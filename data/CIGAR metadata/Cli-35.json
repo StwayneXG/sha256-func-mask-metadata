@@ -1,0 +1,17 @@
+{
+    "bug_id": 35,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    public List<String> getMatchingOptions(String opt)\n    {\n        opt = Util.stripLeadingHyphens(opt);\n        \n        List<String> matchingOpts = new ArrayList<String>();\n\n        // for a perfect match return the single option only\n\n        for (String longOpt : longOpts.keySet())\n        {\n            if (longOpt.startsWith(opt))\n            {\n                matchingOpts.add(longOpt);\n            }\n        }\n        \n        return matchingOpts;\n    }",
+    "fixed_code": "    public List<String> getMatchingOptions(String opt)\n    {\n        opt = Util.stripLeadingHyphens(opt);\n        \n        List<String> matchingOpts = new ArrayList<String>();\n\n        // for a perfect match return the single option only\n        if(longOpts.keySet().contains(opt)) {\n            return Collections.singletonList(opt);\n        }\n\n        for (String longOpt : longOpts.keySet())\n        {\n            if (longOpt.startsWith(opt))\n            {\n                matchingOpts.add(longOpt);\n            }\n        }\n        \n        return matchingOpts;\n    }",
+    "fixed_lines": "        if(longOpts.keySet().contains(opt)) {\n            return Collections.singletonList(opt);\n        }",
+    "masked_code": "    public List<String> getMatchingOptions(String opt)\n    {\n        opt = Util.stripLeadingHyphens(opt);\n        \n        List<String> matchingOpts = new ArrayList<String>();\n\n        // for a perfect match return the single option only\n>>> [ INFILL ] <<<\n\n        for (String longOpt : longOpts.keySet())\n        {\n            if (longOpt.startsWith(opt))\n            {\n                matchingOpts.add(longOpt);\n            }\n        }\n        \n        return matchingOpts;\n    }",
+    "project": "Cli",
+    "test_error_message": "org.apache.commons.cli.AmbiguousOptionException: Ambiguous option: '--prefix' (could be: 'prefix', 'prefixplusplus')",
+    "test_framework": "defects4j",
+    "test_line": "        new DefaultParser().parse(getOptions(), new String[]{\"--prefix\"});",
+    "test_name": "testExactOptionNameMatch",
+    "test_suite": "org.apache.commons.cli.bug.BugCLI252Test",
+    "time_buggy": "2015-05-11 11:42:46 +0000",
+    "time_fixed": "2015-06-09 05:18:22 +0000"
+}

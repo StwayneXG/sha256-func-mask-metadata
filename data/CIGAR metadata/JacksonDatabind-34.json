@@ -1,0 +1,17 @@
+{
+    "bug_id": 34,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "                visitFloatFormat(visitor, typeHint, JsonParser.NumberType.BIG_INTEGER);",
+    "code": "            if (h == BigDecimal.class) {\n                visitFloatFormat(visitor, typeHint, JsonParser.NumberType.BIG_INTEGER);\n            } else {",
+    "fixed_code": "            if (h == BigDecimal.class) {\n                visitFloatFormat(visitor, typeHint, JsonParser.NumberType.BIG_DECIMAL);\n            } else {",
+    "fixed_lines": "                visitFloatFormat(visitor, typeHint, JsonParser.NumberType.BIG_DECIMAL);",
+    "masked_code": "            if (h == BigDecimal.class) {\n>>> [ INFILL ] <<<\n            } else {",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<...dec([numberType=BIG_[DECIMAL]])][optProp bigInt([...> but was:<...dec([numberType=BIG_[INTEGER]])][optProp bigInt([...>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"[optProp dec([numberType=BIG_DECIMAL])][optProp bigInt([numberType=BIG_INTEGER])]\",",
+    "test_name": "testSimpleNumbers",
+    "test_suite": "com.fasterxml.jackson.databind.jsonschema.NewSchemaTest",
+    "time_buggy": "2015-12-11 18:05:06 -0800",
+    "time_fixed": "2015-12-12 11:29:04 -0800"
+}

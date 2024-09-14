@@ -1,0 +1,17 @@
+{
+    "bug_id": 21,
+    "bug_type": "SF",
+    "buggy_lines": "            --shift;\n            if (shift == 0) {\n        if (length > 0 && shift > 0) {",
+    "code": "    private void writeBits(final DataOutput header, final BitSet bits, final int length) throws IOException {\n        int cache = 0;\n        int shift = 7;\n        for (int i = 0; i < length; i++) {\n            cache |= ((bits.get(i) ? 1 : 0) << shift);\n            --shift;\n            if (shift == 0) {\n                header.write(cache);\n                shift = 7;\n                cache = 0;\n            }\n        }\n        if (length > 0 && shift > 0) {\n            header.write(cache);\n        }\n    }",
+    "fixed_code": "    private void writeBits(final DataOutput header, final BitSet bits, final int length) throws IOException {\n        int cache = 0;\n        int shift = 7;\n        for (int i = 0; i < length; i++) {\n            cache |= ((bits.get(i) ? 1 : 0) << shift);\n            if (--shift < 0) {\n                header.write(cache);\n                shift = 7;\n                cache = 0;\n            }\n        }\n        if (shift != 7) {\n            header.write(cache);\n        }\n    }",
+    "fixed_lines": "            if (--shift < 0) {\n        if (shift != 7) {",
+    "masked_code": "    private void writeBits(final DataOutput header, final BitSet bits, final int length) throws IOException {\n        int cache = 0;\n        int shift = 7;\n        for (int i = 0; i < length; i++) {\n            cache |= ((bits.get(i) ? 1 : 0) << shift);\n                header.write(cache);\n                shift = 7;\n                cache = 0;\n            }\n        }\n>>> [ INFILL ] <<<\n            header.write(cache);\n        }\n    }",
+    "project": "Compress",
+    "test_error_message": "java.io.IOException: Unknown property 128",
+    "test_framework": "defects4j",
+    "test_line": "        SevenZFile archive = new SevenZFile(output);",
+    "test_name": "testSevenEmptyFiles",
+    "test_suite": "org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest",
+    "time_buggy": "2013-12-20 05:16:56 +0000",
+    "time_fixed": "2013-12-20 12:13:11 +0000"
+}

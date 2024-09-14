@@ -1,0 +1,17 @@
+{
+    "bug_id": 15,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "    if (Double.isNaN(value) || Double.isInfinite(value)) {",
+    "code": "  public JsonWriter value(double value) throws IOException {\n    writeDeferredName();\n    if (Double.isNaN(value) || Double.isInfinite(value)) {\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n    }\n    beforeValue();\n    out.append(Double.toString(value));\n    return this;\n  }",
+    "fixed_code": "  public JsonWriter value(double value) throws IOException {\n    writeDeferredName();\n    if (!lenient && (Double.isNaN(value) || Double.isInfinite(value))) {\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n    }\n    beforeValue();\n    out.append(Double.toString(value));\n    return this;\n  }",
+    "fixed_lines": "    if (!lenient && (Double.isNaN(value) || Double.isInfinite(value))) {",
+    "masked_code": "  public JsonWriter value(double value) throws IOException {\n    writeDeferredName();\n>>> [ INFILL ] <<<\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n    }\n    beforeValue();\n    out.append(Double.toString(value));\n    return this;\n  }",
+    "project": "Gson",
+    "test_error_message": "java.lang.IllegalArgumentException: Numeric values must be finite, but was NaN",
+    "test_framework": "defects4j",
+    "test_line": "    jsonWriter.value(Double.NaN);",
+    "test_name": "testNonFiniteDoublesWhenLenient",
+    "test_suite": "com.google.gson.stream.JsonWriterTest",
+    "time_buggy": "2017-05-30 18:38:01 -0700",
+    "time_fixed": "2017-05-31 09:50:44 -0700"
+}

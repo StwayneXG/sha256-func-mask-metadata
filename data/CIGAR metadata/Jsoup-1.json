@@ -1,0 +1,17 @@
+{
+    "bug_id": 1,
+    "bug_type": "SH SF",
+    "buggy_lines": "            body().appendChild(new TextNode(\" \", \"\"));\n            body().appendChild(node);",
+    "code": "    private void normalise(Element element) {\n        List<Node> toMove = new ArrayList<Node>();\n        for (Node node: element.childNodes) {\n            if (node instanceof TextNode) {\n                TextNode tn = (TextNode) node;\n                if (!tn.isBlank())\n                    toMove.add(tn);\n            }\n        }\n\n        for (Node node: toMove) {\n            element.removeChild(node);\n            body().appendChild(new TextNode(\" \", \"\"));\n            body().appendChild(node);\n        }\n    }",
+    "fixed_code": "    private void normalise(Element element) {\n        List<Node> toMove = new ArrayList<Node>();\n        for (Node node: element.childNodes) {\n            if (node instanceof TextNode) {\n                TextNode tn = (TextNode) node;\n                if (!tn.isBlank())\n                    toMove.add(tn);\n            }\n        }\n\n        for (Node node: toMove) {\n            element.removeChild(node);\n            body().prependChild(node);\n            body().prependChild(new TextNode(\" \", \"\"));\n        }\n    }",
+    "fixed_lines": "            body().prependChild(node);\n            body().prependChild(new TextNode(\" \", \"\"));",
+    "masked_code": "    private void normalise(Element element) {\n        List<Node> toMove = new ArrayList<Node>();\n        for (Node node: element.childNodes) {\n            if (node instanceof TextNode) {\n                TextNode tn = (TextNode) node;\n                if (!tn.isBlank())\n                    toMove.add(tn);\n            }\n        }\n\n        for (Node node: toMove) {\n            element.removeChild(node);\n>>> [ INFILL ] <<<\n        }\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<[foo bar baz]> but was:<[bar baz foo]>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals (\"foo bar baz\", doc.text());",
+    "test_name": "createsStructureFromBodySnippet",
+    "test_suite": "org.jsoup.parser.ParserTest",
+    "time_buggy": "2011-07-02 21:11:52 +1000",
+    "time_fixed": "2011-07-02 21:11:53 +1000"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 23,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "        if (getClass() != DefaultPrettyPrinter.class) { // since 2.10\n            throw new IllegalStateException(\"Failed `createInstance()`: \"+getClass().getName()\n                    +\" does not override method; it has to\");\n        }",
+    "masked_code": "",
+    "project": "JacksonCore",
+    "test_error_message": "junit.framework.AssertionFailedError: Should not pass",
+    "test_framework": "defects4j",
+    "test_line": "            fail(\"Should not pass\");",
+    "test_name": "testInvalidSubClass",
+    "test_suite": "com.fasterxml.jackson.core.util.TestDefaultPrettyPrinter",
+    "time_buggy": "2018-12-08 14:26:29 -0800",
+    "time_fixed": "2018-12-11 22:06:44 -0800"
+}

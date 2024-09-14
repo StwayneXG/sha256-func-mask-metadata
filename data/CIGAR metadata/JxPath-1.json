@@ -1,0 +1,17 @@
+{
+    "bug_id": 1,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "JxPath",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2007-01-10 17:32:14 +0000",
+    "time_fixed": "2007-01-10 18:27:20 +0000"
+}

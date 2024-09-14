@@ -1,0 +1,17 @@
+{
+    "bug_id": 5,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "            char c = str.charAt(i++);",
+    "code": "    private final static int _parseIndex(String str) {\n        final int len = str.length();\n        // [Issue#133]: beware of super long indexes; assume we never\n        // have arrays over 2 billion entries so ints are fine.\n        if (len == 0 || len > 10) {\n            return -1;\n        }\n        for (int i = 0; i < len; ++i) {\n            char c = str.charAt(i++);\n            if (c > '9' || c < '0') {\n                return -1;\n            }\n        }\n        if (len == 10) {\n            long l = NumberInput.parseLong(str);\n            if (l > Integer.MAX_VALUE) {\n                return -1;\n            }\n        }\n        return NumberInput.parseInt(str);\n    }",
+    "fixed_code": "    private final static int _parseIndex(String str) {\n        final int len = str.length();\n        // [Issue#133]: beware of super long indexes; assume we never\n        // have arrays over 2 billion entries so ints are fine.\n        if (len == 0 || len > 10) {\n            return -1;\n        }\n        for (int i = 0; i < len; ++i) {\n            char c = str.charAt(i);\n            if (c > '9' || c < '0') {\n                return -1;\n            }\n        }\n        if (len == 10) {\n            long l = NumberInput.parseLong(str);\n            if (l > Integer.MAX_VALUE) {\n                return -1;\n            }\n        }\n        return NumberInput.parseInt(str);\n    }",
+    "fixed_lines": "            char c = str.charAt(i);",
+    "masked_code": "    private final static int _parseIndex(String str) {\n        final int len = str.length();\n        // [Issue#133]: beware of super long indexes; assume we never\n        // have arrays over 2 billion entries so ints are fine.\n        if (len == 0 || len > 10) {\n            return -1;\n        }\n        for (int i = 0; i < len; ++i) {\n>>> [ INFILL ] <<<\n            if (c > '9' || c < '0') {\n                return -1;\n            }\n        }\n        if (len == 10) {\n            long l = NumberInput.parseLong(str);\n            if (l > Integer.MAX_VALUE) {\n                return -1;\n            }\n        }\n        return NumberInput.parseInt(str);\n    }",
+    "project": "JacksonCore",
+    "test_error_message": "java.lang.NumberFormatException: For input string: \"1e0\"",
+    "test_framework": "defects4j",
+    "test_line": "        JsonPointer ptr = JsonPointer.compile(\"/1e0\");",
+    "test_name": "testWonkyNumber173",
+    "test_suite": "com.fasterxml.jackson.core.TestJsonPointer",
+    "time_buggy": "2014-11-24 18:16:45 -0800",
+    "time_fixed": "2014-12-07 10:16:55 -0800"
+}

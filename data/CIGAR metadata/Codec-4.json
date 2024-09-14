@@ -1,0 +1,17 @@
+{
+    "bug_id": 4,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        this(false);",
+    "code": "    public Base64() {\n        this(false);\n    }",
+    "fixed_code": "    public Base64() {\n        this(0);\n    }",
+    "fixed_lines": "        this(0);",
+    "masked_code": "    public Base64() {\n>>> [ INFILL ] <<<\n    }",
+    "project": "Codec",
+    "test_error_message": "junit.framework.AssertionFailedError: Encoder test-1",
+    "test_framework": "defects4j",
+    "test_line": "                assertTrue(\"Encoder test-\" + i, b);",
+    "test_name": "testEncoder",
+    "test_suite": "org.apache.commons.codec.binary.Base64Codec13Test",
+    "time_buggy": "2010-03-26 23:52:46 +0000",
+    "time_fixed": "2010-03-27 00:02:22 +0000"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 38,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "                        if (tb.getFromStack(\"svg\") == null)\n                        else\n                            tb.insert(startTag);",
+    "masked_code": "",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<<img />",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"<img />\\n<svg>\\n <image />\\n</svg>\", doc.body().html());",
+    "test_name": "convertsImageToImg",
+    "test_suite": "org.jsoup.parser.HtmlParserTest",
+    "time_buggy": "2013-11-16 16:48:43 -0800",
+    "time_fixed": "2013-11-16 17:12:31 -0800"
+}

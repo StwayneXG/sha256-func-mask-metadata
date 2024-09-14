@@ -1,0 +1,17 @@
+{
+    "bug_id": 70,
+    "bug_type": "SF",
+    "buggy_lines": "                else\n                    return el.parent() != null && el.parent().tag.preserveWhitespace();",
+    "code": "    static boolean preserveWhitespace(Node node) {\n        // looks only at this element and five levels up, to prevent recursion & needless stack searches\n        if (node != null && node instanceof Element) {\n            Element el = (Element) node;\n                if (el.tag.preserveWhitespace())\n                    return true;\n                else\n                    return el.parent() != null && el.parent().tag.preserveWhitespace();\n        }\n        return false;\n    }",
+    "fixed_code": "    static boolean preserveWhitespace(Node node) {\n        // looks only at this element and five levels up, to prevent recursion & needless stack searches\n        if (node != null && node instanceof Element) {\n            Element el = (Element) node;\n            int i = 0;\n            do {\n                if (el.tag.preserveWhitespace())\n                    return true;\n                el = el.parent();\n                i++;\n            } while (i < 6 && el != null);\n        }\n        return false;\n    }",
+    "fixed_lines": "            int i = 0;\n            do {\n                el = el.parent();\n                i++;\n            } while (i < 6 && el != null);",
+    "masked_code": "    static boolean preserveWhitespace(Node node) {\n        // looks only at this element and five levels up, to prevent recursion & needless stack searches\n        if (node != null && node instanceof Element) {\n            Element el = (Element) node;\n                if (el.tag.preserveWhitespace())\n                    return true;\n>>> [ INFILL ] <<<\n        }\n        return false;\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<code[",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"code\\n\\ncode\", doc.text());",
+    "test_name": "testKeepsPreTextAtDepth",
+    "test_suite": "org.jsoup.nodes.ElementTest",
+    "time_buggy": "2017-11-12 14:23:10 -0800",
+    "time_fixed": "2017-11-12 16:02:31 -0800"
+}

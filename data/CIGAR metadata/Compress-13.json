@@ -1,0 +1,17 @@
+{
+    "bug_id": 13,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    protected void setName(String name) {\n        this.name = name;\n    }",
+    "fixed_code": "    protected void setName(String name) {\n        if (name != null && getPlatform() == PLATFORM_FAT\n            && name.indexOf(\"/\") == -1) {\n            name = name.replace('\\\\', '/');\n        }\n        this.name = name;\n    }",
+    "fixed_lines": "        if (name != null && getPlatform() == PLATFORM_FAT\n            && name.indexOf(\"/\") == -1) {\n            name = name.replace('\\\\', '/');\n        }",
+    "masked_code": "    protected void setName(String name) {\n>>> [ INFILL ] <<<\n        this.name = name;\n    }",
+    "project": "Compress",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<\u00e4[/]> but was:<\u00e4[\\]>",
+    "test_framework": "defects4j",
+    "test_line": "            assertEquals(\"\\u00e4/\", zae.getName());",
+    "test_name": "winzipBackSlashWorkaround",
+    "test_suite": "org.apache.commons.compress.archivers.zip.ZipArchiveInputStreamTest",
+    "time_buggy": "2012-02-23 10:45:36 +0000",
+    "time_fixed": "2012-02-28 05:00:26 +0000"
+}

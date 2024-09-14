@@ -1,0 +1,17 @@
+{
+    "bug_id": 7,
+    "bug_type": "SF",
+    "buggy_lines": "            if (buffer[i] == 0) {\n            result.append((char) buffer[i]);",
+    "code": "    public static String parseName(byte[] buffer, final int offset, final int length) {\n        StringBuffer result = new StringBuffer(length);\n        int          end = offset + length;\n\n        for (int i = offset; i < end; ++i) {\n            if (buffer[i] == 0) {\n                break;\n            }\n            result.append((char) buffer[i]);\n        }\n\n        return result.toString();\n    }",
+    "fixed_code": "    public static String parseName(byte[] buffer, final int offset, final int length) {\n        StringBuffer result = new StringBuffer(length);\n        int          end = offset + length;\n\n        for (int i = offset; i < end; ++i) {\n            byte b = buffer[i];\n            if (b == 0) { // Trailing null\n                break;\n            }\n            result.append((char) (b & 0xFF)); // Allow for sign-extension\n        }\n\n        return result.toString();\n    }",
+    "fixed_lines": "            byte b = buffer[i];\n            if (b == 0) { // Trailing null\n            result.append((char) (b & 0xFF)); // Allow for sign-extension",
+    "masked_code": "    public static String parseName(byte[] buffer, final int offset, final int length) {\n        StringBuffer result = new StringBuffer(length);\n        int          end = offset + length;\n\n        for (int i = offset; i < end; ++i) {\n                break;\n            }\n>>> [ INFILL ] <<<\n        }\n\n        return result.toString();\n    }",
+    "project": "Compress",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<0302-0601-3[\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1]MOE.model> but was:<0302-0601-3[\uffb1\uffb1\uffb1F06\uffb1W220\uffb1ZB\uffb1LALALA\uffb1\uffb1\uffb1\uffb1\uffb1\uffb1\uffb1\uffb1\uffb1\uffb1CAN\uffb1\uffb1DC\uffb1\uffb1\uffb104\uffb1060302\uffb1]MOE.model>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(string, TarUtils.parseName(buff, 0, len));",
+    "test_name": "testRoundTripNames",
+    "test_suite": "org.apache.commons.compress.archivers.tar.TarUtilsTest",
+    "time_buggy": "2010-05-13 15:32:39 +0000",
+    "time_fixed": "2010-05-17 14:51:17 +0000"
+}

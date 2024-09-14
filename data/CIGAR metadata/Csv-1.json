@@ -1,0 +1,17 @@
+{
+    "bug_id": 1,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        if (current == '\\n') {",
+    "code": "    public int read() throws IOException {\n        int current = super.read();\n        if (current == '\\n') {\n            lineCounter++;\n        }\n        lastChar = current;\n        return lastChar;\n    }",
+    "fixed_code": "    public int read() throws IOException {\n        int current = super.read();\n        if (current == '\\r' || (current == '\\n' && lastChar != '\\r')) {\n            lineCounter++;\n        }\n        lastChar = current;\n        return lastChar;\n    }",
+    "fixed_lines": "        if (current == '\\r' || (current == '\\n' && lastChar != '\\r')) {",
+    "masked_code": "    public int read() throws IOException {\n        int current = super.read();\n>>> [ INFILL ] <<<\n            lineCounter++;\n        }\n        lastChar = current;\n        return lastChar;\n    }",
+    "project": "Csv",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<1> but was:<0>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(1, parser.getLineNumber());",
+    "test_name": "testGetLineNumberWithCR",
+    "test_suite": "org.apache.commons.csv.CSVParserTest",
+    "time_buggy": "2012-03-27 00:42:22 +0000",
+    "time_fixed": "2012-03-27 00:49:17 +0000"
+}

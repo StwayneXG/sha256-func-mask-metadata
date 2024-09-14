@@ -1,0 +1,17 @@
+{
+    "bug_id": 7,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public TokenBuffer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n    {\n            copyCurrentStructure(jp);\n        /* 28-Oct-2014, tatu: As per #592, need to support a special case of starting from\n         *    FIELD_NAME, which is taken to mean that we are missing START_OBJECT, but need\n         *    to assume one did exist.\n         */\n        return this;\n    }",
+    "fixed_code": "    public TokenBuffer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n    {\n        if (jp.getCurrentTokenId() != JsonToken.FIELD_NAME.id()) {\n            copyCurrentStructure(jp);\n            return this;\n        }\n        /* 28-Oct-2014, tatu: As per #592, need to support a special case of starting from\n         *    FIELD_NAME, which is taken to mean that we are missing START_OBJECT, but need\n         *    to assume one did exist.\n         */\n        JsonToken t;\n        writeStartObject();\n        do {\n            copyCurrentStructure(jp);\n        } while ((t = jp.nextToken()) == JsonToken.FIELD_NAME);\n        if (t != JsonToken.END_OBJECT) {\n            throw ctxt.mappingException(\"Expected END_OBJECT after copying contents of a JsonParser into TokenBuffer, got \"+t);\n        }\n        writeEndObject();\n        return this;\n    }",
+    "fixed_lines": "        if (jp.getCurrentTokenId() != JsonToken.FIELD_NAME.id()) {\n            return this;\n        }\n        JsonToken t;\n        writeStartObject();\n        do {\n            copyCurrentStructure(jp);\n        } while ((t = jp.nextToken()) == JsonToken.FIELD_NAME);\n        if (t != JsonToken.END_OBJECT) {\n            throw ctxt.mappingException(\"Expected END_OBJECT after copying contents of a JsonParser into TokenBuffer, got \"+t);\n        }\n        writeEndObject();",
+    "masked_code": "    public TokenBuffer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n    {\n            copyCurrentStructure(jp);\n        /* 28-Oct-2014, tatu: As per #592, need to support a special case of starting from\n         *    FIELD_NAME, which is taken to mean that we are missing START_OBJECT, but need\n         *    to assume one did exist.\n         */\n>>> [ INFILL ] <<<\n        return this;\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.AssertionFailedError: Expected token START_OBJECT, current token FIELD_NAME",
+    "test_framework": "defects4j",
+    "test_line": "        assertToken(JsonToken.START_OBJECT, jp.nextToken());",
+    "test_name": "testDelegateWithTokenBuffer",
+    "test_suite": "com.fasterxml.jackson.databind.creators.TestCreatorsDelegating",
+    "time_buggy": "2014-10-21 10:38:04 -0700",
+    "time_fixed": "2014-10-28 20:32:47 -0700"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 53,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public String chompBalanced(char open, char close) {\n        int start = -1;\n        int end = -1;\n        int depth = 0;\n        char last = 0;\n\n        do {\n            if (isEmpty()) break;\n            Character c = consume();\n            if (last == 0 || last != ESC) {\n                if (c.equals(open)) {\n                    depth++;\n                    if (start == -1)\n                        start = pos;\n                }\n                else if (c.equals(close))\n                    depth--;\n            }\n\n            if (depth > 0 && last != 0)\n                end = pos; // don't include the outer match pair in the return\n            last = c;\n        } while (depth > 0);\n        return (end >= 0) ? queue.substring(start, end) : \"\";\n    }",
+    "fixed_code": "    public String chompBalanced(char open, char close) {\n        int start = -1;\n        int end = -1;\n        int depth = 0;\n        char last = 0;\n        boolean inQuote = false;\n\n        do {\n            if (isEmpty()) break;\n            Character c = consume();\n            if (last == 0 || last != ESC) {\n                if (c.equals('\\'') || c.equals('\"') && c != open)\n                    inQuote = !inQuote;\n                if (inQuote)\n                    continue;\n                if (c.equals(open)) {\n                    depth++;\n                    if (start == -1)\n                        start = pos;\n                }\n                else if (c.equals(close))\n                    depth--;\n            }\n\n            if (depth > 0 && last != 0)\n                end = pos; // don't include the outer match pair in the return\n            last = c;\n        } while (depth > 0);\n        return (end >= 0) ? queue.substring(start, end) : \"\";\n    }",
+    "fixed_lines": "        boolean inQuote = false;\n                if (c.equals('\\'') || c.equals('\"') && c != open)\n                    inQuote = !inQuote;\n                if (inQuote)\n                    continue;",
+    "masked_code": "    public String chompBalanced(char open, char close) {\n        int start = -1;\n        int end = -1;\n        int depth = 0;\n        char last = 0;\n\n        do {\n            if (isEmpty()) break;\n            Character c = consume();\n            if (last == 0 || last != ESC) {\n>>> [ INFILL ] <<<\n                if (c.equals(open)) {\n                    depth++;\n                    if (start == -1)\n                        start = pos;\n                }\n                else if (c.equals(close))\n                    depth--;\n            }\n\n            if (depth > 0 && last != 0)\n                end = pos; // don't include the outer match pair in the return\n            last = c;\n        } while (depth > 0);\n        return (end >= 0) ? queue.substring(start, end) : \"\";\n    }",
+    "project": "Jsoup",
+    "test_error_message": "org.jsoup.select.Selector$SelectorParseException: Could not parse query 'div[data='End]'': unexpected token at '''",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"One\", doc.select(\"div[data='End]'\").first().text());",
+    "test_name": "attributeWithBrackets",
+    "test_suite": "org.jsoup.select.SelectorTest",
+    "time_buggy": "2016-05-07 16:18:24 -0700",
+    "time_fixed": "2016-05-07 17:18:58 -0700"
+}

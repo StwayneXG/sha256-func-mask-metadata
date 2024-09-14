@@ -1,0 +1,17 @@
+{
+    "bug_id": 11,
+    "bug_type": "SH SF",
+    "buggy_lines": "    } else if (n.getJSType() != null && parent.isAssign()) {\n      return;",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "",
+    "masked_code": "",
+    "project": "Closure",
+    "test_error_message": "junit.framework.AssertionFailedError: expected a warning",
+    "test_framework": "defects4j",
+    "test_line": "      assertTrue(\"expected a warning\", warnings.length > 0);",
+    "test_name": "testGetprop4",
+    "test_suite": "com.google.javascript.jscomp.TypeCheckTest",
+    "time_buggy": "2012-09-11 23:17:52 +0000",
+    "time_fixed": "2012-09-12 22:16:03 +0000"
+}

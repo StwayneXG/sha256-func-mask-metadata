@@ -1,0 +1,17 @@
+{
+    "bug_id": 4,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return new LinkedHashMap<String, Integer>(this.headerMap);",
+    "code": "    public Map<String, Integer> getHeaderMap() {\n        return new LinkedHashMap<String, Integer>(this.headerMap);\n    }",
+    "fixed_code": "    public Map<String, Integer> getHeaderMap() {\n        return this.headerMap == null ? null : new LinkedHashMap<String, Integer>(this.headerMap);\n    }",
+    "fixed_lines": "        return this.headerMap == null ? null : new LinkedHashMap<String, Integer>(this.headerMap);",
+    "masked_code": "    public Map<String, Integer> getHeaderMap() {\n>>> [ INFILL ] <<<\n    }",
+    "project": "Csv",
+    "test_error_message": "java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "        Assert.assertNull(parser.getHeaderMap());",
+    "test_name": "testNoHeaderMap",
+    "test_suite": "org.apache.commons.csv.CSVParserTest",
+    "time_buggy": "2013-09-14 11:13:22 +0000",
+    "time_fixed": "2013-09-18 14:57:57 +0000"
+}

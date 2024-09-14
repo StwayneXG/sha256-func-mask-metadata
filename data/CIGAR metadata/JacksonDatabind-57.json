@@ -1,0 +1,17 @@
+{
+    "bug_id": 57,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return _bindAndReadValues(_considerFilter(_parserFactory.createParser(src), ",
+    "code": "    public <T> MappingIterator<T> readValues(byte[] src, int offset, int length)\n        throws IOException, JsonProcessingException\n    {\n        if (_dataFormatReaders != null) {\n            return _detectBindAndReadValues(_dataFormatReaders.findFormat(src, offset, length), false);\n        }\n        return _bindAndReadValues(_considerFilter(_parserFactory.createParser(src), \n                true));\n    }",
+    "fixed_code": "    public <T> MappingIterator<T> readValues(byte[] src, int offset, int length)\n        throws IOException, JsonProcessingException\n    {\n        if (_dataFormatReaders != null) {\n            return _detectBindAndReadValues(_dataFormatReaders.findFormat(src, offset, length), false);\n        }\n        return _bindAndReadValues(_considerFilter(_parserFactory.createParser(src, offset, length),\n                true));\n    }",
+    "fixed_lines": "        return _bindAndReadValues(_considerFilter(_parserFactory.createParser(src, offset, length),",
+    "masked_code": "    public <T> MappingIterator<T> readValues(byte[] src, int offset, int length)\n        throws IOException, JsonProcessingException\n    {\n        if (_dataFormatReaders != null) {\n            return _detectBindAndReadValues(_dataFormatReaders.findFormat(src, offset, length), false);\n        }\n>>> [ INFILL ] <<<\n                true));\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "java.io.CharConversionException: Invalid UTF-32 character 0x2261223a(above 10ffff) at char #1, byte #7)",
+    "test_framework": "defects4j",
+    "test_line": "                return r.readValues(b, 3, b.length-6);",
+    "test_name": "testRootBeans",
+    "test_suite": "com.fasterxml.jackson.databind.seq.ReadValuesTest",
+    "time_buggy": "2016-08-31 20:19:36 -0700",
+    "time_fixed": "2016-09-01 18:36:27 -0700"
+}

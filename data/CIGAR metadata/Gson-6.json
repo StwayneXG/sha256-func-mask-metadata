@@ -1,0 +1,17 @@
+{
+    "bug_id": 6,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "    if (typeAdapter != null) {\n    }",
+    "masked_code": "",
+    "project": "Gson",
+    "test_error_message": "java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "        return (TypeAdapter) gson.getDelegateAdapter(this, type);",
+    "test_name": "testNullSafeBugDeserialize",
+    "test_suite": "com.google.gson.regression.JsonAdapterNullSafeTest",
+    "time_buggy": "2016-02-25 00:08:20 -0500",
+    "time_fixed": "2016-02-26 13:35:59 -0500"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 15,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "                    } else if (StringUtil.in(name, \"base\", \"basefont\", \"bgsound\", \"command\", \"link\", \"meta\", \"noframes\", \"style\", \"title\")) {",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "                    } else if (StringUtil.in(name, \"base\", \"basefont\", \"bgsound\", \"command\", \"link\", \"meta\", \"noframes\", \"script\", \"style\", \"title\")) {",
+    "masked_code": "",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<Hello []There> but was:<Hello ['); i++; ]There>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"Hello There\", doc.text());",
+    "test_name": "handlesDataOnlyTags",
+    "test_suite": "org.jsoup.parser.ParserTest",
+    "time_buggy": "2011-07-02 21:12:10 +1000",
+    "time_fixed": "2011-07-02 21:12:10 +1000"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 49,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public Object generateId(Object forPojo) {\n        // 04-Jun-2016, tatu: As per [databind#1255], need to consider possibility of\n        //    id being generated for \"alwaysAsId\", but not being written as POJO; regardless,\n        //    need to use existing id if there is one:\n            id = generator.generateId(forPojo);\n        return id;\n    }",
+    "fixed_code": "    public Object generateId(Object forPojo) {\n        // 04-Jun-2016, tatu: As per [databind#1255], need to consider possibility of\n        //    id being generated for \"alwaysAsId\", but not being written as POJO; regardless,\n        //    need to use existing id if there is one:\n        if (id == null) {\n            id = generator.generateId(forPojo);\n        }\n        return id;\n    }",
+    "fixed_lines": "        if (id == null) {\n        }",
+    "masked_code": "    public Object generateId(Object forPojo) {\n        // 04-Jun-2016, tatu: As per [databind#1255], need to consider possibility of\n        //    id being generated for \"alwaysAsId\", but not being written as POJO; regardless,\n        //    need to use existing id if there is one:\n            id = generator.generateId(forPojo);\n>>> [ INFILL ] <<<\n        return id;\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "com.fasterxml.jackson.databind.deser.UnresolvedForwardReference: Unresolved forward references for: Object id [1] (for com.fasterxml.jackson.databind.objectid.AlwaysAsReferenceFirstTest$Bar) at [Source: {\"bar1\":1,\"bar2\":{\"@id\":2,\"value\":3}}; line: 1, column: 10].",
+    "test_framework": "defects4j",
+    "test_line": "",
+    "test_name": "testIssue1255",
+    "test_suite": "com.fasterxml.jackson.databind.objectid.AlwaysAsReferenceFirstTest",
+    "time_buggy": "2016-06-04 11:34:28 -0700",
+    "time_fixed": "2016-06-04 20:27:07 -0700"
+}

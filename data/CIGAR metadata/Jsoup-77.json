@@ -1,0 +1,17 @@
+{
+    "bug_id": 77,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        String elName = endTag.name();",
+    "code": "    private void popStackToClose(Token.EndTag endTag) {\n        String elName = endTag.name();\n        Element firstFound = null;\n\n        for (int pos = stack.size() -1; pos >= 0; pos--) {\n            Element next = stack.get(pos);\n            if (next.nodeName().equals(elName)) {\n                firstFound = next;\n                break;\n            }\n        }\n        if (firstFound == null)\n            return; // not found, skip\n\n        for (int pos = stack.size() -1; pos >= 0; pos--) {\n            Element next = stack.get(pos);\n            stack.remove(pos);\n            if (next == firstFound)\n                break;\n        }\n    }",
+    "fixed_code": "    private void popStackToClose(Token.EndTag endTag) {\n        String elName = endTag.normalName();\n        Element firstFound = null;\n\n        for (int pos = stack.size() -1; pos >= 0; pos--) {\n            Element next = stack.get(pos);\n            if (next.nodeName().equals(elName)) {\n                firstFound = next;\n                break;\n            }\n        }\n        if (firstFound == null)\n            return; // not found, skip\n\n        for (int pos = stack.size() -1; pos >= 0; pos--) {\n            Element next = stack.get(pos);\n            stack.remove(pos);\n            if (next == firstFound)\n                break;\n        }\n    }",
+    "fixed_lines": "        String elName = endTag.normalName();",
+    "masked_code": "    private void popStackToClose(Token.EndTag endTag) {\n>>> [ INFILL ] <<<\n        Element firstFound = null;\n\n        for (int pos = stack.size() -1; pos >= 0; pos--) {\n            Element next = stack.get(pos);\n            if (next.nodeName().equals(elName)) {\n                firstFound = next;\n                break;\n            }\n        }\n        if (firstFound == null)\n            return; // not found, skip\n\n        for (int pos = stack.size() -1; pos >= 0; pos--) {\n            Element next = stack.get(pos);\n            stack.remove(pos);\n            if (next == firstFound)\n                break;\n        }\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<<div>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"<div>\\n test\\n</div>\\n<p></p>\", document.html());",
+    "test_name": "normalizesDiscordantTags",
+    "test_suite": "org.jsoup.parser.XmlTreeBuilderTest",
+    "time_buggy": "2017-12-21 18:36:16 -0800",
+    "time_fixed": "2017-12-22 10:25:08 -0800"
+}

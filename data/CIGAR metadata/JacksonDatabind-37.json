@@ -1,0 +1,17 @@
+{
+    "bug_id": 37,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return new SimpleType(subclass, _bindings, _superClass, _superInterfaces,",
+    "code": "        if (!_class.isAssignableFrom(subclass)) {\n            throw new IllegalArgumentException(\"Class \"+subclass.getName()+\" not sub-type of \"\n                    +_class.getName());\n        }\n        */\n        // 15-Jan-2015, tatu: Not correct; should really re-resolve...\n        return new SimpleType(subclass, _bindings, _superClass, _superInterfaces,\n                _valueHandler, _typeHandler, _asStatic);\n    }\n    \n    @Override\n    public JavaType withContentType(JavaType contentType) {\n        throw new IllegalArgumentException(\"Simple types have no content types; can not call withContentType()\");\n    }\n    \n    @Override\n    public SimpleType withTypeHandler(Object h) {\n        if (_typeHandler == h) {\n            return this;\n        }",
+    "fixed_code": "        if (!_class.isAssignableFrom(subclass)) {\n            throw new IllegalArgumentException(\"Class \"+subclass.getName()+\" not sub-type of \"\n                    +_class.getName());\n        }\n        */\n        // 15-Jan-2015, tatu: Not correct; should really re-resolve...\n        return new SimpleType(subclass, _bindings, this, _superInterfaces,\n                _valueHandler, _typeHandler, _asStatic);\n    }\n    \n    @Override\n    public JavaType withContentType(JavaType contentType) {\n        throw new IllegalArgumentException(\"Simple types have no content types; can not call withContentType()\");\n    }\n    \n    @Override\n    public SimpleType withTypeHandler(Object h) {\n        if (_typeHandler == h) {\n            return this;\n        }",
+    "fixed_lines": "        return new SimpleType(subclass, _bindings, this, _superInterfaces,",
+    "masked_code": "        if (!_class.isAssignableFrom(subclass)) {\n            throw new IllegalArgumentException(\"Class \"+subclass.getName()+\" not sub-type of \"\n                    +_class.getName());\n        }\n        */\n        // 15-Jan-2015, tatu: Not correct; should really re-resolve...\n>>> [ INFILL ] <<<\n                _valueHandler, _typeHandler, _asStatic);\n    }\n    \n    @Override\n    public JavaType withContentType(JavaType contentType) {\n        throw new IllegalArgumentException(\"Simple types have no content types; can not call withContentType()\");\n    }\n    \n    @Override\n    public SimpleType withTypeHandler(Object h) {\n        if (_typeHandler == h) {\n            return this;\n        }",
+    "project": "JacksonDatabind",
+    "test_error_message": "com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"name\" (class com.fasterxml.jackson.databind.objectid.Objecid1083Test$JsonMapSchema), not marked as ignorable (0 known properties: ])",
+    "test_framework": "defects4j",
+    "test_line": "",
+    "test_name": "testSimple",
+    "test_suite": "com.fasterxml.jackson.databind.objectid.Objecid1083Test",
+    "time_buggy": "2016-01-15 20:25:14 -0800",
+    "time_fixed": "2016-01-15 21:02:56 -0800"
+}

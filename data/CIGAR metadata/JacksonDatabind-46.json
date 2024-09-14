@@ -1,0 +1,17 @@
+{
+    "bug_id": 46,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        sb.append(';');",
+    "code": "    public StringBuilder getGenericSignature(StringBuilder sb)\n    {\n        _classSignature(_class, sb, false);\n        sb.append('<');\n        sb = _referencedType.getGenericSignature(sb);\n        sb.append(';');\n        return sb;\n    }",
+    "fixed_code": "    public StringBuilder getGenericSignature(StringBuilder sb)\n    {\n        _classSignature(_class, sb, false);\n        sb.append('<');\n        sb = _referencedType.getGenericSignature(sb);\n        sb.append(\">;\");\n        return sb;\n    }",
+    "fixed_lines": "        sb.append(\">;\");",
+    "masked_code": "    public StringBuilder getGenericSignature(StringBuilder sb)\n    {\n        _classSignature(_class, sb, false);\n        sb.append('<');\n        sb = _referencedType.getGenericSignature(sb);\n>>> [ INFILL ] <<<\n        return sb;\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<...e<Ljava/lang/String;[>];> but was:<...e<Ljava/lang/String;[];>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/String;>;\", t.getGenericSignature());",
+    "test_name": "testGenericSignature1195",
+    "test_suite": "com.fasterxml.jackson.databind.type.TestJavaType",
+    "time_buggy": "2016-04-04 18:22:32 -0700",
+    "time_fixed": "2016-04-11 21:01:14 -0700"
+}

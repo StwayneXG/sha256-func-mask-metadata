@@ -1,0 +1,17 @@
+{
+    "bug_id": 11,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        if (option.hasArg() && (option.getArgName() != null))",
+    "code": "    private static void appendOption(final StringBuffer buff, \n                                     final Option option, \n                                     final boolean required)\n    {\n        if (!required)\n        {\n            buff.append(\"[\");\n        }\n\n        if (option.getOpt() != null)\n        {\n            buff.append(\"-\").append(option.getOpt());\n        }\n        else\n        {\n            buff.append(\"--\").append(option.getLongOpt());\n        }\n\n        // if the Option has a value\n        if (option.hasArg() && (option.getArgName() != null))\n        {\n            buff.append(\" <\").append(option.getArgName()).append(\">\");\n        }\n\n        // if the Option is not a required option\n        if (!required)\n        {\n            buff.append(\"]\");\n        }\n    }",
+    "fixed_code": "    private static void appendOption(final StringBuffer buff, \n                                     final Option option, \n                                     final boolean required)\n    {\n        if (!required)\n        {\n            buff.append(\"[\");\n        }\n\n        if (option.getOpt() != null)\n        {\n            buff.append(\"-\").append(option.getOpt());\n        }\n        else\n        {\n            buff.append(\"--\").append(option.getLongOpt());\n        }\n\n        // if the Option has a value\n        if (option.hasArg() && option.hasArgName())\n        {\n            buff.append(\" <\").append(option.getArgName()).append(\">\");\n        }\n\n        // if the Option is not a required option\n        if (!required)\n        {\n            buff.append(\"]\");\n        }\n    }",
+    "fixed_lines": "        if (option.hasArg() && option.hasArgName())",
+    "masked_code": "    private static void appendOption(final StringBuffer buff, \n                                     final Option option, \n                                     final boolean required)\n    {\n        if (!required)\n        {\n            buff.append(\"[\");\n        }\n\n        if (option.getOpt() != null)\n        {\n            buff.append(\"-\").append(option.getOpt());\n        }\n        else\n        {\n            buff.append(\"--\").append(option.getLongOpt());\n        }\n\n        // if the Option has a value\n>>> [ INFILL ] <<<\n        {\n            buff.append(\" <\").append(option.getArgName()).append(\">\");\n        }\n\n        // if the Option is not a required option\n        if (!required)\n        {\n            buff.append(\"]\");\n        }\n    }",
+    "project": "Cli",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<usage: app -f[]",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"usage: app -f\" + EOL, out.toString());",
+    "test_name": "testPrintOptionWithEmptyArgNameUsage",
+    "test_suite": "org.apache.commons.cli.HelpFormatterTest",
+    "time_buggy": "2008-05-30 10:19:46 +0000",
+    "time_fixed": "2008-05-30 10:22:49 +0000"
+}

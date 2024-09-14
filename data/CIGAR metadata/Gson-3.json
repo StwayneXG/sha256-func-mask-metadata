@@ -1,0 +1,17 @@
+{
+    "bug_id": 3,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "Gson",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2015-11-04 22:24:05 -0500",
+    "time_fixed": "2015-11-05 07:25:34 -0500"
+}

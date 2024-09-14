@@ -1,0 +1,17 @@
+{
+    "bug_id": 76,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "                        tb.reader.matchConsume(\"\\n\"); // ignore LF if next token",
+    "masked_code": "",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"\\nOne\\nTwo\\n\", pre.wholeText());",
+    "test_name": "preSkipsFirstNewline",
+    "test_suite": "org.jsoup.parser.HtmlParserTest",
+    "time_buggy": "2017-12-03 15:13:40 -0800",
+    "time_fixed": "2017-12-03 15:49:58 -0800"
+}

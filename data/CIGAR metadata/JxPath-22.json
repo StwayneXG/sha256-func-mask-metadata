@@ -1,0 +1,17 @@
+{
+    "bug_id": 22,
+    "bug_type": "SF",
+    "buggy_lines": "                        return attr.getValue();\n            return null;\n        return uri;",
+    "code": "    public static String getNamespaceURI(Node node) {\n        if (node instanceof Document) {\n            node = ((Document) node).getDocumentElement();\n        }\n\n        Element element = (Element) node;\n\n        String uri = element.getNamespaceURI();\n        if (uri == null) {\n            String prefix = getPrefix(node);\n            String qname = prefix == null ? \"xmlns\" : \"xmlns:\" + prefix;\n    \n            Node aNode = node;\n            while (aNode != null) {\n                if (aNode.getNodeType() == Node.ELEMENT_NODE) {\n                    Attr attr = ((Element) aNode).getAttributeNode(qname);\n                    if (attr != null) {\n                        return attr.getValue();\n                    }\n                }\n                aNode = aNode.getParentNode();\n            }\n            return null;\n        }\n        return uri;\n    }",
+    "fixed_code": "    public static String getNamespaceURI(Node node) {\n        if (node instanceof Document) {\n            node = ((Document) node).getDocumentElement();\n        }\n\n        Element element = (Element) node;\n\n        String uri = element.getNamespaceURI();\n        if (uri == null) {\n            String prefix = getPrefix(node);\n            String qname = prefix == null ? \"xmlns\" : \"xmlns:\" + prefix;\n    \n            Node aNode = node;\n            while (aNode != null) {\n                if (aNode.getNodeType() == Node.ELEMENT_NODE) {\n                    Attr attr = ((Element) aNode).getAttributeNode(qname);\n                    if (attr != null) {\n                        uri = attr.getValue();\n                        break;\n                    }\n                }\n                aNode = aNode.getParentNode();\n            }\n        }\n        return \"\".equals(uri) ? null : uri;\n    }",
+    "fixed_lines": "                        uri = attr.getValue();\n                        break;\n        return \"\".equals(uri) ? null : uri;",
+    "masked_code": "    public static String getNamespaceURI(Node node) {\n        if (node instanceof Document) {\n            node = ((Document) node).getDocumentElement();\n        }\n\n        Element element = (Element) node;\n\n        String uri = element.getNamespaceURI();\n        if (uri == null) {\n            String prefix = getPrefix(node);\n            String qname = prefix == null ? \"xmlns\" : \"xmlns:\" + prefix;\n    \n            Node aNode = node;\n            while (aNode != null) {\n                if (aNode.getNodeType() == Node.ELEMENT_NODE) {\n                    Attr attr = ((Element) aNode).getAttributeNode(qname);\n                    if (attr != null) {\n                    }\n                }\n                aNode = aNode.getParentNode();\n            }\n        }\n>>> [ INFILL ] <<<\n    }",
+    "project": "JxPath",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:</b:foo[1]/[test[1]]> but was:</b:foo[1]/[node()[2]]>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(expectedValue, context.getPointer(path).asPath());",
+    "test_name": "testInnerEmptyNamespaceDOM",
+    "test_suite": "org.apache.commons.jxpath.ri.model.JXPath154Test",
+    "time_buggy": "2012-01-20 17:55:54 +0000",
+    "time_fixed": "2012-01-20 17:58:11 +0000"
+}

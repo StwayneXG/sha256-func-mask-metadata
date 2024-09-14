@@ -1,0 +1,17 @@
+{
+    "bug_id": 166,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "Closure",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2012-08-01 18:39:38 +0000",
+    "time_fixed": "2012-08-01 23:56:31 +0000"
+}

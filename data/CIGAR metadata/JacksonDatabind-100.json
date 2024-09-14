@@ -1,0 +1,17 @@
+{
+    "bug_id": 100,
+    "bug_type": "SF",
+    "buggy_lines": "            byte[] data = n.binaryValue();\n            if (data != null) {\n                return data;\n            }\n            if (n.isPojo()) {\n                Object ob = ((POJONode) n).getPojo();\n                if (ob instanceof byte[]) {\n                    return (byte[]) ob;\n                }",
+    "code": "    public byte[] getBinaryValue(Base64Variant b64variant)\n        throws IOException, JsonParseException\n    {\n        // Multiple possibilities...\n        JsonNode n = currentNode();\n        if (n != null) {\n            // [databind#2096]: although `binaryValue()` works for real binary node\n            // and embedded \"POJO\" node, coercion from TextNode may require variant, so:\n            byte[] data = n.binaryValue();\n            if (data != null) {\n                return data;\n            }\n            if (n.isPojo()) {\n                Object ob = ((POJONode) n).getPojo();\n                if (ob instanceof byte[]) {\n                    return (byte[]) ob;\n                }\n            }\n        }\n        // otherwise return null to mark we have no binary content\n        return null;\n    }",
+    "fixed_code": "    public byte[] getBinaryValue(Base64Variant b64variant)\n        throws IOException, JsonParseException\n    {\n        // Multiple possibilities...\n        JsonNode n = currentNode();\n        if (n != null) {\n            // [databind#2096]: although `binaryValue()` works for real binary node\n            // and embedded \"POJO\" node, coercion from TextNode may require variant, so:\n            if (n instanceof TextNode) {\n                return ((TextNode) n).getBinaryValue(b64variant);\n            }\n            return n.binaryValue();\n        }\n        // otherwise return null to mark we have no binary content\n        return null;\n    }",
+    "fixed_lines": "            if (n instanceof TextNode) {\n                return ((TextNode) n).getBinaryValue(b64variant);\n            return n.binaryValue();",
+    "masked_code": "    public byte[] getBinaryValue(Base64Variant b64variant)\n        throws IOException, JsonParseException\n    {\n        // Multiple possibilities...\n        JsonNode n = currentNode();\n        if (n != null) {\n            // [databind#2096]: although `binaryValue()` works for real binary node\n            // and embedded \"POJO\" node, coercion from TextNode may require variant, so:\n            }\n>>> [ INFILL ] <<<\n        }\n        // otherwise return null to mark we have no binary content\n        return null;\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.AssertionFailedError: expected not same",
+    "test_framework": "defects4j",
+    "test_line": "        assertNotSame(w, newW);",
+    "test_name": "testViewSettings",
+    "test_suite": "com.fasterxml.jackson.databind.ObjectWriterTest",
+    "time_buggy": "2018-08-15 07:15:33 -0700",
+    "time_fixed": "2018-08-15 16:56:18 -0700"
+}

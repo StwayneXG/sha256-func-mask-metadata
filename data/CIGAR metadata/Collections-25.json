@@ -1,0 +1,17 @@
+{
+    "bug_id": 25,
+    "bug_type": "SF",
+    "buggy_lines": "        return new CollatingIterator<E>(comparator, iterators);",
+    "code": "    public static <E> Iterator<E> collatedIterator(final Comparator<? super E> comparator,\n                                                   final Iterator<? extends E> iterator1,\n                                                   final Iterator<? extends E> iterator2) {\n        return new CollatingIterator<E>(comparator, iterator1, iterator2);\n    }",
+    "fixed_code": "    public static <E> Iterator<E> collatedIterator(final Comparator<? super E> comparator,\n                                                   final Iterator<? extends E> iterator1,\n                                                   final Iterator<? extends E> iterator2) {\n        @SuppressWarnings(\"unchecked\")\n        final Comparator<E> comp = comparator == null ? ComparatorUtils.NATURAL_COMPARATOR : comparator;\n        return new CollatingIterator<E>(comp, iterator1, iterator2);\n    }",
+    "fixed_lines": "        @SuppressWarnings(\"unchecked\")\n        final Comparator<E> comp = comparator == null ? ComparatorUtils.NATURAL_COMPARATOR : comparator;\n        return new CollatingIterator<E>(comp, iterators);",
+    "masked_code": "    public static <E> Iterator<E> collatedIterator(final Comparator<? super E> comparator,\n                                                   final Iterator<? extends E> iterator1,\n                                                   final Iterator<? extends E> iterator2) {\n>>> [ INFILL ] <<<\n    }",
+    "project": "Collections",
+    "test_error_message": "java.lang.NullPointerException: You must invoke setComparator() to set a comparator first.",
+    "test_framework": "defects4j",
+    "test_line": "        List<Integer> result = IteratorUtils.toList(it);",
+    "test_name": "testCollatedIterator",
+    "test_suite": "org.apache.commons.collections4.IteratorUtilsTest",
+    "time_buggy": "2015-06-04 15:23:56 +0000",
+    "time_fixed": "2015-06-04 20:36:25 +0000"
+}

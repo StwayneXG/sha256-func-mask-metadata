@@ -1,0 +1,17 @@
+{
+    "bug_id": 45,
+    "bug_type": "SF",
+    "buggy_lines": "        formatBigIntegerBinary(value, buf, offset, length, negative);",
+    "code": "    public static int formatLongOctalOrBinaryBytes(\n        final long value, final byte[] buf, final int offset, final int length) {\n\n        // Check whether we are dealing with UID/GID or SIZE field\n        final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;\n\n        final boolean negative = value < 0;\n        if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars\n            return formatLongOctalBytes(value, buf, offset, length);\n        }\n\n        if (length < 9) {\n            formatLongBinary(value, buf, offset, length, negative);\n        }\n        formatBigIntegerBinary(value, buf, offset, length, negative);\n\n        buf[offset] = (byte) (negative ? 0xff : 0x80);\n        return offset + length;\n    }",
+    "fixed_code": "    public static int formatLongOctalOrBinaryBytes(\n        final long value, final byte[] buf, final int offset, final int length) {\n\n        // Check whether we are dealing with UID/GID or SIZE field\n        final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;\n\n        final boolean negative = value < 0;\n        if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars\n            return formatLongOctalBytes(value, buf, offset, length);\n        }\n\n        if (length < 9) {\n            formatLongBinary(value, buf, offset, length, negative);\n        } else {\n            formatBigIntegerBinary(value, buf, offset, length, negative);\n        }\n\n        buf[offset] = (byte) (negative ? 0xff : 0x80);\n        return offset + length;\n    }",
+    "fixed_lines": "        } else {\n            formatBigIntegerBinary(value, buf, offset, length, negative);",
+    "masked_code": "    public static int formatLongOctalOrBinaryBytes(\n        final long value, final byte[] buf, final int offset, final int length) {\n\n        // Check whether we are dealing with UID/GID or SIZE field\n        final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;\n\n        final boolean negative = value < 0;\n        if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars\n            return formatLongOctalBytes(value, buf, offset, length);\n        }\n\n        if (length < 9) {\n            formatLongBinary(value, buf, offset, length, negative);\n        }\n>>> [ INFILL ] <<<\n\n        buf[offset] = (byte) (negative ? 0xff : 0x80);\n        return offset + length;\n    }",
+    "project": "Compress",
+    "test_error_message": "java.lang.IllegalArgumentException: Value -72057594037927935 is too large for 8 byte field.",
+    "test_framework": "defects4j",
+    "test_line": "        TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);",
+    "test_name": "testRoundTripOctalOrBinary8",
+    "test_suite": "org.apache.commons.compress.archivers.tar.TarUtilsTest",
+    "time_buggy": "2017-06-17 21:46:53 +0200",
+    "time_fixed": "2017-06-17 21:47:10 +0200"
+}

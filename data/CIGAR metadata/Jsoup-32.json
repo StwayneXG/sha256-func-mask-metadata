@@ -1,0 +1,17 @@
+{
+    "bug_id": 32,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        clone.classNames();",
+    "code": "    public Element clone() {\n        Element clone = (Element) super.clone();\n        clone.classNames();\n        return clone;\n    }",
+    "fixed_code": "    public Element clone() {\n        Element clone = (Element) super.clone();\n        clone.classNames = null; // derived on first hit, otherwise gets a pointer to source classnames\n        return clone;\n    }",
+    "fixed_lines": "        clone.classNames = null; // derived on first hit, otherwise gets a pointer to source classnames",
+    "masked_code": "    public Element clone() {\n        Element clone = (Element) super.clone();\n>>> [ INFILL ] <<<\n        return clone;\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError",
+    "test_framework": "defects4j",
+    "test_line": "        assertTrue(classes.contains(\"one\"));",
+    "test_name": "testClonesClassnames",
+    "test_suite": "org.jsoup.nodes.ElementTest",
+    "time_buggy": "2012-12-23 14:02:21 -0800",
+    "time_fixed": "2012-12-23 14:03:05 -0800"
+}

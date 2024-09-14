@@ -1,0 +1,17 @@
+{
+    "bug_id": 17,
+    "bug_type": "SH SF",
+    "buggy_lines": "    if (in.peek() != JsonToken.STRING) {\n      throw new JsonParseException(\"The date should be a string value\");",
+    "code": "  public Date read(JsonReader in) throws IOException {\n    if (in.peek() != JsonToken.STRING) {\n      throw new JsonParseException(\"The date should be a string value\");\n    }\n    Date date = deserializeToDate(in.nextString());\n    if (dateType == Date.class) {\n      return date;\n    } else if (dateType == Timestamp.class) {\n      return new Timestamp(date.getTime());\n    } else if (dateType == java.sql.Date.class) {\n      return new java.sql.Date(date.getTime());\n    } else {\n      // This must never happen: dateType is guarded in the primary constructor\n      throw new AssertionError();\n    }\n  }",
+    "fixed_code": "  public Date read(JsonReader in) throws IOException {\n    if (in.peek() == JsonToken.NULL) {\n      in.nextNull();\n      return null;\n    }\n    Date date = deserializeToDate(in.nextString());\n    if (dateType == Date.class) {\n      return date;\n    } else if (dateType == Timestamp.class) {\n      return new Timestamp(date.getTime());\n    } else if (dateType == java.sql.Date.class) {\n      return new java.sql.Date(date.getTime());\n    } else {\n      // This must never happen: dateType is guarded in the primary constructor\n      throw new AssertionError();\n    }\n  }",
+    "fixed_lines": "    if (in.peek() == JsonToken.NULL) {\n      in.nextNull();\n      return null;",
+    "masked_code": "  public Date read(JsonReader in) throws IOException {\n>>> [ INFILL ] <<<\n    }\n    Date date = deserializeToDate(in.nextString());\n    if (dateType == Date.class) {\n      return date;\n    } else if (dateType == Timestamp.class) {\n      return new Timestamp(date.getTime());\n    } else if (dateType == java.sql.Date.class) {\n      return new java.sql.Date(date.getTime());\n    } else {\n      // This must never happen: dateType is guarded in the primary constructor\n      throw new AssertionError();\n    }\n  }",
+    "project": "Gson",
+    "test_error_message": "com.google.gson.JsonParseException: The date should be a string value",
+    "test_framework": "defects4j",
+    "test_line": "      adapter.fromJson(\"{}\");",
+    "test_name": "testUnexpectedToken",
+    "test_suite": "com.google.gson.DefaultDateTypeAdapterTest",
+    "time_buggy": "2017-09-17 23:46:52 -0700",
+    "time_fixed": "2017-09-17 23:49:13 -0700"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 7,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return StringUtils.newStringUtf8(encodeBase64(binaryData, true));",
+    "code": "    public static String encodeBase64String(byte[] binaryData) {\n        return StringUtils.newStringUtf8(encodeBase64(binaryData, true));\n    }",
+    "fixed_code": "    public static String encodeBase64String(byte[] binaryData) {\n        return StringUtils.newStringUtf8(encodeBase64(binaryData, false));\n    }",
+    "fixed_lines": "        return StringUtils.newStringUtf8(encodeBase64(binaryData, false));",
+    "masked_code": "    public static String encodeBase64String(byte[] binaryData) {\n>>> [ INFILL ] <<<\n    }",
+    "project": "Codec",
+    "test_error_message": "junit.framework.ComparisonFailure: byteToString static Hello World expected:<SGVsbG8gV29ybGQ=[]> but was:<SGVsbG8gV29ybGQ=[",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"byteToString static Hello World\", \"SGVsbG8gV29ybGQ=\", Base64.encodeBase64String(b1));",
+    "test_name": "testByteToStringVariations",
+    "test_suite": "org.apache.commons.codec.binary.Base64Test",
+    "time_buggy": "2011-01-22 05:57:53 +0000",
+    "time_fixed": "2011-01-23 05:52:42 +0000"
+}

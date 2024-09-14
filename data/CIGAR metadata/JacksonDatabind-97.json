@@ -1,0 +1,17 @@
+{
+    "bug_id": 97,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "            gen.writeObject(_value);",
+    "code": "    public final void serialize(JsonGenerator gen, SerializerProvider ctxt) throws IOException\n    {\n        if (_value == null) {\n            ctxt.defaultSerializeNull(gen);\n        } else if (_value instanceof JsonSerializable) {\n            ((JsonSerializable) _value).serialize(gen, ctxt);\n        } else {\n            // 25-May-2018, tatu: [databind#1991] do not call via generator but through context;\n            //    this to preserve contextual information\n            gen.writeObject(_value);\n        }\n    }",
+    "fixed_code": "    public final void serialize(JsonGenerator gen, SerializerProvider ctxt) throws IOException\n    {\n        if (_value == null) {\n            ctxt.defaultSerializeNull(gen);\n        } else if (_value instanceof JsonSerializable) {\n            ((JsonSerializable) _value).serialize(gen, ctxt);\n        } else {\n            // 25-May-2018, tatu: [databind#1991] do not call via generator but through context;\n            //    this to preserve contextual information\n            ctxt.defaultSerializeValue(_value, gen);\n        }\n    }",
+    "fixed_lines": "            ctxt.defaultSerializeValue(_value, gen);",
+    "masked_code": "    public final void serialize(JsonGenerator gen, SerializerProvider ctxt) throws IOException\n    {\n        if (_value == null) {\n            ctxt.defaultSerializeNull(gen);\n        } else if (_value instanceof JsonSerializable) {\n            ((JsonSerializable) _value).serialize(gen, ctxt);\n        } else {\n            // 25-May-2018, tatu: [databind#1991] do not call via generator but through context;\n            //    this to preserve contextual information\n>>> [ INFILL ] <<<\n        }\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.AssertionFailedError: expected not same",
+    "test_framework": "defects4j",
+    "test_line": "        assertNotSame(w, newW);",
+    "test_name": "testViewSettings",
+    "test_suite": "com.fasterxml.jackson.databind.ObjectWriterTest",
+    "time_buggy": "2018-05-25 15:46:15 -0700",
+    "time_fixed": "2018-05-25 16:25:23 -0700"
+}

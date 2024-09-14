@@ -1,0 +1,17 @@
+{
+    "bug_id": 55,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "        void read(Tokeniser t, CharacterReader r) {\n            char c = r.consume();\n            switch (c) {\n                case '>':\n                    t.tagPending.selfClosing = true;\n                    t.emitTagPending();\n                    t.transition(Data);\n                    break;\n                case eof:\n                    t.eofError(this);\n                    t.transition(Data);\n                    break;\n                default:\n                    t.error(this);\n                    t.transition(BeforeAttributeName);\n            }\n        }",
+    "fixed_code": "        void read(Tokeniser t, CharacterReader r) {\n            char c = r.consume();\n            switch (c) {\n                case '>':\n                    t.tagPending.selfClosing = true;\n                    t.emitTagPending();\n                    t.transition(Data);\n                    break;\n                case eof:\n                    t.eofError(this);\n                    t.transition(Data);\n                    break;\n                default:\n                    t.error(this);\n                    r.unconsume();\n                    t.transition(BeforeAttributeName);\n            }\n        }",
+    "fixed_lines": "                    r.unconsume();",
+    "masked_code": "        void read(Tokeniser t, CharacterReader r) {\n            char c = r.consume();\n            switch (c) {\n                case '>':\n                    t.tagPending.selfClosing = true;\n                    t.emitTagPending();\n                    t.transition(Data);\n                    break;\n                case eof:\n                    t.eofError(this);\n                    t.transition(Data);\n                    break;\n                default:\n                    t.error(this);\n>>> [ INFILL ] <<<\n                    t.transition(BeforeAttributeName);\n            }\n        }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: SelfClosingStartTag ignores last character",
+    "test_framework": "defects4j",
+    "test_line": "        assertTrue(\"SelfClosingStartTag ignores last character\", doc.select(\"img[onerror]\").size() != 0);",
+    "test_name": "dropsSlashFromAttributeName",
+    "test_suite": "org.jsoup.parser.AttributeParseTest",
+    "time_buggy": "2016-08-19 12:04:21 -0700",
+    "time_fixed": "2016-08-19 12:54:51 -0700"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 110,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "JacksonDatabind",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2019-02-28 19:20:27 -0800",
+    "time_fixed": "2019-03-02 17:39:43 -0800"
+}

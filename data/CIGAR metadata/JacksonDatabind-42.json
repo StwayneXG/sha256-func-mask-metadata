@@ -1,0 +1,17 @@
+{
+    "bug_id": 42,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "        protected Object _deserializeFromEmptyString() throws IOException {\n            // As per [databind#398], URI requires special handling\n            if (_kind == STD_URI) {\n                return URI.create(\"\");\n            }\n            // As per [databind#1123], Locale too\n            return super._deserializeFromEmptyString();\n        }",
+    "fixed_code": "        protected Object _deserializeFromEmptyString() throws IOException {\n            // As per [databind#398], URI requires special handling\n            if (_kind == STD_URI) {\n                return URI.create(\"\");\n            }\n            // As per [databind#1123], Locale too\n            if (_kind == STD_LOCALE) {\n                return Locale.ROOT;\n            }\n            return super._deserializeFromEmptyString();\n        }",
+    "fixed_lines": "            if (_kind == STD_LOCALE) {\n                return Locale.ROOT;\n            }",
+    "masked_code": "        protected Object _deserializeFromEmptyString() throws IOException {\n            // As per [databind#398], URI requires special handling\n            if (_kind == STD_URI) {\n                return URI.create(\"\");\n            }\n            // As per [databind#1123], Locale too\n>>> [ INFILL ] <<<\n            return super._deserializeFromEmptyString();\n        }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.AssertionFailedError: expected same:<> was not:<null>",
+    "test_framework": "defects4j",
+    "test_line": "        // then use templating; note that these are not exactly valid UUIDs",
+    "test_name": "testLocale",
+    "test_suite": "com.fasterxml.jackson.databind.deser.TestJdkTypes",
+    "time_buggy": "2016-02-01 21:57:16 -0800",
+    "time_fixed": "2016-02-09 16:43:49 -0800"
+}

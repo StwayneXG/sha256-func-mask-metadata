@@ -1,0 +1,17 @@
+{
+    "bug_id": 40,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        Validate.notEmpty(name);",
+    "code": "    public DocumentType(String name, String publicId, String systemId, String baseUri) {\n        super(baseUri);\n\n        Validate.notEmpty(name);\n        attr(\"name\", name);\n        attr(\"publicId\", publicId);\n        attr(\"systemId\", systemId);\n    }",
+    "fixed_code": "    public DocumentType(String name, String publicId, String systemId, String baseUri) {\n        super(baseUri);\n\n        attr(\"name\", name);\n        attr(\"publicId\", publicId);\n        attr(\"systemId\", systemId);\n    }",
+    "fixed_lines": "",
+    "masked_code": "    public DocumentType(String name, String publicId, String systemId, String baseUri) {\n        super(baseUri);\n\n>>> [ INFILL ] <<<\n        attr(\"name\", name);\n        attr(\"publicId\", publicId);\n        attr(\"systemId\", systemId);\n    }",
+    "project": "Jsoup",
+    "test_error_message": "java.lang.IllegalArgumentException: String must not be empty",
+    "test_framework": "defects4j",
+    "test_line": "        DocumentType fail = new DocumentType(\"\",\"\", \"\", \"\");",
+    "test_name": "constructorValidationOkWithBlankName",
+    "test_suite": "org.jsoup.nodes.DocumentTypeTest",
+    "time_buggy": "2014-09-27 15:02:08 -0700",
+    "time_fixed": "2014-09-27 15:34:56 -0700"
+}

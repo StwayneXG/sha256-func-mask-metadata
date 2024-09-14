@@ -1,0 +1,17 @@
+{
+    "bug_id": 37,
+    "bug_type": "SF",
+    "buggy_lines": "        return token.startsWith(\"-\") && token.length() >= 2 && options.hasShortOption(token.substring(1, 2));",
+    "code": "    private boolean isShortOption(String token)\n    {\n        // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)\n        return token.startsWith(\"-\") && token.length() >= 2 && options.hasShortOption(token.substring(1, 2));\n\n        // remove leading \"-\" and \"=value\"\n    }",
+    "fixed_code": "    private boolean isShortOption(String token)\n    {\n        // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)\n        if (!token.startsWith(\"-\") || token.length() == 1)\n        {\n            return false;\n        }\n\n        // remove leading \"-\" and \"=value\"\n        int pos = token.indexOf(\"=\");\n        String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);\n        return options.hasShortOption(optName);\n    }",
+    "fixed_lines": "        if (!token.startsWith(\"-\") || token.length() == 1)\n        {\n            return false;\n        }\n        int pos = token.indexOf(\"=\");\n        String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);\n        return options.hasShortOption(optName);",
+    "masked_code": "    private boolean isShortOption(String token)\n    {\n        // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)\n\n        // remove leading \"-\" and \"=value\"\n>>> [ INFILL ] <<<\n    }",
+    "project": "Cli",
+    "test_error_message": "junit.framework.AssertionFailedError: Second option has been used as value for first option. Actual: -last",
+    "test_framework": "defects4j",
+    "test_line": "        assertNotEquals(\"Second option has been used as value for first option\", \"-last\", commandLine.getOptionValue(\"t1\"));",
+    "test_name": "shouldParseShortOptionWithoutValue",
+    "test_suite": "org.apache.commons.cli.bug.BugCLI265Test",
+    "time_buggy": "2016-09-07 19:30:23 +0000",
+    "time_fixed": "2016-09-07 20:19:32 +0000"
+}

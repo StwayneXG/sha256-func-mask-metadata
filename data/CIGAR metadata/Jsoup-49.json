@@ -1,0 +1,17 @@
+{
+    "bug_id": 49,
+    "bug_type": "SF",
+    "buggy_lines": "        reindexChildren(index);",
+    "code": "    protected void addChildren(int index, Node... children) {\n        Validate.noNullElements(children);\n        ensureChildNodes();\n        for (int i = children.length - 1; i >= 0; i--) {\n            Node in = children[i];\n            reparentChild(in);\n            childNodes.add(index, in);\n        }\n        reindexChildren(index);\n    }",
+    "fixed_code": "    protected void addChildren(int index, Node... children) {\n        Validate.noNullElements(children);\n        ensureChildNodes();\n        for (int i = children.length - 1; i >= 0; i--) {\n            Node in = children[i];\n            reparentChild(in);\n            childNodes.add(index, in);\n            reindexChildren(index);\n        }\n    }",
+    "fixed_lines": "            reindexChildren(index);",
+    "masked_code": "    protected void addChildren(int index, Node... children) {\n        Validate.noNullElements(children);\n        ensureChildNodes();\n        for (int i = children.length - 1; i >= 0; i--) {\n            Node in = children[i];\n            reparentChild(in);\n            childNodes.add(index, in);\n        }\n>>> [ INFILL ] <<<\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<...><div3>Check</div3><[div4></div4><div1></div1><div2></div2><]/body>> but was:<...><div3>Check</div3><[]/body>>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"<body><div3>Check</div3><div4></div4><div1></div1><div2></div2></body>\", result);",
+    "test_name": "appendMustCorrectlyMoveChildrenInsideOneParentElement",
+    "test_suite": "org.jsoup.nodes.ElementTest",
+    "time_buggy": "2016-04-03 18:33:09 -0700",
+    "time_fixed": "2016-04-03 20:19:13 -0700"
+}

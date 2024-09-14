@@ -1,0 +1,17 @@
+{
+    "bug_id": 18,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return CharSequenceUtils.regionMatches(cs1, false, 0, cs2, 0, Math.max(cs1.length(), cs2.length()));",
+    "code": "    public static boolean equals(final CharSequence cs1, final CharSequence cs2) {\n        if (cs1 == cs2) {\n            return true;\n        }\n        if (cs1 == null || cs2 == null) {\n            return false;\n        }\n        if (cs1 instanceof String && cs2 instanceof String) {\n            return cs1.equals(cs2);\n        }\n        return CharSequenceUtils.regionMatches(cs1, false, 0, cs2, 0, Math.max(cs1.length(), cs2.length()));\n    }",
+    "fixed_code": "    public static boolean equals(final CharSequence cs1, final CharSequence cs2) {\n        if (cs1 == cs2) {\n            return true;\n        }\n        if (cs1 == null || cs2 == null) {\n            return false;\n        }\n        if (cs1 instanceof String && cs2 instanceof String) {\n            return cs1.equals(cs2);\n        }\n        return cs1.length() == cs2.length() && CharSequenceUtils.regionMatches(cs1, false, 0, cs2, 0, cs1.length());\n    }",
+    "fixed_lines": "        return cs1.length() == cs2.length() && CharSequenceUtils.regionMatches(cs1, false, 0, cs2, 0, cs1.length());",
+    "masked_code": "    public static boolean equals(final CharSequence cs1, final CharSequence cs2) {\n        if (cs1 == cs2) {\n            return true;\n        }\n        if (cs1 == null || cs2 == null) {\n            return false;\n        }\n        if (cs1 instanceof String && cs2 instanceof String) {\n            return cs1.equals(cs2);\n        }\n>>> [ INFILL ] <<<\n    }",
+    "project": "Codec",
+    "test_error_message": "java.lang.StringIndexOutOfBoundsException: String index out of range: 3",
+    "test_framework": "defects4j",
+    "test_line": "        Assert.assertFalse(StringUtils.equals(new StringBuilder(\"abc\"), new StringBuilder(\"abcd\")));",
+    "test_name": "testEqualsCS1",
+    "test_suite": "org.apache.commons.codec.binary.StringUtilsTest",
+    "time_buggy": "2017-03-26 18:34:51 +0000",
+    "time_fixed": "2017-03-26 21:43:36 +0000"
+}

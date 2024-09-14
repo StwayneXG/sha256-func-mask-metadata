@@ -1,0 +1,17 @@
+{
+    "bug_id": 89,
+    "bug_type": "SF",
+    "buggy_lines": "        String oldVal = parent.get(this.key);",
+    "code": "    public String setValue(String val) {\n        String oldVal = parent.get(this.key);\n        if (parent != null) {\n            int i = parent.indexOfKey(this.key);\n            if (i != Attributes.NotFound)\n                parent.vals[i] = val;\n        }\n        this.val = val;\n        return Attributes.checkNotNull(oldVal);\n    }",
+    "fixed_code": "    public String setValue(String val) {\n        String oldVal = this.val;\n        if (parent != null) {\n            oldVal = parent.get(this.key); // trust the container more\n            int i = parent.indexOfKey(this.key);\n            if (i != Attributes.NotFound)\n                parent.vals[i] = val;\n        }\n        this.val = val;\n        return Attributes.checkNotNull(oldVal);\n    }",
+    "fixed_lines": "        String oldVal = this.val;\n            oldVal = parent.get(this.key); // trust the container more",
+    "masked_code": "    public String setValue(String val) {\n        if (parent != null) {\n>>> [ INFILL ] <<<\n            int i = parent.indexOfKey(this.key);\n            if (i != Attributes.NotFound)\n                parent.vals[i] = val;\n        }\n        this.val = val;\n        return Attributes.checkNotNull(oldVal);\n    }",
+    "project": "Jsoup",
+    "test_error_message": "java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "        String oldVal = attr.setValue(\"four\");",
+    "test_name": "settersOnOrphanAttribute",
+    "test_suite": "org.jsoup.nodes.AttributeTest",
+    "time_buggy": "2018-12-23 22:02:59 -0800",
+    "time_fixed": "2018-12-23 22:27:31 -0800"
+}

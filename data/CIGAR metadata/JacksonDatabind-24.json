@@ -1,0 +1,17 @@
+{
+    "bug_id": 24,
+    "bug_type": "SF",
+    "buggy_lines": "        TimeZone tz = (df == null) ? _timeZone : df.getTimeZone();\n                tz, _defaultBase64);",
+    "code": "    public BaseSettings withDateFormat(DateFormat df) {\n        if (_dateFormat == df) {\n            return this;\n        }\n        TimeZone tz = (df == null) ? _timeZone : df.getTimeZone();\n        return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n                _typeResolverBuilder, df, _handlerInstantiator, _locale,\n                tz, _defaultBase64);\n    }",
+    "fixed_code": "    public BaseSettings withDateFormat(DateFormat df) {\n        if (_dateFormat == df) {\n            return this;\n        }\n        return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n                _typeResolverBuilder, df, _handlerInstantiator, _locale,\n                _timeZone, _defaultBase64);\n    }",
+    "fixed_lines": "                _timeZone, _defaultBase64);",
+    "masked_code": "    public BaseSettings withDateFormat(DateFormat df) {\n        if (_dateFormat == df) {\n            return this;\n        }\n        return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n                _typeResolverBuilder, df, _handlerInstantiator, _locale,\n>>> [ INFILL ] <<<\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<sun.util.calendar.ZoneInfo[id=\"America/Los_Angeles\",offset=-28800000,dstSavings=3600000,useDaylight=true,transitions=185,lastRule=java.util.SimpleTimeZone[id=America/Los_Angeles,offset=-28800000,dstSavings=3600000,useDaylight=true,startYear=0,startMode=3,startMonth=2,startDay=8,startDayOfWeek=1,startTime=7200000,startTimeMode=0,endMode=3,endMonth=10,endDay=1,endDayOfWeek=1,endTime=7200000,endTimeMode=0]]> but was:<sun.util.calendar.ZoneInfo[id=\"GMT\",offset=0,dstSavings=0,useDaylight=false,transitions=0,lastRule=null]>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(tz1, mapper.getSerializationConfig().getTimeZone());",
+    "test_name": "testDateFormatConfig",
+    "test_suite": "com.fasterxml.jackson.databind.ser.TestConfig",
+    "time_buggy": "2015-08-06 21:59:02 -0700",
+    "time_fixed": "2015-08-06 22:12:59 -0700"
+}

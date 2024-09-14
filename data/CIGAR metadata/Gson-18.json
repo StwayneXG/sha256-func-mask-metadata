@@ -1,0 +1,17 @@
+{
+    "bug_id": 18,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "  static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {\n      // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead\n    checkArgument(supertype.isAssignableFrom(contextRawType));\n    return resolve(context, contextRawType,\n        $Gson$Types.getGenericSupertype(context, contextRawType, supertype));\n  }",
+    "fixed_code": "  static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {\n    if (context instanceof WildcardType) {\n      // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead\n      context = ((WildcardType)context).getUpperBounds()[0];\n    }\n    checkArgument(supertype.isAssignableFrom(contextRawType));\n    return resolve(context, contextRawType,\n        $Gson$Types.getGenericSupertype(context, contextRawType, supertype));\n  }",
+    "fixed_lines": "    if (context instanceof WildcardType) {\n      context = ((WildcardType)context).getUpperBounds()[0];\n    }",
+    "masked_code": "  static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {\n      // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead\n>>> [ INFILL ] <<<\n    checkArgument(supertype.isAssignableFrom(contextRawType));\n    return resolve(context, contextRawType,\n        $Gson$Types.getGenericSupertype(context, contextRawType, supertype));\n  }",
+    "project": "Gson",
+    "test_error_message": "java.lang.ClassCastException: com.google.gson.internal.LinkedTreeMap cannot be cast to com.google.gson.functional.CollectionTest$SmallClass",
+    "test_framework": "defects4j",
+    "test_line": "",
+    "test_name": "testIssue1107",
+    "test_suite": "com.google.gson.functional.CollectionTest",
+    "time_buggy": "2017-09-20 18:53:10 -0700",
+    "time_fixed": "2017-09-21 17:50:41 -0700"
+}

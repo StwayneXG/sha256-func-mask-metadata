@@ -1,0 +1,17 @@
+{
+    "bug_id": 2,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public String get(final String name) {\n        if (mapping == null) {\n            throw new IllegalStateException(\n                    \"No header mapping was specified, the record values can't be accessed by name\");\n        }\n        final Integer index = mapping.get(name);\n            return index != null ? values[index.intValue()] : null;\n    }",
+    "fixed_code": "    public String get(final String name) {\n        if (mapping == null) {\n            throw new IllegalStateException(\n                    \"No header mapping was specified, the record values can't be accessed by name\");\n        }\n        final Integer index = mapping.get(name);\n        try {\n            return index != null ? values[index.intValue()] : null;\n        } catch (ArrayIndexOutOfBoundsException e) {\n            throw new IllegalArgumentException(\n                    String.format(\n                            \"Index for header '%s' is %d but CSVRecord only has %d values!\",\n                            name, index.intValue(), values.length));\n        }\n    }",
+    "fixed_lines": "        try {\n        } catch (ArrayIndexOutOfBoundsException e) {\n            throw new IllegalArgumentException(\n                    String.format(\n                            \"Index for header '%s' is %d but CSVRecord only has %d values!\",\n                            name, index.intValue(), values.length));\n        }",
+    "masked_code": "    public String get(final String name) {\n        if (mapping == null) {\n            throw new IllegalStateException(\n                    \"No header mapping was specified, the record values can't be accessed by name\");\n        }\n        final Integer index = mapping.get(name);\n            return index != null ? values[index.intValue()] : null;\n>>> [ INFILL ] <<<\n    }",
+    "project": "Csv",
+    "test_error_message": "java.lang.Exception: Unexpected exception, expected<java.lang.IllegalArgumentException> but was<java.lang.ArrayIndexOutOfBoundsException>",
+    "test_framework": "defects4j",
+    "test_line": "        recordWithHeader.get(\"fourth\");",
+    "test_name": "testGetStringInconsistentRecord",
+    "test_suite": "org.apache.commons.csv.CSVRecordTest",
+    "time_buggy": "2013-04-08 18:55:58 +0000",
+    "time_fixed": "2013-04-08 19:34:38 +0000"
+}

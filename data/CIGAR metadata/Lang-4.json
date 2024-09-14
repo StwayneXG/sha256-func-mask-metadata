@@ -1,0 +1,17 @@
+{
+    "bug_id": 4,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "Lang",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2013-04-22 04:18:24 +0000",
+    "time_fixed": "2013-04-23 06:00:41 +0000"
+}

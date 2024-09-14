@@ -1,0 +1,17 @@
+{
+    "bug_id": 12,
+    "bug_type": "SH SF",
+    "buggy_lines": "        return (_valueTypeDeserializer == null)",
+    "code": "    public boolean isCachable() {\n        /* As per [databind#735], existence of value or key deserializer (only passed\n         * if annotated to use non-standard one) should also prevent caching.\n         */\n        return (_valueTypeDeserializer == null)\n                && (_ignorableProperties == null);\n    }",
+    "fixed_code": "    public boolean isCachable() {\n        /* As per [databind#735], existence of value or key deserializer (only passed\n         * if annotated to use non-standard one) should also prevent caching.\n         */\n        return (_valueDeserializer == null)\n                && (_keyDeserializer == null)\n                && (_valueTypeDeserializer == null)\n                && (_ignorableProperties == null);\n    }",
+    "fixed_lines": "        return (_valueDeserializer == null)\n                && (_keyDeserializer == null)\n                && (_valueTypeDeserializer == null)",
+    "masked_code": "    public boolean isCachable() {\n        /* As per [databind#735], existence of value or key deserializer (only passed\n         * if annotated to use non-standard one) should also prevent caching.\n         */\n>>> [ INFILL ] <<<\n                && (_ignorableProperties == null);\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<1> but was:<100>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(1, bean.map2.get(\"a\").intValue());",
+    "test_name": "testCustomMapValueDeser735",
+    "test_suite": "com.fasterxml.jackson.databind.deser.TestCustomDeserializers",
+    "time_buggy": "2015-02-17 12:55:20 -0800",
+    "time_fixed": "2015-03-26 12:49:58 -0700"
+}

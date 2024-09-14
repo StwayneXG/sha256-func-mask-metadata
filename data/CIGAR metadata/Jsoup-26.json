@@ -1,0 +1,17 @@
+{
+    "bug_id": 26,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "    public Document clean(Document dirtyDocument) {\n        Validate.notNull(dirtyDocument);\n\n        Document clean = Document.createShell(dirtyDocument.baseUri());\n            copySafeNodes(dirtyDocument.body(), clean.body());\n\n        return clean;\n    }",
+    "fixed_code": "    public Document clean(Document dirtyDocument) {\n        Validate.notNull(dirtyDocument);\n\n        Document clean = Document.createShell(dirtyDocument.baseUri());\n        if (dirtyDocument.body() != null) // frameset documents won't have a body. the clean doc will have empty body.\n            copySafeNodes(dirtyDocument.body(), clean.body());\n\n        return clean;\n    }",
+    "fixed_lines": "        if (dirtyDocument.body() != null) // frameset documents won't have a body. the clean doc will have empty body.",
+    "masked_code": "    public Document clean(Document dirtyDocument) {\n        Validate.notNull(dirtyDocument);\n\n        Document clean = Document.createShell(dirtyDocument.baseUri());\n>>> [ INFILL ] <<<\n            copySafeNodes(dirtyDocument.body(), clean.body());\n\n        return clean;\n    }",
+    "project": "Jsoup",
+    "test_error_message": "java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "        Document cleanDoc = new Cleaner(Whitelist.basic()).clean(dirtyDoc);",
+    "test_name": "handlesFramesets",
+    "test_suite": "org.jsoup.safety.CleanerTest",
+    "time_buggy": "2012-06-03 20:13:22 -0700",
+    "time_fixed": "2012-06-03 20:40:32 -0700"
+}

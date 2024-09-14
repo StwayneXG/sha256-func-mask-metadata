@@ -1,0 +1,17 @@
+{
+    "bug_id": 7,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    public int writeValue() {\n        // Most likely, object:\n        if (_type == TYPE_OBJECT) {\n            _gotName = false;\n            ++_index;\n            return STATUS_OK_AFTER_COLON;\n        }\n\n        // Ok, array?\n        if (_type == TYPE_ARRAY) {\n            int ix = _index;\n            ++_index;\n            return (ix < 0) ? STATUS_OK_AS_IS : STATUS_OK_AFTER_COMMA;\n        }\n        \n        // Nope, root context\n        // No commas within root context, but need space\n        ++_index;\n        return (_index == 0) ? STATUS_OK_AS_IS : STATUS_OK_AFTER_SPACE;\n    }",
+    "fixed_code": "    public int writeValue() {\n        // Most likely, object:\n        if (_type == TYPE_OBJECT) {\n            if (!_gotName) {\n                return STATUS_EXPECT_NAME;\n            }\n            _gotName = false;\n            ++_index;\n            return STATUS_OK_AFTER_COLON;\n        }\n\n        // Ok, array?\n        if (_type == TYPE_ARRAY) {\n            int ix = _index;\n            ++_index;\n            return (ix < 0) ? STATUS_OK_AS_IS : STATUS_OK_AFTER_COMMA;\n        }\n        \n        // Nope, root context\n        // No commas within root context, but need space\n        ++_index;\n        return (_index == 0) ? STATUS_OK_AS_IS : STATUS_OK_AFTER_SPACE;\n    }",
+    "fixed_lines": "            if (!_gotName) {\n                return STATUS_EXPECT_NAME;\n            }",
+    "masked_code": "    public int writeValue() {\n        // Most likely, object:\n        if (_type == TYPE_OBJECT) {\n>>> [ INFILL ] <<<\n            _gotName = false;\n            ++_index;\n            return STATUS_OK_AFTER_COLON;\n        }\n\n        // Ok, array?\n        if (_type == TYPE_ARRAY) {\n            int ix = _index;\n            ++_index;\n            return (ix < 0) ? STATUS_OK_AS_IS : STATUS_OK_AFTER_COMMA;\n        }\n        \n        // Nope, root context\n        // No commas within root context, but need space\n        ++_index;\n        return (_index == 0) ? STATUS_OK_AS_IS : STATUS_OK_AFTER_SPACE;\n    }",
+    "project": "JacksonCore",
+    "test_error_message": "junit.framework.AssertionFailedError: Should not have let com.fasterxml.jackson.core.json.UTF8JsonGenerator.writeString() be used in place of 'writeFieldName()': output = {:\"a\"",
+    "test_framework": "defects4j",
+    "test_line": "            fail(\"Should not have let \"+gen.getClass().getName()+\".writeString() be used in place of 'writeFieldName()': output = \"+json);",
+    "test_name": "testFailOnWritingStringNotFieldNameBytes",
+    "test_suite": "com.fasterxml.jackson.core.json.GeneratorFailTest",
+    "time_buggy": "2015-01-12 14:01:00 -0800",
+    "time_fixed": "2015-01-15 16:10:26 -0800"
+}

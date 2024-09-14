@@ -1,0 +1,17 @@
+{
+    "bug_id": 46,
+    "bug_type": "SH SF",
+    "buggy_lines": "        final long TWO_TO_32 = 0x100000000L;\n        if (l >= TWO_TO_32) {",
+    "code": "    private static ZipLong unixTimeToZipLong(long l) {\n        final long TWO_TO_32 = 0x100000000L;\n        if (l >= TWO_TO_32) {\n            throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n        }\n        return new ZipLong(l);\n    }",
+    "fixed_code": "    private static ZipLong unixTimeToZipLong(long l) {\n        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {\n            throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n        }\n        return new ZipLong(l);\n    }",
+    "fixed_lines": "        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {",
+    "masked_code": "    private static ZipLong unixTimeToZipLong(long l) {\n>>> [ INFILL ] <<<\n            throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n        }\n        return new ZipLong(l);\n    }",
+    "project": "Compress",
+    "test_error_message": "junit.framework.AssertionFailedError: Time too big for 32 bits!",
+    "test_framework": "defects4j",
+    "test_line": "            fail(\"Time too big for 32 bits!\");",
+    "test_name": "testGettersSetters",
+    "test_suite": "org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestampTest",
+    "time_buggy": "2017-07-04 08:51:32 +0200",
+    "time_fixed": "2017-07-04 08:51:32 +0200"
+}

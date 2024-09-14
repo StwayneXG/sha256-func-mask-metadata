@@ -1,0 +1,17 @@
+{
+    "bug_id": 9,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "Mockito",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2014-11-22 17:37:19 +0100",
+    "time_fixed": "2014-11-22 22:13:29 +0100"
+}

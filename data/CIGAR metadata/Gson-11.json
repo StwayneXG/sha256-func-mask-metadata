@@ -1,0 +1,17 @@
+{
+    "bug_id": 11,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "    public Number read(JsonReader in) throws IOException {\n      JsonToken jsonToken = in.peek();\n      switch (jsonToken) {\n      case NULL:\n        in.nextNull();\n        return null;\n      case NUMBER:\n        return new LazilyParsedNumber(in.nextString());\n      default:\n        throw new JsonSyntaxException(\"Expecting number, got: \" + jsonToken);\n      }\n    }",
+    "fixed_code": "    public Number read(JsonReader in) throws IOException {\n      JsonToken jsonToken = in.peek();\n      switch (jsonToken) {\n      case NULL:\n        in.nextNull();\n        return null;\n      case NUMBER:\n      case STRING:\n        return new LazilyParsedNumber(in.nextString());\n      default:\n        throw new JsonSyntaxException(\"Expecting number, got: \" + jsonToken);\n      }\n    }",
+    "fixed_lines": "      case STRING:",
+    "masked_code": "    public Number read(JsonReader in) throws IOException {\n      JsonToken jsonToken = in.peek();\n      switch (jsonToken) {\n      case NULL:\n        in.nextNull();\n        return null;\n      case NUMBER:\n>>> [ INFILL ] <<<\n        return new LazilyParsedNumber(in.nextString());\n      default:\n        throw new JsonSyntaxException(\"Expecting number, got: \" + jsonToken);\n      }\n    }",
+    "project": "Gson",
+    "test_error_message": "com.google.gson.JsonSyntaxException: Expecting number, got: STRING",
+    "test_framework": "defects4j",
+    "test_line": "    Number value = gson.fromJson(\"\\\"18\\\"\", Number.class);",
+    "test_name": "testNumberAsStringDeserialization",
+    "test_suite": "com.google.gson.functional.PrimitiveTest",
+    "time_buggy": "2016-11-14 21:21:24 -0800",
+    "time_fixed": "2016-11-25 23:40:14 -0800"
+}

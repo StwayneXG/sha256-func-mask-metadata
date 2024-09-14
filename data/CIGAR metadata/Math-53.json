@@ -1,0 +1,17 @@
+{
+    "bug_id": 53,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    public Complex add(Complex rhs)\n        throws NullArgumentException {\n        MathUtils.checkNotNull(rhs);\n        return createComplex(real + rhs.getReal(),\n            imaginary + rhs.getImaginary());\n    }",
+    "fixed_code": "    public Complex add(Complex rhs)\n        throws NullArgumentException {\n        MathUtils.checkNotNull(rhs);\n        if (isNaN || rhs.isNaN) {\n            return NaN;\n        }\n        return createComplex(real + rhs.getReal(),\n            imaginary + rhs.getImaginary());\n    }",
+    "fixed_lines": "        if (isNaN || rhs.isNaN) {\n            return NaN;\n        }",
+    "masked_code": "    public Complex add(Complex rhs)\n        throws NullArgumentException {\n        MathUtils.checkNotNull(rhs);\n>>> [ INFILL ] <<<\n        return createComplex(real + rhs.getReal(),\n            imaginary + rhs.getImaginary());\n    }",
+    "project": "Math",
+    "test_error_message": "junit.framework.AssertionFailedError",
+    "test_framework": "defects4j",
+    "test_line": "        Assert.assertTrue(Double.isNaN(w.getReal()));",
+    "test_name": "testAddNaN",
+    "test_suite": "org.apache.commons.math.complex.ComplexTest",
+    "time_buggy": "2011-07-14 05:32:41 +0000",
+    "time_fixed": "2011-07-14 06:08:05 +0000"
+}

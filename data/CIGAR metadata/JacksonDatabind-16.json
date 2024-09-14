@@ -1,0 +1,17 @@
+{
+    "bug_id": 16,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return (previous != null) && previous.equals(ann);",
+    "code": "    protected final boolean _add(Annotation ann) {\n        if (_annotations == null) {\n            _annotations = new HashMap<Class<? extends Annotation>,Annotation>();\n        }\n        Annotation previous = _annotations.put(ann.annotationType(), ann);\n        return (previous != null) && previous.equals(ann);\n    }",
+    "fixed_code": "    protected final boolean _add(Annotation ann) {\n        if (_annotations == null) {\n            _annotations = new HashMap<Class<? extends Annotation>,Annotation>();\n        }\n        Annotation previous = _annotations.put(ann.annotationType(), ann);\n        return (previous == null) || !previous.equals(ann);\n    }",
+    "fixed_lines": "        return (previous == null) || !previous.equals(ann);",
+    "masked_code": "    protected final boolean _add(Annotation ann) {\n        if (_annotations == null) {\n            _annotations = new HashMap<Class<? extends Annotation>,Annotation>();\n        }\n        Annotation previous = _annotations.put(ann.annotationType(), ann);\n>>> [ INFILL ] <<<\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<{\"[bar]\":\"result\"}> but was:<{\"[stuff]\":\"result\"}>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"{\\\"bar\\\":\\\"result\\\"}\", result);",
+    "test_name": "testMixinWithBundles",
+    "test_suite": "com.fasterxml.jackson.databind.mixins.MixinsWithBundlesTest",
+    "time_buggy": "2015-04-26 22:24:57 -0700",
+    "time_fixed": "2015-04-26 22:42:17 -0700"
+}

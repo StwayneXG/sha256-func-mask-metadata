@@ -1,0 +1,17 @@
+{
+    "bug_id": 64,
+    "bug_type": "SF",
+    "buggy_lines": "        tb.insert(startTag);",
+    "code": "    private static void handleRawtext(Token.StartTag startTag, HtmlTreeBuilder tb) {\n        tb.insert(startTag);\n        tb.tokeniser.transition(TokeniserState.Rawtext);\n        tb.markInsertionMode();\n        tb.transition(Text);\n    }",
+    "fixed_code": "    private static void handleRawtext(Token.StartTag startTag, HtmlTreeBuilder tb) {\n        tb.tokeniser.transition(TokeniserState.Rawtext);\n        tb.markInsertionMode();\n        tb.transition(Text);\n        tb.insert(startTag);\n    }",
+    "fixed_lines": "        tb.insert(startTag);",
+    "masked_code": "    private static void handleRawtext(Token.StartTag startTag, HtmlTreeBuilder tb) {\n        tb.tokeniser.transition(TokeniserState.Rawtext);\n        tb.markInsertionMode();\n        tb.transition(Text);\n>>> [ INFILL ] <<<\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<...ead><style></style><[meta name=\"foo\"></head><body>One]</body></html>> but was:<...ead><style></style><[/head><body>&lt;meta name=foo&gt;&lt;/head&gt;&lt;body&gt;One&lt;/body&gt;&lt;/html&gt;]</body></html>>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"<html><head><style></style><meta name=\\\"foo\\\"></head><body>One</body></html>\", TextUtil.stripNewlines(doc.html()));",
+    "test_name": "handlesKnownEmptyStyle",
+    "test_suite": "org.jsoup.parser.HtmlParserTest",
+    "time_buggy": "2017-06-26 21:18:21 -0700",
+    "time_fixed": "2017-06-29 15:24:05 -0700"
+}

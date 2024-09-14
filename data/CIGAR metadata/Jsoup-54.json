@@ -1,0 +1,17 @@
+{
+    "bug_id": 54,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "        private void copyAttributes(org.jsoup.nodes.Node source, Element el) {\n            for (Attribute attribute : source.attributes()) {\n                // valid xml attribute names are: ^[a-zA-Z_:][-a-zA-Z0-9_:.]\n                String key = attribute.getKey().replaceAll(\"[^-a-zA-Z0-9_:.]\", \"\");\n                    el.setAttribute(key, attribute.getValue());\n            }\n        }",
+    "fixed_code": "        private void copyAttributes(org.jsoup.nodes.Node source, Element el) {\n            for (Attribute attribute : source.attributes()) {\n                // valid xml attribute names are: ^[a-zA-Z_:][-a-zA-Z0-9_:.]\n                String key = attribute.getKey().replaceAll(\"[^-a-zA-Z0-9_:.]\", \"\");\n                if (key.matches(\"[a-zA-Z_:]{1}[-a-zA-Z0-9_:.]*\"))\n                    el.setAttribute(key, attribute.getValue());\n            }\n        }",
+    "fixed_lines": "                if (key.matches(\"[a-zA-Z_:]{1}[-a-zA-Z0-9_:.]*\"))",
+    "masked_code": "        private void copyAttributes(org.jsoup.nodes.Node source, Element el) {\n            for (Attribute attribute : source.attributes()) {\n                // valid xml attribute names are: ^[a-zA-Z_:][-a-zA-Z0-9_:.]\n                String key = attribute.getKey().replaceAll(\"[^-a-zA-Z0-9_:.]\", \"\");\n>>> [ INFILL ] <<<\n                    el.setAttribute(key, attribute.getValue());\n            }\n        }",
+    "project": "Jsoup",
+    "test_error_message": "org.w3c.dom.DOMException: INVALID_CHARACTER_ERR: An invalid or illegal XML character is specified.",
+    "test_framework": "defects4j",
+    "test_line": "        Document w3Doc = new W3CDom().fromJsoup(jsoupDoc);",
+    "test_name": "handlesInvalidAttributeNames",
+    "test_suite": "org.jsoup.helper.W3CDomTest",
+    "time_buggy": "2016-08-05 15:34:17 -0700",
+    "time_fixed": "2016-08-05 16:41:40 -0700"
+}

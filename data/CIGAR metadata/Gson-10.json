@@ -1,0 +1,17 @@
+{
+    "bug_id": 10,
+    "bug_type": "SH SF",
+    "buggy_lines": "        TypeAdapter t =\n          new TypeAdapterRuntimeTypeWrapper(context, typeAdapter, fieldType.getType());",
+    "code": "      @Override void write(JsonWriter writer, Object value)\n          throws IOException, IllegalAccessException {\n        Object fieldValue = field.get(value);\n        TypeAdapter t =\n          new TypeAdapterRuntimeTypeWrapper(context, typeAdapter, fieldType.getType());\n        t.write(writer, fieldValue);\n      }",
+    "fixed_code": "      @Override void write(JsonWriter writer, Object value)\n          throws IOException, IllegalAccessException {\n        Object fieldValue = field.get(value);\n        TypeAdapter t = jsonAdapterPresent ? typeAdapter\n            : new TypeAdapterRuntimeTypeWrapper(context, typeAdapter, fieldType.getType());\n        t.write(writer, fieldValue);\n      }",
+    "fixed_lines": "        TypeAdapter t = jsonAdapterPresent ? typeAdapter\n            : new TypeAdapterRuntimeTypeWrapper(context, typeAdapter, fieldType.getType());",
+    "masked_code": "      @Override void write(JsonWriter writer, Object value)\n          throws IOException, IllegalAccessException {\n        Object fieldValue = field.get(value);\n>>> [ INFILL ] <<<\n        t.write(writer, fieldValue);\n      }",
+    "project": "Gson",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<{\"part\":[\"42\"]}> but was:<{\"part\":[42]}>",
+    "test_framework": "defects4j",
+    "test_line": "    assertEquals(\"{\\\"part\\\":\\\"42\\\"}\", json);",
+    "test_name": "testPrimitiveFieldAnnotationTakesPrecedenceOverDefault",
+    "test_suite": "com.google.gson.functional.JsonAdapterAnnotationOnFieldsTest",
+    "time_buggy": "2016-05-17 07:38:50 -0400",
+    "time_fixed": "2016-05-17 17:26:52 -0400"
+}

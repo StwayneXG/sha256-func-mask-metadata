@@ -1,0 +1,17 @@
+{
+    "bug_id": 37,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return accum.toString().trim();",
+    "code": "    public String html() {\n        StringBuilder accum = new StringBuilder();\n        html(accum);\n        return accum.toString().trim();\n    }",
+    "fixed_code": "    public String html() {\n        StringBuilder accum = new StringBuilder();\n        html(accum);\n        return getOutputSettings().prettyPrint() ? accum.toString().trim() : accum.toString();\n    }",
+    "fixed_lines": "        return getOutputSettings().prettyPrint() ? accum.toString().trim() : accum.toString();",
+    "masked_code": "    public String html() {\n        StringBuilder accum = new StringBuilder();\n        html(accum);\n>>> [ INFILL ] <<<\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<[",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"   \\n<p>Hello\\n there\\n</p>\", div.html());",
+    "test_name": "testNotPretty",
+    "test_suite": "org.jsoup.nodes.ElementTest",
+    "time_buggy": "2013-11-16 14:56:47 -0800",
+    "time_fixed": "2013-11-16 16:48:43 -0800"
+}

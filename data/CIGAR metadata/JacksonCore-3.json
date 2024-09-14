@@ -1,0 +1,17 @@
+{
+    "bug_id": 3,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public UTF8StreamJsonParser(IOContext ctxt, int features, InputStream in,\n            ObjectCodec codec, BytesToNameCanonicalizer sym,\n            byte[] inputBuffer, int start, int end,\n            boolean bufferRecyclable)\n    {\n        super(ctxt, features);\n        _inputStream = in;\n        _objectCodec = codec;\n        _symbols = sym;\n        _inputBuffer = inputBuffer;\n        _inputPtr = start;\n        _inputEnd = end;\n        // If we have offset, need to omit that from byte offset, so:\n        _bufferRecyclable = bufferRecyclable;\n    }",
+    "fixed_code": "    public UTF8StreamJsonParser(IOContext ctxt, int features, InputStream in,\n            ObjectCodec codec, BytesToNameCanonicalizer sym,\n            byte[] inputBuffer, int start, int end,\n            boolean bufferRecyclable)\n    {\n        super(ctxt, features);\n        _inputStream = in;\n        _objectCodec = codec;\n        _symbols = sym;\n        _inputBuffer = inputBuffer;\n        _inputPtr = start;\n        _inputEnd = end;\n        _currInputRowStart = start;\n        // If we have offset, need to omit that from byte offset, so:\n        _currInputProcessed = -start;\n        _bufferRecyclable = bufferRecyclable;\n    }",
+    "fixed_lines": "        _currInputRowStart = start;\n        _currInputProcessed = -start;",
+    "masked_code": "    public UTF8StreamJsonParser(IOContext ctxt, int features, InputStream in,\n            ObjectCodec codec, BytesToNameCanonicalizer sym,\n            byte[] inputBuffer, int start, int end,\n            boolean bufferRecyclable)\n    {\n        super(ctxt, features);\n        _inputStream = in;\n        _objectCodec = codec;\n        _symbols = sym;\n        _inputBuffer = inputBuffer;\n        _inputPtr = start;\n        _inputEnd = end;\n        // If we have offset, need to omit that from byte offset, so:\n>>> [ INFILL ] <<<\n        _bufferRecyclable = bufferRecyclable;\n    }",
+    "project": "JacksonCore",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<0> but was:<3>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(0L, loc.getByteOffset());",
+    "test_name": "testOffsetWithInputOffset",
+    "test_suite": "com.fasterxml.jackson.core.json.TestLocation",
+    "time_buggy": "2013-10-03 10:51:06 -0700",
+    "time_fixed": "2013-10-08 10:03:44 -0700"
+}

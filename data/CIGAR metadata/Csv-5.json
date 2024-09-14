@@ -1,0 +1,17 @@
+{
+    "bug_id": 5,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public void println() throws IOException {\n        final String recordSeparator = format.getRecordSeparator();\n            out.append(recordSeparator);\n        newRecord = true;\n    }",
+    "fixed_code": "    public void println() throws IOException {\n        final String recordSeparator = format.getRecordSeparator();\n        if (recordSeparator != null) {\n            out.append(recordSeparator);\n        }\n        newRecord = true;\n    }",
+    "fixed_lines": "        if (recordSeparator != null) {\n        }",
+    "masked_code": "    public void println() throws IOException {\n        final String recordSeparator = format.getRecordSeparator();\n            out.append(recordSeparator);\n>>> [ INFILL ] <<<\n        newRecord = true;\n    }",
+    "project": "Csv",
+    "test_error_message": "junit.framework.AssertionFailedError",
+    "test_framework": "defects4j",
+    "test_line": "        assertFalse(formatStr.endsWith(\"null\"));",
+    "test_name": "testNullRecordSeparatorCsv106",
+    "test_suite": "org.apache.commons.csv.CSVFormatTest",
+    "time_buggy": "2014-03-12 14:29:33 +0000",
+    "time_fixed": "2014-03-13 00:16:57 +0000"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 9,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "JacksonCore",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2015-03-30 16:42:55 -0700",
+    "time_fixed": "2015-03-30 17:26:08 -0700"
+}

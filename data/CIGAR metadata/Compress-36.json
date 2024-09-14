@@ -1,0 +1,17 @@
+{
+    "bug_id": 36,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    private InputStream getCurrentStream() throws IOException {\n        if (deferredBlockStreams.isEmpty()) {\n            throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n        }\n        \n        while (deferredBlockStreams.size() > 1) {\n            // In solid compression mode we need to decompress all leading folder'\n            // streams to get access to an entry. We defer this until really needed\n            // so that entire blocks can be skipped without wasting time for decompression.\n            final InputStream stream = deferredBlockStreams.remove(0);\n            IOUtils.skip(stream, Long.MAX_VALUE);\n            stream.close();\n        }\n\n        return deferredBlockStreams.get(0);\n    }",
+    "fixed_code": "    private InputStream getCurrentStream() throws IOException {\n        if (archive.files[currentEntryIndex].getSize() == 0) {\n            return new ByteArrayInputStream(new byte[0]);\n        }\n        if (deferredBlockStreams.isEmpty()) {\n            throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n        }\n        \n        while (deferredBlockStreams.size() > 1) {\n            // In solid compression mode we need to decompress all leading folder'\n            // streams to get access to an entry. We defer this until really needed\n            // so that entire blocks can be skipped without wasting time for decompression.\n            final InputStream stream = deferredBlockStreams.remove(0);\n            IOUtils.skip(stream, Long.MAX_VALUE);\n            stream.close();\n        }\n\n        return deferredBlockStreams.get(0);\n    }",
+    "fixed_lines": "        if (archive.files[currentEntryIndex].getSize() == 0) {\n            return new ByteArrayInputStream(new byte[0]);\n        }",
+    "masked_code": "    private InputStream getCurrentStream() throws IOException {\n>>> [ INFILL ] <<<\n        if (deferredBlockStreams.isEmpty()) {\n            throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n        }\n        \n        while (deferredBlockStreams.size() > 1) {\n            // In solid compression mode we need to decompress all leading folder'\n            // streams to get access to an entry. We defer this until really needed\n            // so that entire blocks can be skipped without wasting time for decompression.\n            final InputStream stream = deferredBlockStreams.remove(0);\n            IOUtils.skip(stream, Long.MAX_VALUE);\n            stream.close();\n        }\n\n        return deferredBlockStreams.get(0);\n    }",
+    "project": "Compress",
+    "test_error_message": "java.lang.IllegalStateException: No current 7z entry (call getNextEntry() first).",
+    "test_framework": "defects4j",
+    "test_line": "                int b = sevenZFile.read();",
+    "test_name": "readEntriesOfSize0",
+    "test_suite": "org.apache.commons.compress.archivers.sevenz.SevenZFileTest",
+    "time_buggy": "2016-04-19 00:10:43 +0100",
+    "time_fixed": "2016-04-24 13:22:34 +0200"
+}

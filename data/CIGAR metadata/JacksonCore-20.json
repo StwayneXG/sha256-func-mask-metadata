@@ -1,0 +1,17 @@
+{
+    "bug_id": 20,
+    "bug_type": "SH SF",
+    "buggy_lines": "        throw new JsonGenerationException(\"No native support for writing embedded objects\",",
+    "code": "    public void writeEmbeddedObject(Object object) throws IOException {\n        // 01-Sep-2016, tatu: As per [core#318], handle small number of cases\n        throw new JsonGenerationException(\"No native support for writing embedded objects\",\n                this);\n    }",
+    "fixed_code": "    public void writeEmbeddedObject(Object object) throws IOException {\n        // 01-Sep-2016, tatu: As per [core#318], handle small number of cases\n        if (object == null) {\n            writeNull();\n            return;\n        }\n        if (object instanceof byte[]) {\n            writeBinary((byte[]) object);\n            return;\n        }\n        throw new JsonGenerationException(\"No native support for writing embedded objects of type \"\n                +object.getClass().getName(),\n                this);\n    }",
+    "fixed_lines": "        if (object == null) {\n            writeNull();\n            return;\n        }\n        if (object instanceof byte[]) {\n            writeBinary((byte[]) object);\n            return;\n        }\n        throw new JsonGenerationException(\"No native support for writing embedded objects of type \"\n                +object.getClass().getName(),",
+    "masked_code": "    public void writeEmbeddedObject(Object object) throws IOException {\n        // 01-Sep-2016, tatu: As per [core#318], handle small number of cases\n>>> [ INFILL ] <<<\n                this);\n    }",
+    "project": "JacksonCore",
+    "test_error_message": "com.fasterxml.jackson.core.JsonGenerationException: No native support for writing embedded objects",
+    "test_framework": "defects4j",
+    "test_line": "        g.writeEmbeddedObject(WIKIPEDIA_BASE64_AS_BYTES);",
+    "test_name": "testBinaryAsEmbeddedObject",
+    "test_suite": "com.fasterxml.jackson.core.base64.Base64GenerationTest",
+    "time_buggy": "2016-08-31 21:16:06 -0700",
+    "time_fixed": "2016-09-01 15:32:46 -0700"
+}

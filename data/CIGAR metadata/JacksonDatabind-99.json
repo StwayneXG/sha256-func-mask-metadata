@@ -1,0 +1,17 @@
+{
+    "bug_id": 99,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "    protected String buildCanonicalName()\n    {\n        StringBuilder sb = new StringBuilder();\n        sb.append(_class.getName());\n        sb.append('<');\n        sb.append(_referencedType.toCanonical());\n        return sb.toString();\n    }",
+    "fixed_code": "    protected String buildCanonicalName()\n    {\n        StringBuilder sb = new StringBuilder();\n        sb.append(_class.getName());\n        sb.append('<');\n        sb.append(_referencedType.toCanonical());\n        sb.append('>');\n        return sb.toString();\n    }",
+    "fixed_lines": "        sb.append('>');",
+    "masked_code": "    protected String buildCanonicalName()\n    {\n        StringBuilder sb = new StringBuilder();\n        sb.append(_class.getName());\n        sb.append('<');\n        sb.append(_referencedType.toCanonical());\n>>> [ INFILL ] <<<\n        return sb.toString();\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<...rence<java.lang.Long[>]> but was:<...rence<java.lang.Long[]>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"java.util.concurrent.atomic.AtomicReference<java.lang.Long>\",",
+    "test_name": "testCanonicalNames",
+    "test_suite": "com.fasterxml.jackson.databind.type.TestTypeFactory",
+    "time_buggy": "2018-06-07 22:49:25 -0700",
+    "time_fixed": "2018-08-15 07:13:38 -0700"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 12,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "  @Override public void skipValue() throws IOException {\n    if (peek() == JsonToken.NAME) {\n      nextName();\n      pathNames[stackSize - 2] = \"null\";\n    } else {\n      popStack();\n        pathNames[stackSize - 1] = \"null\";\n    }\n      pathIndices[stackSize - 1]++;\n  }",
+    "fixed_code": "  @Override public void skipValue() throws IOException {\n    if (peek() == JsonToken.NAME) {\n      nextName();\n      pathNames[stackSize - 2] = \"null\";\n    } else {\n      popStack();\n      if (stackSize > 0) {\n        pathNames[stackSize - 1] = \"null\";\n      }\n    }\n    if (stackSize > 0) {\n      pathIndices[stackSize - 1]++;\n    }\n  }",
+    "fixed_lines": "      if (stackSize > 0) {\n      }\n    if (stackSize > 0) {\n    }",
+    "masked_code": "  @Override public void skipValue() throws IOException {\n    if (peek() == JsonToken.NAME) {\n      nextName();\n      pathNames[stackSize - 2] = \"null\";\n    } else {\n      popStack();\n        pathNames[stackSize - 1] = \"null\";\n    }\n      pathIndices[stackSize - 1]++;\n>>> [ INFILL ] <<<\n  }",
+    "project": "Gson",
+    "test_error_message": "java.lang.ArrayIndexOutOfBoundsException: -1",
+    "test_framework": "defects4j",
+    "test_line": "    in.skipValue();",
+    "test_name": "testSkipValue_filledJsonObject",
+    "test_suite": "com.google.gson.internal.bind.JsonTreeReaderTest",
+    "time_buggy": "2017-02-07 19:17:28 -0500",
+    "time_fixed": "2017-02-15 18:41:39 -0800"
+}

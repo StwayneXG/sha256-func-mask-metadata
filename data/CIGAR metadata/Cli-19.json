@@ -1,0 +1,17 @@
+{
+    "bug_id": 19,
+    "bug_type": "SF",
+    "buggy_lines": "            tokens.add(token);\n            tokens.add(token);",
+    "code": "    private void processOptionToken(String token, boolean stopAtNonOption)\n    {\n        if (options.hasOption(token))\n        {\n            currentOption = options.getOption(token);\n            tokens.add(token);\n        }\n        else if (stopAtNonOption)\n        {\n            eatTheRest = true;\n            tokens.add(token);\n        }\n    }",
+    "fixed_code": "    private void processOptionToken(String token, boolean stopAtNonOption)\n    {\n        if (options.hasOption(token))\n        {\n            currentOption = options.getOption(token);\n        }\n        else if (stopAtNonOption)\n        {\n            eatTheRest = true;\n        }\n\n        tokens.add(token);\n    }",
+    "fixed_lines": "\n        tokens.add(token);",
+    "masked_code": "    private void processOptionToken(String token, boolean stopAtNonOption)\n    {\n        if (options.hasOption(token))\n        {\n            currentOption = options.getOption(token);\n        }\n        else if (stopAtNonOption)\n        {\n            eatTheRest = true;\n        }\n>>> [ INFILL ] <<<\n    }",
+    "project": "Cli",
+    "test_error_message": "junit.framework.AssertionFailedError: UnrecognizedOptionException wasn't thrown",
+    "test_framework": "defects4j",
+    "test_line": "            fail(\"UnrecognizedOptionException wasn't thrown\");",
+    "test_name": "testUnrecognizedOption2",
+    "test_suite": "org.apache.commons.cli.PosixParserTest",
+    "time_buggy": "2008-07-28 08:27:46 +0000",
+    "time_fixed": "2008-07-28 08:43:28 +0000"
+}

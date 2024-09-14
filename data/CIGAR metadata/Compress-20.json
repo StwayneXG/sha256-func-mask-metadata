@@ -1,0 +1,17 @@
+{
+    "bug_id": 20,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "Compress",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2013-08-08 15:57:55 +0000",
+    "time_fixed": "2013-08-08 16:18:45 +0000"
+}

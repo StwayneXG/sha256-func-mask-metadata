@@ -1,0 +1,17 @@
+{
+    "bug_id": 27,
+    "bug_type": "SF",
+    "buggy_lines": "        if (selected == null || selected.equals(option.getOpt()))\n            selected = option.getOpt();",
+    "code": "    public void setSelected(Option option) throws AlreadySelectedException\n    {\n        if (option == null)\n        {\n            // reset the option previously selected\n            selected = null;\n            return;\n        }\n        \n        // if no option has already been selected or the \n        // same option is being reselected then set the\n        // selected member variable\n        if (selected == null || selected.equals(option.getOpt()))\n        {\n            selected = option.getOpt();\n        }\n        else\n        {\n            throw new AlreadySelectedException(this, option);\n        }\n    }",
+    "fixed_code": "    public void setSelected(Option option) throws AlreadySelectedException\n    {\n        if (option == null)\n        {\n            // reset the option previously selected\n            selected = null;\n            return;\n        }\n        \n        // if no option has already been selected or the \n        // same option is being reselected then set the\n        // selected member variable\n        if (selected == null || selected.equals(option.getKey()))\n        {\n            selected = option.getKey();\n        }\n        else\n        {\n            throw new AlreadySelectedException(this, option);\n        }\n    }",
+    "fixed_lines": "        if (selected == null || selected.equals(option.getKey()))\n            selected = option.getKey();",
+    "masked_code": "    public void setSelected(Option option) throws AlreadySelectedException\n    {\n        if (option == null)\n        {\n            // reset the option previously selected\n            selected = null;\n            return;\n        }\n        \n        // if no option has already been selected or the \n        // same option is being reselected then set the\n        // selected member variable\n        {\n>>> [ INFILL ] <<<\n        }\n        else\n        {\n            throw new AlreadySelectedException(this, option);\n        }\n    }",
+    "project": "Cli",
+    "test_error_message": "junit.framework.ComparisonFailure: selected option expected:<bar> but was:<null>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"selected option\", \"bar\", group.getSelected());",
+    "test_name": "testOptionGroupLong",
+    "test_suite": "org.apache.commons.cli.BasicParserTest",
+    "time_buggy": "2009-05-28 16:22:05 +0000",
+    "time_fixed": "2009-05-30 02:31:22 +0000"
+}

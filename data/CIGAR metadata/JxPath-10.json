@@ -1,0 +1,17 @@
+{
+    "bug_id": 10,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return compute(args[0].computeValue(context), args[1].computeValue(context)) ",
+    "code": "    public final Object computeValue(EvalContext context) {\n        return compute(args[0].computeValue(context), args[1].computeValue(context)) \n                ? Boolean.TRUE : Boolean.FALSE;\n    }",
+    "fixed_code": "    public final Object computeValue(EvalContext context) {\n        return compute(args[0].compute(context), args[1].compute(context))\n                ? Boolean.TRUE : Boolean.FALSE;\n    }",
+    "fixed_lines": "        return compute(args[0].compute(context), args[1].compute(context))",
+    "masked_code": "    public final Object computeValue(EvalContext context) {\n>>> [ INFILL ] <<<\n                ? Boolean.TRUE : Boolean.FALSE;\n    }",
+    "project": "JxPath",
+    "test_error_message": "junit.framework.AssertionFailedError: Evaluating </idonotexist >= 0> expected:<false> but was:<true>",
+    "test_framework": "defects4j",
+    "test_line": "        assertXPathValue(context, \"/idonotexist >= 0\", Boolean.FALSE, Boolean.class);",
+    "test_name": "testEmptyNodeSetOperations",
+    "test_suite": "org.apache.commons.jxpath.ri.compiler.CoreOperationTest",
+    "time_buggy": "2007-07-13 19:41:41 +0000",
+    "time_fixed": "2007-07-13 19:43:38 +0000"
+}

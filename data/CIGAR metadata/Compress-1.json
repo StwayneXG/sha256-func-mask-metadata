@@ -1,0 +1,17 @@
+{
+    "bug_id": 1,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "    public void close() throws IOException {\n        if (!this.closed) {\n            super.close();\n            this.closed = true;\n        }\n    }",
+    "fixed_code": "    public void close() throws IOException {\n        if (!this.closed) {\n            this.finish();\n            super.close();\n            this.closed = true;\n        }\n    }",
+    "fixed_lines": "            this.finish();",
+    "masked_code": "    public void close() throws IOException {\n        if (!this.closed) {\n>>> [ INFILL ] <<<\n            super.close();\n            this.closed = true;\n        }\n    }",
+    "project": "Compress",
+    "test_error_message": "java.io.EOFException",
+    "test_framework": "defects4j",
+    "test_line": "        while ((entry = in.getNextEntry()) != null) {",
+    "test_name": "testCpioUnarchive",
+    "test_suite": "org.apache.commons.compress.archivers.CpioTestCase",
+    "time_buggy": "2009-03-25 14:43:44 +0000",
+    "time_fixed": "2009-03-26 10:36:45 +0000"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 15,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "    \tif(!_allowMultipleMatches && _currToken != null && _exposedContext == null){\n    \t\tif((_currToken.isStructEnd()  && _headContext.isStartHandled()) ){\n    \t\t\treturn (_currToken = null);\n    \t\t}\n    \t\telse if(_currToken.isScalarValue() && !_headContext.isStartHandled() && !_includePath \n    \t\t\t\t&& _itemFilter == TokenFilter.INCLUDE_ALL) {\n    \t\t\treturn (_currToken = null);\n    \t\t}\n    \t}",
+    "masked_code": "",
+    "project": "JacksonCore",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<3[]> but was:<3[ 4]>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(aposToQuotes(\"3\"), result);",
+    "test_name": "testNotAllowMultipleMatches",
+    "test_suite": "com.fasterxml.jackson.core.filter.BasicParserFilteringTest",
+    "time_buggy": "2016-03-15 18:20:10 -0700",
+    "time_fixed": "2016-03-21 21:27:04 -0700"
+}

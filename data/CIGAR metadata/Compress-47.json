@@ -1,0 +1,17 @@
+{
+    "bug_id": 47,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "Compress",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2018-01-13 16:32:10 +0100",
+    "time_fixed": "2018-01-14 12:12:50 +0100"
+}

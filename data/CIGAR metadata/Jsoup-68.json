@@ -1,0 +1,17 @@
+{
+    "bug_id": 68,
+    "bug_type": "SH SF",
+    "buggy_lines": "        int bottom = stack.size() -1;\n        if (bottom > MaxScopeSearchDepth) {\n            bottom = MaxScopeSearchDepth;\n        }",
+    "code": "    private boolean inSpecificScope(String[] targetNames, String[] baseTypes, String[] extraTypes) {\n        // https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope\n        int bottom = stack.size() -1;\n        if (bottom > MaxScopeSearchDepth) {\n            bottom = MaxScopeSearchDepth;\n        }\n        final int top = bottom > MaxScopeSearchDepth ? bottom - MaxScopeSearchDepth : 0;\n        // don't walk too far up the tree\n\n        for (int pos = bottom; pos >= top; pos--) {\n            final String elName = stack.get(pos).nodeName();\n            if (inSorted(elName, targetNames))\n                return true;\n            if (inSorted(elName, baseTypes))\n                return false;\n            if (extraTypes != null && inSorted(elName, extraTypes))\n                return false;\n        }\n        //Validate.fail(\"Should not be reachable\"); // would end up false because hitting 'html' at root (basetypes)\n        return false;\n    }",
+    "fixed_code": "    private boolean inSpecificScope(String[] targetNames, String[] baseTypes, String[] extraTypes) {\n        // https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope\n        final int bottom = stack.size() -1;\n        final int top = bottom > MaxScopeSearchDepth ? bottom - MaxScopeSearchDepth : 0;\n        // don't walk too far up the tree\n\n        for (int pos = bottom; pos >= top; pos--) {\n            final String elName = stack.get(pos).nodeName();\n            if (inSorted(elName, targetNames))\n                return true;\n            if (inSorted(elName, baseTypes))\n                return false;\n            if (extraTypes != null && inSorted(elName, extraTypes))\n                return false;\n        }\n        //Validate.fail(\"Should not be reachable\"); // would end up false because hitting 'html' at root (basetypes)\n        return false;\n    }",
+    "fixed_lines": "        final int bottom = stack.size() -1;",
+    "masked_code": "    private boolean inSpecificScope(String[] targetNames, String[] baseTypes, String[] extraTypes) {\n        // https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope\n>>> [ INFILL ] <<<\n        final int top = bottom > MaxScopeSearchDepth ? bottom - MaxScopeSearchDepth : 0;\n        // don't walk too far up the tree\n\n        for (int pos = bottom; pos >= top; pos--) {\n            final String elName = stack.get(pos).nodeName();\n            if (inSorted(elName, targetNames))\n                return true;\n            if (inSorted(elName, baseTypes))\n                return false;\n            if (extraTypes != null && inSorted(elName, extraTypes))\n                return false;\n        }\n        //Validate.fail(\"Should not be reachable\"); // would end up false because hitting 'html' at root (basetypes)\n        return false;\n    }",
+    "project": "Jsoup",
+    "test_error_message": "java.lang.StackOverflowError",
+    "test_framework": "defects4j",
+    "test_line": "            final String elName = stack.get(pos).nodeName();",
+    "test_name": "testHandlesDeepSpans",
+    "test_suite": "org.jsoup.parser.HtmlParserTest",
+    "time_buggy": "2017-11-04 18:11:21 -0700",
+    "time_fixed": "2017-11-06 22:28:56 -0800"
+}

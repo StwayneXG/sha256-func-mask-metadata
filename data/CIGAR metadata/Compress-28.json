@@ -1,0 +1,17 @@
+{
+    "bug_id": 28,
+    "bug_type": "SF",
+    "buggy_lines": "        count(totalRead);",
+    "code": "    public int read(byte[] buf, int offset, int numToRead) throws IOException {\n    \tint totalRead = 0;\n\n        if (hasHitEOF || entryOffset >= entrySize) {\n            return -1;\n        }\n\n        if (currEntry == null) {\n            throw new IllegalStateException(\"No current tar entry\");\n        }\n\n        numToRead = Math.min(numToRead, available());\n        \n        totalRead = is.read(buf, offset, numToRead);\n        count(totalRead);\n        \n        if (totalRead == -1) {\n            hasHitEOF = true;\n        } else {\n            entryOffset += totalRead;\n        }\n\n        return totalRead;\n    }",
+    "fixed_code": "    public int read(byte[] buf, int offset, int numToRead) throws IOException {\n    \tint totalRead = 0;\n\n        if (hasHitEOF || entryOffset >= entrySize) {\n            return -1;\n        }\n\n        if (currEntry == null) {\n            throw new IllegalStateException(\"No current tar entry\");\n        }\n\n        numToRead = Math.min(numToRead, available());\n        \n        totalRead = is.read(buf, offset, numToRead);\n        \n        if (totalRead == -1) {\n            if (numToRead > 0) {\n                throw new IOException(\"Truncated TAR archive\");\n            }\n            hasHitEOF = true;\n        } else {\n            count(totalRead);\n            entryOffset += totalRead;\n        }\n\n        return totalRead;\n    }",
+    "fixed_lines": "            if (numToRead > 0) {\n                throw new IOException(\"Truncated TAR archive\");\n            }\n            count(totalRead);",
+    "masked_code": "    public int read(byte[] buf, int offset, int numToRead) throws IOException {\n    \tint totalRead = 0;\n\n        if (hasHitEOF || entryOffset >= entrySize) {\n            return -1;\n        }\n\n        if (currEntry == null) {\n            throw new IllegalStateException(\"No current tar entry\");\n        }\n\n        numToRead = Math.min(numToRead, available());\n        \n        totalRead = is.read(buf, offset, numToRead);\n        \n        if (totalRead == -1) {\n            hasHitEOF = true;\n        } else {\n>>> [ INFILL ] <<<\n            entryOffset += totalRead;\n        }\n\n        return totalRead;\n    }",
+    "project": "Compress",
+    "test_error_message": "junit.framework.AssertionFailedError: Expected exception: java.io.IOException",
+    "test_framework": "defects4j",
+    "test_line": "",
+    "test_name": "shouldThrowAnExceptionOnTruncatedEntries",
+    "test_suite": "org.apache.commons.compress.archivers.tar.TarArchiveInputStreamTest",
+    "time_buggy": "2014-04-19 06:00:19 +0000",
+    "time_fixed": "2014-04-27 09:15:33 +0000"
+}

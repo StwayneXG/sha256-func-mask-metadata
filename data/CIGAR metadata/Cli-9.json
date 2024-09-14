@@ -1,0 +1,17 @@
+{
+    "bug_id": 9,
+    "bug_type": "SF",
+    "buggy_lines": "            throw new MissingOptionException(buff.toString());",
+    "code": "    protected void checkRequiredOptions()\n        throws MissingOptionException\n    {\n        // if there are required options that have not been\n        // processsed\n        if (getRequiredOptions().size() > 0)\n        {\n            Iterator iter = getRequiredOptions().iterator();\n            StringBuffer buff = new StringBuffer(\"Missing required option\");\n            buff.append(getRequiredOptions().size() == 1 ? \"\" : \"s\");\n            buff.append(\": \");\n\n\n            // loop through the required options\n            while (iter.hasNext())\n            {\n                buff.append(iter.next());\n            }\n\n            throw new MissingOptionException(buff.toString());\n        }\n    }",
+    "fixed_code": "    protected void checkRequiredOptions()\n        throws MissingOptionException\n    {\n        // if there are required options that have not been\n        // processsed\n        if (getRequiredOptions().size() > 0)\n        {\n            Iterator iter = getRequiredOptions().iterator();\n            StringBuffer buff = new StringBuffer(\"Missing required option\");\n            buff.append(getRequiredOptions().size() == 1 ? \"\" : \"s\");\n            buff.append(\": \");\n\n\n            // loop through the required options\n            while (iter.hasNext())\n            {\n                buff.append(iter.next());\n                buff.append(\", \");\n            }\n\n            throw new MissingOptionException(buff.substring(0, buff.length() - 2));\n        }\n    }",
+    "fixed_lines": "                buff.append(\", \");\n            throw new MissingOptionException(buff.substring(0, buff.length() - 2));",
+    "masked_code": "    protected void checkRequiredOptions()\n        throws MissingOptionException\n    {\n        // if there are required options that have not been\n        // processsed\n        if (getRequiredOptions().size() > 0)\n        {\n            Iterator iter = getRequiredOptions().iterator();\n            StringBuffer buff = new StringBuffer(\"Missing required option\");\n            buff.append(getRequiredOptions().size() == 1 ? \"\" : \"s\");\n            buff.append(\": \");\n\n\n            // loop through the required options\n            while (iter.hasNext())\n            {\n                buff.append(iter.next());\n            }\n\n>>> [ INFILL ] <<<\n        }\n    }",
+    "project": "Cli",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<... required options: f[, ]x> but was:<... required options: f[]x>",
+    "test_framework": "defects4j",
+    "test_line": "            assertEquals(\"Missing required options: f, x\", e.getMessage());",
+    "test_name": "testMissingOptionsException",
+    "test_suite": "org.apache.commons.cli.OptionsTest",
+    "time_buggy": "2008-05-08 06:43:14 +0000",
+    "time_fixed": "2008-05-08 06:56:36 +0000"
+}

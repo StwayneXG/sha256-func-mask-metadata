@@ -1,0 +1,17 @@
+{
+    "bug_id": 26,
+    "bug_type": "SF",
+    "buggy_lines": "    implements BeanProperty",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "    implements BeanProperty,\n        java.io.Serializable // since 2.6.2\n    private static final long serialVersionUID = 4603296144163950020L;",
+    "masked_code": "",
+    "project": "JacksonDatabind",
+    "test_error_message": "java.io.NotSerializableException: com.fasterxml.jackson.databind.ser.BeanPropertyWriter",
+    "test_framework": "defects4j",
+    "test_line": "        obOut.writeObject(o);",
+    "test_name": "testEnumHandlers",
+    "test_suite": "com.fasterxml.jackson.databind.TestJDKSerialization",
+    "time_buggy": "2015-08-14 14:47:04 -0700",
+    "time_fixed": "2015-08-14 15:44:02 -0700"
+}

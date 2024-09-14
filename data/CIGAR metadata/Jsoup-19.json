@@ -1,0 +1,17 @@
+{
+    "bug_id": 19,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {\n        // try to resolve relative urls to abs, and optionally update the attribute so output html has abs.\n        // rels without a baseuri get removed\n        String value = el.absUrl(attr.getKey());\n        if (!preserveRelativeLinks)\n            attr.setValue(value);\n        \n        for (Protocol protocol : protocols) {\n            String prot = protocol.toString() + \":\";\n            if (value.toLowerCase().startsWith(prot)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+    "fixed_code": "    private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {\n        // try to resolve relative urls to abs, and optionally update the attribute so output html has abs.\n        // rels without a baseuri get removed\n        String value = el.absUrl(attr.getKey());\n        if (value.length() == 0)\n            value = attr.getValue(); // if it could not be made abs, run as-is to allow custom unknown protocols\n        if (!preserveRelativeLinks)\n            attr.setValue(value);\n        \n        for (Protocol protocol : protocols) {\n            String prot = protocol.toString() + \":\";\n            if (value.toLowerCase().startsWith(prot)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+    "fixed_lines": "        if (value.length() == 0)\n            value = attr.getValue(); // if it could not be made abs, run as-is to allow custom unknown protocols",
+    "masked_code": "    private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {\n        // try to resolve relative urls to abs, and optionally update the attribute so output html has abs.\n        // rels without a baseuri get removed\n        String value = el.absUrl(attr.getKey());\n>>> [ INFILL ] <<<\n        if (!preserveRelativeLinks)\n            attr.setValue(value);\n        \n        for (Protocol protocol : protocols) {\n            String prot = protocol.toString() + \":\";\n            if (value.toLowerCase().startsWith(prot)) {\n                return true;\n            }\n        }\n        return false;\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<<img [src=\"cid:12345\" />",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"<img src=\\\"cid:12345\\\" /> \\n<img src=\\\"data:gzzt\\\" />\", preserved);",
+    "test_name": "handlesCustomProtocols",
+    "test_suite": "org.jsoup.safety.CleanerTest",
+    "time_buggy": "2011-08-28 14:13:21 +1000",
+    "time_fixed": "2011-08-28 15:14:35 +1000"
+}

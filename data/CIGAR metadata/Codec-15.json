@@ -1,0 +1,17 @@
+{
+    "bug_id": 15,
+    "bug_type": "SF",
+    "buggy_lines": "            final char hwChar = str.charAt(index - 1);\n            if ('H' == hwChar || 'W' == hwChar) {\n                final char preHWChar = str.charAt(index - 2);\n                final char firstCode = this.map(preHWChar);\n                if (firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar) {",
+    "code": "    private char getMappingCode(final String str, final int index) {\n        // map() throws IllegalArgumentException\n        final char mappedChar = this.map(str.charAt(index));\n        // HW rule check\n        if (index > 1 && mappedChar != '0') {\n            final char hwChar = str.charAt(index - 1);\n            if ('H' == hwChar || 'W' == hwChar) {\n                final char preHWChar = str.charAt(index - 2);\n                final char firstCode = this.map(preHWChar);\n                if (firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar) {\n                    return 0;\n                }\n            }\n        }\n        return mappedChar;\n    }",
+    "fixed_code": "    private char getMappingCode(final String str, final int index) {\n        // map() throws IllegalArgumentException\n        final char mappedChar = this.map(str.charAt(index));\n        // HW rule check\n        if (index > 1 && mappedChar != '0') {\n            for (int i=index-1 ; i>=0 ; i--) {\n                final char prevChar = str.charAt(i);\n                if (this.map(prevChar)==mappedChar) {\n                    return 0;\n                }\n                if ('H'!=prevChar && 'W'!=prevChar) {\n                    break;\n                }\n            }\n        }\n        return mappedChar;\n    }",
+    "fixed_lines": "            for (int i=index-1 ; i>=0 ; i--) {\n                final char prevChar = str.charAt(i);\n                if (this.map(prevChar)==mappedChar) {\n                if ('H'!=prevChar && 'W'!=prevChar) {\n                    break;\n                }",
+    "masked_code": "    private char getMappingCode(final String str, final int index) {\n        // map() throws IllegalArgumentException\n        final char mappedChar = this.map(str.charAt(index));\n        // HW rule check\n        if (index > 1 && mappedChar != '0') {\n                    return 0;\n                }\n>>> [ INFILL ] <<<\n            }\n        }\n        return mappedChar;\n    }",
+    "project": "Codec",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<Y3[3]0> but was:<Y3[0]0>",
+    "test_framework": "defects4j",
+    "test_line": "        Assert.assertEquals(\"Y330\", this.getStringEncoder().encode(\"yhwdyt\"));",
+    "test_name": "testHWRuleEx1",
+    "test_suite": "org.apache.commons.codec.language.SoundexTest",
+    "time_buggy": "2015-03-22 17:32:16 +0000",
+    "time_fixed": "2015-03-22 18:48:52 +0000"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 6,
+    "bug_type": "SH SF",
+    "buggy_lines": "        for (int i = 0; i < len; ++i) {\n            char c = str.charAt(i);",
+    "code": "    private final static int _parseIndex(String str) {\n        final int len = str.length();\n        // [core#133]: beware of super long indexes; assume we never\n        // have arrays over 2 billion entries so ints are fine.\n        if (len == 0 || len > 10) {\n            return -1;\n        }\n        // [core#176]: no leading zeroes allowed\n        for (int i = 0; i < len; ++i) {\n            char c = str.charAt(i);\n            if (c > '9' || c < '0') {\n                return -1;\n            }\n        }\n        if (len == 10) {\n            long l = NumberInput.parseLong(str);\n            if (l > Integer.MAX_VALUE) {\n                return -1;\n            }\n        }\n        return NumberInput.parseInt(str);\n    }",
+    "fixed_code": "    private final static int _parseIndex(String str) {\n        final int len = str.length();\n        // [core#133]: beware of super long indexes; assume we never\n        // have arrays over 2 billion entries so ints are fine.\n        if (len == 0 || len > 10) {\n            return -1;\n        }\n        // [core#176]: no leading zeroes allowed\n        char c = str.charAt(0);\n        if (c <= '0') {\n            return (len == 1 && c == '0') ? 0 : -1;\n        }\n        if (c > '9') {\n            return -1;\n        }\n        for (int i = 1; i < len; ++i) {\n            c = str.charAt(i);\n            if (c > '9' || c < '0') {\n                return -1;\n            }\n        }\n        if (len == 10) {\n            long l = NumberInput.parseLong(str);\n            if (l > Integer.MAX_VALUE) {\n                return -1;\n            }\n        }\n        return NumberInput.parseInt(str);\n    }",
+    "fixed_lines": "        char c = str.charAt(0);\n        if (c <= '0') {\n            return (len == 1 && c == '0') ? 0 : -1;\n        }\n        if (c > '9') {\n            return -1;\n        }\n        for (int i = 1; i < len; ++i) {\n            c = str.charAt(i);",
+    "masked_code": "    private final static int _parseIndex(String str) {\n        final int len = str.length();\n        // [core#133]: beware of super long indexes; assume we never\n        // have arrays over 2 billion entries so ints are fine.\n        if (len == 0 || len > 10) {\n            return -1;\n        }\n        // [core#176]: no leading zeroes allowed\n>>> [ INFILL ] <<<\n            if (c > '9' || c < '0') {\n                return -1;\n            }\n        }\n        if (len == 10) {\n            long l = NumberInput.parseLong(str);\n            if (l > Integer.MAX_VALUE) {\n                return -1;\n            }\n        }\n        return NumberInput.parseInt(str);\n    }",
+    "project": "JacksonCore",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<-1> but was:<0>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(-1, ptr.getMatchingIndex());",
+    "test_name": "testIZeroIndex",
+    "test_suite": "com.fasterxml.jackson.core.TestJsonPointer",
+    "time_buggy": "2014-12-07 10:16:55 -0800",
+    "time_fixed": "2014-12-30 17:09:51 -0800"
+}

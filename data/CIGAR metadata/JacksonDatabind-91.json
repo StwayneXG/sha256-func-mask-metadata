@@ -1,0 +1,17 @@
+{
+    "bug_id": 91,
+    "bug_type": "SF",
+    "buggy_lines": "                return (ct.getValueHandler() != null) || (ct.getTypeHandler() != null);",
+    "code": "    private boolean _hasCustomHandlers(JavaType t) {\n        if (t.isContainerType()) {\n            // First: value types may have both value and type handlers\n            JavaType ct = t.getContentType();\n            if (ct != null) {\n                return (ct.getValueHandler() != null) || (ct.getTypeHandler() != null);\n            // Second: map(-like) types may have value handler for key (but not type; keys are untyped)\n            }\n        }\n        return false;\n    }",
+    "fixed_code": "    private boolean _hasCustomHandlers(JavaType t) {\n        if (t.isContainerType()) {\n            // First: value types may have both value and type handlers\n            JavaType ct = t.getContentType();\n            if (ct != null) {\n                if ((ct.getValueHandler() != null) || (ct.getTypeHandler() != null)) {\n                    return true;\n                }\n            }\n            // Second: map(-like) types may have value handler for key (but not type; keys are untyped)\n            if (t.isMapLikeType()) {\n                JavaType kt = t.getKeyType();\n                if (kt.getValueHandler() != null) {\n                    return true;\n                }\n            }\n        }\n        return false;\n    }",
+    "fixed_lines": "                if ((ct.getValueHandler() != null) || (ct.getTypeHandler() != null)) {\n                    return true;\n                }\n            }\n            if (t.isMapLikeType()) {\n                JavaType kt = t.getKeyType();\n                if (kt.getValueHandler() != null) {\n                    return true;\n                }",
+    "masked_code": "    private boolean _hasCustomHandlers(JavaType t) {\n        if (t.isContainerType()) {\n            // First: value types may have both value and type handlers\n            JavaType ct = t.getContentType();\n            if (ct != null) {\n            // Second: map(-like) types may have value handler for key (but not type; keys are untyped)\n>>> [ INFILL ] <<<\n            }\n        }\n        return false;\n    }",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.AssertionFailedError: Not using custom key deserializer for input: {\"data\":{\"1st\":\"onedata\",\"2nd\":\"twodata\"}}; resulted in: {1st=onedata, 2nd=twodata}",
+    "test_framework": "defects4j",
+    "test_line": "            fail(\"Not using custom key deserializer for input: \"+json+\"; resulted in: \"+model2.data);",
+    "test_name": "testCachedSerialize",
+    "test_suite": "com.fasterxml.jackson.databind.deser.jdk.MapDeserializerCachingTest",
+    "time_buggy": "2017-10-23 20:02:43 -0700",
+    "time_fixed": "2017-11-01 15:36:43 -0700"
+}

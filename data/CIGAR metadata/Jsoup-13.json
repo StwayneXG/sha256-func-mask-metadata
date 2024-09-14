@@ -1,0 +1,17 @@
+{
+    "bug_id": 13,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    public boolean hasAttr(String attributeKey) {\n        Validate.notNull(attributeKey);\n\n        return attributes.hasKey(attributeKey);\n    }",
+    "fixed_code": "    public boolean hasAttr(String attributeKey) {\n        Validate.notNull(attributeKey);\n\n        if (attributeKey.toLowerCase().startsWith(\"abs:\")) {\n            String key = attributeKey.substring(\"abs:\".length());\n            if (attributes.hasKey(key) && !absUrl(key).equals(\"\"))\n                return true;\n        }\n        return attributes.hasKey(attributeKey);\n    }",
+    "fixed_lines": "        if (attributeKey.toLowerCase().startsWith(\"abs:\")) {\n            String key = attributeKey.substring(\"abs:\".length());\n            if (attributes.hasKey(key) && !absUrl(key).equals(\"\"))\n                return true;\n        }",
+    "masked_code": "    public boolean hasAttr(String attributeKey) {\n        Validate.notNull(attributeKey);\n\n>>> [ INFILL ] <<<\n        return attributes.hasKey(attributeKey);\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError",
+    "test_framework": "defects4j",
+    "test_line": "        assertTrue(two.hasAttr(\"abs:href\"));",
+    "test_name": "handlesAbsPrefixOnHasAttr",
+    "test_suite": "org.jsoup.nodes.NodeTest",
+    "time_buggy": "2011-07-02 21:12:08 +1000",
+    "time_fixed": "2011-07-02 21:12:08 +1000"
+}

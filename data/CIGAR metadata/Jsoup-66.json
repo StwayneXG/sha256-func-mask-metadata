@@ -1,0 +1,17 @@
+{
+    "bug_id": 66,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        clone.childNodes = new NodeList(childNodes.size());\n    private final class NodeList extends ChangeNotifyingArrayList<Node> {\n        NodeList(int initialCapacity) {\n            nodelistChanged();",
+    "code": "    protected Element doClone(Node parent) {\n        Element clone = (Element) super.doClone(parent);\n        clone.attributes = attributes != null ? attributes.clone() : null;\n        clone.baseUri = baseUri;\n        clone.childNodes = new NodeList(childNodes.size());\n        clone.childNodes.addAll(childNodes);\n\n        return clone;\n    }",
+    "fixed_code": "    protected Element doClone(Node parent) {\n        Element clone = (Element) super.doClone(parent);\n        clone.attributes = attributes != null ? attributes.clone() : null;\n        clone.baseUri = baseUri;\n        clone.childNodes = new NodeList(clone, childNodes.size());\n        clone.childNodes.addAll(childNodes);\n\n        return clone;\n    }",
+    "fixed_lines": "        clone.childNodes = new NodeList(clone, childNodes.size());\n    private static final class NodeList extends ChangeNotifyingArrayList<Node> {\n        private final Element owner;\n\n        NodeList(Element owner, int initialCapacity) {\n            this.owner = owner;\n            owner.nodelistChanged();",
+    "masked_code": "    protected Element doClone(Node parent) {\n        Element clone = (Element) super.doClone(parent);\n        clone.attributes = attributes != null ? attributes.clone() : null;\n        clone.baseUri = baseUri;\n>>> [ INFILL ] <<<\n        clone.childNodes.addAll(childNodes);\n\n        return clone;\n    }",
+    "project": "Jsoup",
+    "test_error_message": "java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(cloneExpect, cloneNextElementSibling.text());",
+    "test_name": "testNextElementSiblingAfterClone",
+    "test_suite": "org.jsoup.nodes.ElementTest",
+    "time_buggy": "2017-10-09 12:35:15 -0700",
+    "time_fixed": "2017-10-09 14:55:26 -0700"
+}

@@ -1,0 +1,17 @@
+{
+    "bug_id": 11,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "    private void _verifySharing()\n    {\n        if (_hashShared) {\n            _hashArea = Arrays.copyOf(_hashArea, _hashArea.length);\n            _names = Arrays.copyOf(_names, _names.length);\n            _hashShared = false;\n            // 09-Sep-2015, tatu: As per [jackson-core#216], also need to ensure\n            //    we rehash as needed, as need-rehash flag is not copied from parent\n        }\n        if (_needRehash) {\n            rehash();\n        }\n    }",
+    "fixed_code": "    private void _verifySharing()\n    {\n        if (_hashShared) {\n            _hashArea = Arrays.copyOf(_hashArea, _hashArea.length);\n            _names = Arrays.copyOf(_names, _names.length);\n            _hashShared = false;\n            // 09-Sep-2015, tatu: As per [jackson-core#216], also need to ensure\n            //    we rehash as needed, as need-rehash flag is not copied from parent\n            _verifyNeedForRehash();\n        }\n        if (_needRehash) {\n            rehash();\n        }\n    }",
+    "fixed_lines": "            _verifyNeedForRehash();",
+    "masked_code": "    private void _verifySharing()\n    {\n        if (_hashShared) {\n            _hashArea = Arrays.copyOf(_hashArea, _hashArea.length);\n            _names = Arrays.copyOf(_names, _names.length);\n            _hashShared = false;\n            // 09-Sep-2015, tatu: As per [jackson-core#216], also need to ensure\n            //    we rehash as needed, as need-rehash flag is not copied from parent\n>>> [ INFILL ] <<<\n        }\n        if (_needRehash) {\n            rehash();\n        }\n    }",
+    "project": "JacksonCore",
+    "test_error_message": "java.lang.ArrayIndexOutOfBoundsException: 512",
+    "test_framework": "defects4j",
+    "test_line": "            assertToken(JsonToken.FIELD_NAME, parser.nextToken());",
+    "test_name": "testSymbolTableExpansionBytes",
+    "test_suite": "com.fasterxml.jackson.core.sym.SymbolsViaParserTest",
+    "time_buggy": "2015-09-09 10:43:05 -0700",
+    "time_fixed": "2015-09-09 10:59:56 -0700"
+}

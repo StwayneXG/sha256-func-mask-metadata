@@ -1,0 +1,17 @@
+{
+    "bug_id": 19,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "        if (rawClass == Properties.class) {\n            return MapType.construct(rawClass, CORE_TYPE_STRING, CORE_TYPE_STRING);\n        }",
+    "masked_code": "",
+    "project": "JacksonDatabind",
+    "test_error_message": "junit.framework.ComparisonFailure: expected:<129> but was:<null>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"129\", props.getProperty(\"A\"));",
+    "test_name": "testMapToProperties",
+    "test_suite": "com.fasterxml.jackson.databind.convert.TestMapConversions",
+    "time_buggy": "2015-05-27 22:44:45 -0700",
+    "time_fixed": "2015-05-28 14:27:57 -0700"
+}

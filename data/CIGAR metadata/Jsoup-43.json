@@ -1,0 +1,17 @@
+{
+    "bug_id": 43,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "            if (element.equals(search))",
+    "code": "    private static <E extends Element> Integer indexInList(Element search, List<E> elements) {\n        Validate.notNull(search);\n        Validate.notNull(elements);\n\n        for (int i = 0; i < elements.size(); i++) {\n            E element = elements.get(i);\n            if (element.equals(search))\n                return i;\n        }\n        return null;\n    }",
+    "fixed_code": "    private static <E extends Element> Integer indexInList(Element search, List<E> elements) {\n        Validate.notNull(search);\n        Validate.notNull(elements);\n\n        for (int i = 0; i < elements.size(); i++) {\n            E element = elements.get(i);\n            if (element == search)\n                return i;\n        }\n        return null;\n    }",
+    "fixed_lines": "            if (element == search)",
+    "masked_code": "    private static <E extends Element> Integer indexInList(Element search, List<E> elements) {\n        Validate.notNull(search);\n        Validate.notNull(elements);\n\n        for (int i = 0; i < elements.size(); i++) {\n            E element = elements.get(i);\n>>> [ INFILL ] <<<\n                return i;\n        }\n        return null;\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError",
+    "test_framework": "defects4j",
+    "test_line": "        assertTrue(1 == ps.get(1).elementSiblingIndex());",
+    "test_name": "testElementSiblingIndexSameContent",
+    "test_suite": "org.jsoup.nodes.ElementTest",
+    "time_buggy": "2015-04-17 15:06:06 -0700",
+    "time_fixed": "2015-04-21 22:11:28 -0700"
+}

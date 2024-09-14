@@ -1,0 +1,17 @@
+{
+    "bug_id": 5,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    static String stripLeadingHyphens(String str)\n    {\n        if (str.startsWith(\"--\"))\n        {\n            return str.substring(2, str.length());\n        }\n        else if (str.startsWith(\"-\"))\n        {\n            return str.substring(1, str.length());\n        }\n\n        return str;\n    }",
+    "fixed_code": "    static String stripLeadingHyphens(String str)\n    {\n        if (str == null) {\n            return null;\n        }\n        if (str.startsWith(\"--\"))\n        {\n            return str.substring(2, str.length());\n        }\n        else if (str.startsWith(\"-\"))\n        {\n            return str.substring(1, str.length());\n        }\n\n        return str;\n    }",
+    "fixed_lines": "        if (str == null) {\n            return null;\n        }",
+    "masked_code": "    static String stripLeadingHyphens(String str)\n    {\n>>> [ INFILL ] <<<\n        if (str.startsWith(\"--\"))\n        {\n            return str.substring(2, str.length());\n        }\n        else if (str.startsWith(\"-\"))\n        {\n            return str.substring(1, str.length());\n        }\n\n        return str;\n    }",
+    "project": "Cli",
+    "test_error_message": "java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "        assertNull(Util.stripLeadingHyphens(null));",
+    "test_name": "testStripLeadingHyphens",
+    "test_suite": "org.apache.commons.cli.UtilTest",
+    "time_buggy": "2007-06-05 04:44:56 +0000",
+    "time_fixed": "2007-06-06 07:10:30 +0000"
+}

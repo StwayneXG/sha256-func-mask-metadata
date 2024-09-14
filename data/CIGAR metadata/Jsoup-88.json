@@ -1,0 +1,17 @@
+{
+    "bug_id": 88,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return val;",
+    "code": "    public String getValue() {\n        return val;\n    }",
+    "fixed_code": "    public String getValue() {\n        return Attributes.checkNotNull(val);\n    }",
+    "fixed_lines": "        return Attributes.checkNotNull(val);",
+    "masked_code": "    public String getValue() {\n>>> [ INFILL ] <<<\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<> but was:<null>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"\", first.getValue());",
+    "test_name": "booleanAttributesAreEmptyStringValues",
+    "test_suite": "org.jsoup.nodes.AttributeTest",
+    "time_buggy": "2018-12-23 20:30:47 -0800",
+    "time_fixed": "2018-12-23 22:02:59 -0800"
+}

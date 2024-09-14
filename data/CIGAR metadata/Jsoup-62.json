@@ -1,0 +1,17 @@
+{
+    "bug_id": 62,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "            String name = t.asEndTag().normalName();",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "            String name = t.asEndTag().name(); // matches with case sensitivity if enabled",
+    "masked_code": "",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<<r> <X> A <[/X> <y> B </y]> </r>> but was:<<r> <X> A <[y> B </y> </X]> </r>>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(\"<r> <X> A </X> <y> B </y> </r>\", StringUtil.normaliseWhitespace(doc.body().html()));",
+    "test_name": "caseSensitiveParseTree",
+    "test_suite": "org.jsoup.parser.HtmlParserTest",
+    "time_buggy": "2017-06-10 14:30:10 -0700",
+    "time_fixed": "2017-06-10 15:51:45 -0700"
+}

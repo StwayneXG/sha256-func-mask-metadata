@@ -1,0 +1,17 @@
+{
+    "bug_id": 8,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        if (!_hasSegments)  return _currentSegment;",
+    "code": "    public char[] getTextBuffer()\n    {\n        // Are we just using shared input buffer?\n        if (_inputStart >= 0) return _inputBuffer;\n        if (_resultArray != null)  return _resultArray;\n        if (_resultString != null) {\n            return (_resultArray = _resultString.toCharArray());\n        }\n        // Nope; but does it fit in just one segment?\n        if (!_hasSegments)  return _currentSegment;\n        // Nope, need to have/create a non-segmented array and return it\n        return contentsAsArray();\n    }",
+    "fixed_code": "    public char[] getTextBuffer()\n    {\n        // Are we just using shared input buffer?\n        if (_inputStart >= 0) return _inputBuffer;\n        if (_resultArray != null)  return _resultArray;\n        if (_resultString != null) {\n            return (_resultArray = _resultString.toCharArray());\n        }\n        // Nope; but does it fit in just one segment?\n        if (!_hasSegments && _currentSegment != null)  return _currentSegment;\n        // Nope, need to have/create a non-segmented array and return it\n        return contentsAsArray();\n    }",
+    "fixed_lines": "        if (!_hasSegments && _currentSegment != null)  return _currentSegment;",
+    "masked_code": "    public char[] getTextBuffer()\n    {\n        // Are we just using shared input buffer?\n        if (_inputStart >= 0) return _inputBuffer;\n        if (_resultArray != null)  return _resultArray;\n        if (_resultString != null) {\n            return (_resultArray = _resultString.toCharArray());\n        }\n        // Nope; but does it fit in just one segment?\n>>> [ INFILL ] <<<\n        // Nope, need to have/create a non-segmented array and return it\n        return contentsAsArray();\n    }",
+    "project": "JacksonCore",
+    "test_error_message": "java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "        assertTrue(tb.getTextBuffer().length == 0);",
+    "test_name": "testEmpty",
+    "test_suite": "com.fasterxml.jackson.core.util.TestTextBuffer",
+    "time_buggy": "2015-02-17 13:11:13 -0800",
+    "time_fixed": "2015-02-19 10:59:06 +0900"
+}

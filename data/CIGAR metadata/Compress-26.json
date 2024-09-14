@@ -1,0 +1,17 @@
+{
+    "bug_id": 26,
+    "bug_type": "SH SF",
+    "buggy_lines": "",
+    "code": "    public static long skip(InputStream input, long numToSkip) throws IOException {\n        long available = numToSkip;\n        while (numToSkip > 0) {\n            long skipped = input.skip(numToSkip);\n            if (skipped == 0) {\n                break;\n            }\n            numToSkip -= skipped;\n        }\n            \n        return available - numToSkip;\n    }",
+    "fixed_code": "    public static long skip(InputStream input, long numToSkip) throws IOException {\n        long available = numToSkip;\n        while (numToSkip > 0) {\n            long skipped = input.skip(numToSkip);\n            if (skipped == 0) {\n                break;\n            }\n            numToSkip -= skipped;\n        }\n            \n        if (numToSkip > 0) {\n            byte[] skipBuf = new byte[SKIP_BUF_SIZE];\n            while (numToSkip > 0) {\n                int read = readFully(input, skipBuf, 0,\n                                     (int) Math.min(numToSkip, SKIP_BUF_SIZE));\n                if (read < 1) {\n                    break;\n                }\n                numToSkip -= read;\n            }\n        }\n        return available - numToSkip;\n    }",
+    "fixed_lines": "        if (numToSkip > 0) {\n            byte[] skipBuf = new byte[SKIP_BUF_SIZE];\n            while (numToSkip > 0) {\n                int read = readFully(input, skipBuf, 0,\n                                     (int) Math.min(numToSkip, SKIP_BUF_SIZE));\n                if (read < 1) {\n                    break;\n                }\n                numToSkip -= read;\n            }\n        }",
+    "masked_code": "    public static long skip(InputStream input, long numToSkip) throws IOException {\n        long available = numToSkip;\n        while (numToSkip > 0) {\n            long skipped = input.skip(numToSkip);\n            if (skipped == 0) {\n                break;\n            }\n            numToSkip -= skipped;\n        }\n            \n>>> [ INFILL ] <<<\n        return available - numToSkip;\n    }",
+    "project": "Compress",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<10> but was:<0>",
+    "test_framework": "defects4j",
+    "test_line": "        Assert.assertEquals(10, IOUtils.skip(sut, 10));",
+    "test_name": "skipUsingRead",
+    "test_suite": "org.apache.commons.compress.utils.IOUtilsTest",
+    "time_buggy": "2014-04-12 16:20:54 +0000",
+    "time_fixed": "2014-04-12 17:05:57 +0000"
+}

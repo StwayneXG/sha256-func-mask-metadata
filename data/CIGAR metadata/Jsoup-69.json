@@ -1,0 +1,17 @@
+{
+    "bug_id": 69,
+    "bug_type": "OT",
+    "buggy_lines": null,
+    "code": null,
+    "fixed_code": null,
+    "fixed_lines": null,
+    "masked_code": null,
+    "project": "Jsoup",
+    "test_error_message": null,
+    "test_framework": "defects4j",
+    "test_line": null,
+    "test_name": null,
+    "test_suite": null,
+    "time_buggy": "2017-11-12 14:23:10 -0800",
+    "time_fixed": "2017-11-13 00:57:36 +0100"
+}

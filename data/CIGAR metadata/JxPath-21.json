@@ -1,0 +1,17 @@
+{
+    "bug_id": 21,
+    "bug_type": "SH SF",
+    "buggy_lines": "        return ValueUtils.getLength(getBaseValue());",
+    "code": "    public int getLength() {\n        return ValueUtils.getLength(getBaseValue());\n    }",
+    "fixed_code": "    public int getLength() {\n        Object baseValue = getBaseValue();\n        return baseValue == null ? 1 : ValueUtils.getLength(baseValue);\n    }",
+    "fixed_lines": "        Object baseValue = getBaseValue();\n        return baseValue == null ? 1 : ValueUtils.getLength(baseValue);",
+    "masked_code": "    public int getLength() {\n>>> [ INFILL ] <<<\n    }",
+    "project": "JxPath",
+    "test_error_message": "junit.framework.AssertionFailedError: Evaluating <map/b != map/a> expected:<true> but was:<false>",
+    "test_framework": "defects4j",
+    "test_line": "        assertXPathValue(context, \"map/b != map/a\", Boolean.TRUE);",
+    "test_name": "testMapValueEquality",
+    "test_suite": "org.apache.commons.jxpath.ri.model.JXPath151Test",
+    "time_buggy": "2011-06-08 17:58:55 +0000",
+    "time_fixed": "2011-06-08 18:19:50 +0000"
+}

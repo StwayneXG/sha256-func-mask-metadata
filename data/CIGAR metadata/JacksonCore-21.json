@@ -1,0 +1,17 @@
+{
+    "bug_id": 21,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "                }",
+    "masked_code": "",
+    "project": "JacksonCore",
+    "test_error_message": "junit.framework.AssertionFailedError: Expected token END_OBJECT, current token null",
+    "test_framework": "defects4j",
+    "test_line": "        assertToken(JsonToken.END_OBJECT, p.nextToken());",
+    "test_name": "testTokensSingleMatchWithPath",
+    "test_suite": "com.fasterxml.jackson.core.filter.TokenVerifyingParserFiltering330Test",
+    "time_buggy": "2017-05-23 15:49:13 -0700",
+    "time_fixed": "2017-05-23 16:08:31 -0700"
+}

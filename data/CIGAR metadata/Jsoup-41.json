@@ -1,0 +1,17 @@
+{
+    "bug_id": 41,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "        return this == o;",
+    "code": "    public boolean equals(Object o) {\n        if (this == o) return true;\n        if (o == null || getClass() != o.getClass()) return false;\n        if (!super.equals(o)) return false;\n\n        Element element = (Element) o;\n\n        return this == o;\n    }",
+    "fixed_code": "    public boolean equals(Object o) {\n        if (this == o) return true;\n        if (o == null || getClass() != o.getClass()) return false;\n        if (!super.equals(o)) return false;\n\n        Element element = (Element) o;\n\n        return tag.equals(element.tag);\n    }",
+    "fixed_lines": "        return tag.equals(element.tag);",
+    "masked_code": "    public boolean equals(Object o) {\n        if (this == o) return true;\n        if (o == null || getClass() != o.getClass()) return false;\n        if (!super.equals(o)) return false;\n\n        Element element = (Element) o;\n\n>>> [ INFILL ] <<<\n    }",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected: org.jsoup.nodes.Element<<p class=\"one\">One</p>> but was: org.jsoup.nodes.Element<<p class=\"one\">One</p>>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(e0, e1);",
+    "test_name": "testHashAndEquals",
+    "test_suite": "org.jsoup.nodes.ElementTest",
+    "time_buggy": "2015-03-29 17:02:12 -0700",
+    "time_fixed": "2015-03-29 18:10:57 -0700"
+}

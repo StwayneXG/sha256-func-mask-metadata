@@ -1,0 +1,17 @@
+{
+    "bug_id": 44,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream in) {\n\n\n\n        this.checksum = checksum;\n        this.in = in;\n    }",
+    "fixed_code": "    public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream in) {\n\n        if ( checksum == null ){\n            throw new NullPointerException(\"Parameter checksum must not be null\");\n        }\n\n        if ( in == null ){\n            throw new NullPointerException(\"Parameter in must not be null\");\n        }\n\n        this.checksum = checksum;\n        this.in = in;\n    }",
+    "fixed_lines": "        if ( checksum == null ){\n            throw new NullPointerException(\"Parameter checksum must not be null\");\n        }\n        if ( in == null ){\n            throw new NullPointerException(\"Parameter in must not be null\");\n        }",
+    "masked_code": "    public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream in) {\n\n\n>>> [ INFILL ] <<<\n\n        this.checksum = checksum;\n        this.in = in;\n    }",
+    "project": "Compress",
+    "test_error_message": "junit.framework.AssertionFailedError: Expected exception: java.lang.NullPointerException",
+    "test_framework": "defects4j",
+    "test_line": "",
+    "test_name": "testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionOne",
+    "test_suite": "org.apache.commons.compress.utils.ChecksumCalculatingInputStreamTest",
+    "time_buggy": "2017-06-17 19:59:34 +0200",
+    "time_fixed": "2017-06-17 20:29:37 +0200"
+}

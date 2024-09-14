@@ -1,0 +1,17 @@
+{
+    "bug_id": 35,
+    "bug_type": "SL SH SF",
+    "buggy_lines": "",
+    "code": "",
+    "fixed_code": "",
+    "fixed_lines": "                            adopter.attributes().addAll(formatEl.attributes());",
+    "masked_code": "",
+    "project": "Jsoup",
+    "test_error_message": "junit.framework.AssertionFailedError: expected:<...com/\">Link</a>",
+    "test_framework": "defects4j",
+    "test_line": "        assertEquals(want, doc.body().html());",
+    "test_name": "handlesUnclosedAnchors",
+    "test_suite": "org.jsoup.parser.HtmlParserTest",
+    "time_buggy": "2013-10-06 15:36:25 -0700",
+    "time_fixed": "2013-10-06 16:20:52 -0700"
+}

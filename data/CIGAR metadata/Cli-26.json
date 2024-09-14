@@ -1,0 +1,17 @@
+{
+    "bug_id": 26,
+    "bug_type": "SF",
+    "buggy_lines": "",
+    "code": "    public static Option create(String opt) throws IllegalArgumentException\n    {\n            // create the option\n        Option option = new Option(opt, description);\n\n            // set the option properties\n            option.setLongOpt(longopt);\n            option.setRequired(required);\n            option.setOptionalArg(optionalArg);\n            option.setArgs(numberOfArgs);\n            option.setType(type);\n            option.setValueSeparator(valuesep);\n            option.setArgName(argName);\n            // reset the OptionBuilder properties\n            OptionBuilder.reset();\n\n        // return the Option instance\n        return option;\n    }",
+    "fixed_code": "    public static Option create(String opt) throws IllegalArgumentException\n    {\n        Option option = null;\n        try {\n            // create the option\n            option = new Option(opt, description);\n\n            // set the option properties\n            option.setLongOpt(longopt);\n            option.setRequired(required);\n            option.setOptionalArg(optionalArg);\n            option.setArgs(numberOfArgs);\n            option.setType(type);\n            option.setValueSeparator(valuesep);\n            option.setArgName(argName);\n        } finally {\n            // reset the OptionBuilder properties\n            OptionBuilder.reset();\n        }\n\n        // return the Option instance\n        return option;\n    }",
+    "fixed_lines": "        } finally {\n        }",
+    "masked_code": "    public static Option create(String opt) throws IllegalArgumentException\n    {\n            // create the option\n\n            // set the option properties\n            option.setLongOpt(longopt);\n            option.setRequired(required);\n            option.setOptionalArg(optionalArg);\n            option.setArgs(numberOfArgs);\n            option.setType(type);\n            option.setValueSeparator(valuesep);\n            option.setArgName(argName);\n            // reset the OptionBuilder properties\n            OptionBuilder.reset();\n>>> [ INFILL ] <<<\n\n        // return the Option instance\n        return option;\n    }",
+    "project": "Cli",
+    "test_error_message": "junit.framework.AssertionFailedError: we inherited a description",
+    "test_framework": "defects4j",
+    "test_line": "        assertNull(\"we inherited a description\", OptionBuilder.create('x').getDescription());",
+    "test_name": "testBuilderIsResettedAlways",
+    "test_suite": "org.apache.commons.cli.OptionBuilderTest",
+    "time_buggy": "2009-03-11 02:28:03 +0000",
+    "time_fixed": "2009-03-16 07:26:44 +0000"
+}
