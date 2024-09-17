@@ -19,7 +19,7 @@ class MethodExtractor:
     @staticmethod
     def extract_method_name(line):
         # This regex pattern matches the method name in various declaration formats
-        pattern = r'(?:(?:public|private|protected|static|final|native|synchronized|abstract|transient)+\s+)+[$_\w<>\[\]\s]*\s+(\w+)\s*\('
+        pattern = r'(?:(?:public|private|protected|static|final|native|synchronized|abstract|transient)+\s+)+(?:[$_\w<>\[\]\s]*\s+)?(\w+)\s*\('
         match = re.search(pattern, line)
         if match:
             return match.group(1)
