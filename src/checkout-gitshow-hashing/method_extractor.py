@@ -28,7 +28,7 @@ class MethodExtractor:
     @staticmethod
     def extract_methods(diff):
         lines = diff.split('\n')
-        methods = []
+        methods = set()
 
         for i, line in enumerate(lines):
             if line.startswith('+') or line.startswith('-'):
@@ -37,7 +37,7 @@ class MethodExtractor:
                     if MethodExtractor.is_function_line(lines[j]):
                         method_name = MethodExtractor.extract_method_name(lines[j])
                         if method_name:
-                            methods.append(method_name)
+                            methods.add(method_name)
                         break  # Stop looking once we've found the function declaration
 
         return methods
