@@ -31,7 +31,7 @@ class MethodExtractor:
         methods = []
 
         for i, line in enumerate(lines):
-            if line.startswith('+'):
+            if line.startswith('+') or line.startswith('-'):
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):

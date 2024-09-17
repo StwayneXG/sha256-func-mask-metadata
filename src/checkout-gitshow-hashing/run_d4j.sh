@@ -1,6 +1,6 @@
 #!/bin/bash
 
-D4J_HOME="$(dirname $(which defects4j))../.."
+D4J_HOME="$(dirname $(which defects4j))/../.."
 REPO_DIR="/root/data/Defects4J/repos/"
 
 for proj in $(defects4j pids); do
