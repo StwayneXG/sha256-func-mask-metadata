@@ -1,0 +1,3 @@
+Old Method Name,New Method Name
+compareTo,func_79344ca127e495bf50341104023f24634afab058454c58e9222d963ad366ee6d
+getValueInOtherClassLoader,func_c050fbadd8d19f2cc998a05505f51212472bf4a8baf325baafb23c9bbfe948d7
