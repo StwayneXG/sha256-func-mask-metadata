@@ -21,10 +21,10 @@ class MainProcessor:
         diff = GitDiffParser.get_diff(project_dir)
         methods = MethodExtractor.extract_methods(diff)
         
-        method_pairs = []
+        method_pairs = set()
         for method_name in methods:
             hashed_name = MethodNameHasher.hash_method_name(method_name)
-            method_pairs.append((method_name, f"func_{hashed_name}"))
+            method_pairs.add((method_name, f"func_{hashed_name}"))
 
         self.csv_writer.write_csv(project, bug_num, method_pairs)
 
