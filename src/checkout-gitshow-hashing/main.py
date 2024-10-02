@@ -20,13 +20,16 @@ class MainProcessor:
         project_dir = self.project_checkout.checkout(project, bug_num)
         diff = GitDiffParser.get_diff(project_dir)
         methods = MethodExtractor.extract_methods(diff)
+        method_implementations = MethodExtractor.extract_method_implementations(diff, methods)
         
-        method_pairs = set()
-        for method_name in methods:
-            hashed_name = MethodNameHasher.hash_method_name(method_name)
-            method_pairs.add((method_name, f"func_{hashed_name}"))
+        method_triples = []
+        for file_path, method_names in methods.items():
+            for method_name in method_names:
+                hashed_name = MethodNameHasher.hash_method_name(method_name)
+                implementation = method_implementations.get(method_name, "")
+                method_triples.append((method_name, f"func_{hashed_name}", implementation))
 
-        self.csv_writer.write_csv(project, bug_num, method_pairs)
+        self.csv_writer.write_csv(project, bug_num, method_triples)
 
 if __name__ == "__main__":
     base_dir = "/root/data/Defects4J/repos/"

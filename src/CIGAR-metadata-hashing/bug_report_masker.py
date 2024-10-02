@@ -24,13 +24,13 @@ class BugReportMasker:
         print(f"Masked bug reports saved to {self.output_file} with {len(df)} rows")
 
     def _csv_exists(self, project, bug_number):
-        return (self.sha256_dir / f"{project}-{bug_number}.csv").exists()
+        return (self.sha256_dir / f"{project}_{bug_number}.csv").exists()
 
     def _mask_text(self, text, project, bug_number):
         if pd.isna(text):
             return text
         
-        mask_file = self.sha256_dir / f"{project}-{bug_number}.csv"
+        mask_file = self.sha256_dir / f"{project}_{bug_number}.csv"
         masks = pd.read_csv(mask_file)
         
         for _, row in masks.iterrows():

@@ -1,4 +1,5 @@
 import re
+import javalang
 
 class MethodExtractor:
     @staticmethod
@@ -36,20 +37,141 @@ class MethodExtractor:
             return method_match.group(1)
 
         return None
-    
+
     @staticmethod
     def extract_methods(diff):
         lines = diff.split('\n')
-        methods = set()
+        methods = {}
+        current_file = None
 
         for i, line in enumerate(lines):
+            if line.startswith('+++') or line.startswith('---'):
+                current_file = line[4:].strip()
+                continue
+
             if line.startswith('+') or line.startswith('-'):
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):
                         method_name = MethodExtractor.extract_method_name(lines[j])
                         if method_name:
-                            methods.add(method_name)
+                            if current_file not in methods:
+                                methods[current_file] = set()
+                            methods[current_file].add(method_name)
                         break  # Stop looking once we've found the function declaration
 
         return methods
+
+    @staticmethod
+    def extract_method_implementations(diff, methods):
+        file_contents = {}
+        current_file = None
+        current_content = []
+
+        # Reconstruct file contents from diff
+        for line in diff.split('\n'):
+            if line.startswith('+++') or line.startswith('---'):
+                if current_file and current_content:
+                    file_contents[current_file] = '\n'.join(current_content)
+                current_file = line[4:].strip()
+                current_content = []
+            elif not line.startswith('@@'):
+                if line.startswith('+'):
+                    current_content.append(line[1:])
+                elif not line.startswith('-'):
+                    current_content.append(line)
+
+        if current_file and current_content:
+            file_contents[current_file] = '\n'.join(current_content)
+
+        method_implementations = {}
+
+        for file_path, method_names in methods.items():
+            if file_path not in file_contents:
+                continue
+
+            content = file_contents[file_path]
+            try:
+                tree = javalang.parse.parse(content)
+            except javalang.parser.JavaSyntaxError:
+                print(f"Error parsing file: {file_path}")
+                continue
+
+            for method_name in method_names:
+                method_info = MethodExtractor._find_method(tree, method_name)
+                if method_info:
+                    method_body = MethodExtractor._find_method_body(method_info[0], content)
+                    method_implementations[method_name] = method_body
+
+        return method_implementations
+
+    @staticmethod
+    def _find_method(tree, method_name: str):
+        for path, node in tree.filter(javalang.tree.MethodDeclaration):
+            if node.name == method_name:
+                return node.position, node.documentation
+        return None
+
+    @staticmethod
+    def _find_method_body(start_position, content: str) -> str:
+        lines = content.split('\n')
+        current_line = start_position[0] - 1
+        current_column = start_position[1] - 1
+        brace_count = 0
+        in_string = False
+        in_char = False
+        in_block_comment = False
+        escape_next = False
+        method_lines = []
+
+        while current_line < len(lines):
+            line = lines[current_line]
+            i = current_column if current_line == start_position[0] - 1 else 0
+            in_line_comment = False
+
+            while i < len(line):
+                char = line[i]
+
+                if escape_next:
+                    escape_next = False
+                elif char == '\\':
+                    escape_next = True
+                elif in_string:
+                    if char == '"':
+                        in_string = False
+                elif in_char:
+                    if char == "'":
+                        in_char = False
+                elif in_line_comment:
+                    pass
+                elif in_block_comment:
+                    if char == '*' and i + 1 < len(line) and line[i + 1] == '/':
+                        in_block_comment = False
+                        i += 1
+                else:
+                    if char == '"':
+                        in_string = True
+                    elif char == "'":
+                        in_char = True
+                    elif char == '/' and i + 1 < len(line):
+                        if line[i + 1] == '/':
+                            in_line_comment = True
+                            i += 1
+                        elif line[i + 1] == '*':
+                            in_block_comment = True
+                            i += 1
+                    elif char == '{':
+                        brace_count += 1
+                    elif char == '}':
+                        brace_count -= 1
+                        if brace_count == 0:
+                            method_lines.append(line[:i + 1])
+                            return '\n'.join(method_lines)
+
+                i += 1
+
+            method_lines.append(line)
+            current_line += 1
+            current_column = 0
+
+        return '\n'.join(method_lines)

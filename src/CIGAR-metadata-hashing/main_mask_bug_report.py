@@ -18,8 +18,8 @@ def main():
     # Add the bug report masking step
     bugreports_file = "data/defects4j/bugreports.csv"
     masked_output = "data/defects4j/masked_bugreports.csv"
-    mask_metadata_dir = "data/sha256 mask metadata"
-    masker = BugReportMasker(bugreports_file, mask_metadata_dir, masked_output)
+    mask_data_dir = "data/sha256 mask checkout-gitshow"
+    masker = BugReportMasker(bugreports_file, mask_data_dir, masked_output)
     masker.mask_bug_reports()
 
 if __name__ == "__main__":
