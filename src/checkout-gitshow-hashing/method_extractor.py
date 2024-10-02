@@ -63,34 +63,11 @@ class MethodExtractor:
         return methods
 
     @staticmethod
-    def extract_method_implementations(diff, methods):
-        file_contents = {}
-        current_file = None
-        current_content = []
-
-        # Reconstruct file contents from diff
-        for line in diff.split('\n'):
-            if line.startswith('+++') or line.startswith('---'):
-                if current_file and current_content:
-                    file_contents[current_file] = '\n'.join(current_content)
-                current_file = line[4:].strip()
-                current_content = []
-            elif not line.startswith('@@'):
-                if line.startswith('+'):
-                    current_content.append(line[1:])
-                elif not line.startswith('-'):
-                    current_content.append(line)
-
-        if current_file and current_content:
-            file_contents[current_file] = '\n'.join(current_content)
-
+    def extract_method_implementations(diff, methods, base_path):
         method_implementations = {}
 
         for file_path, method_names in methods.items():
-            if file_path not in file_contents:
-                continue
-
-            content = file_contents[file_path]
+            content = open(base_path + file_path).read()
             try:
                 tree = javalang.parse.parse(content)
             except javalang.parser.JavaSyntaxError:
