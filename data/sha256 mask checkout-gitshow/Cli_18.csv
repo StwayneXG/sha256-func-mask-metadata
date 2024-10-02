@@ -1,4 +1,68 @@
-Old Method Name,New Method Name
-processSingleHyphen,func_6960980d383b34756038e0ee743543ea3b6613f8f4cc78d3aaf070c13aedac47
-flatten,func_3ab675f2b94ec6889fc354439d5f31c7278f7a7ef414645c774017e1bdac24dc
-processOptionToken,func_31bbc0634b8fa675cbaff45d51599e65519313122fd52cc09d68968861bb2f6d
+Old Method Name,New Method Name,Method Implementation
+flatten,func_3ab675f2b94ec6889fc354439d5f31c7278f7a7ef414645c774017e1bdac24dc,"    protected String[] flatten(Options options, String[] arguments, boolean stopAtNonOption)
+    {
+        init();
+        this.options = options;
+
+        // an iterator for the command line tokens
+        Iterator iter = Arrays.asList(arguments).iterator();
+
+        // process each command line token
+        while (iter.hasNext())
+        {
+            // get the next command line token
+            String token = (String) iter.next();
+
+            // handle SPECIAL TOKEN
+            if (token.startsWith(""--""))
+            {
+                if (token.indexOf('=') != -1)
+                {
+                    tokens.add(token.substring(0, token.indexOf('=')));
+                    tokens.add(token.substring(token.indexOf('=') + 1, token.length()));
+                }
+                else
+                {
+                    tokens.add(token);
+                }
+            }
+
+            // single hyphen
+            else if (""-"".equals(token))
+            {
+                processSingleHyphen(token);
+            }
+            else if (token.startsWith(""-""))
+            {
+                if (token.length() == 2)
+                {
+                    processOptionToken(token, stopAtNonOption);
+                }
+                else if (options.hasOption(token))
+                {
+                    tokens.add(token);
+                }
+                // requires bursting
+                else
+                {
+                    burstToken(token, stopAtNonOption);
+                }
+            }
+            else if (stopAtNonOption)
+            {
+                process(token);
+            }
+            else
+            {
+                tokens.add(token);
+            }
+
+            gobble(iter);
+        }
+
+        return (String[]) tokens.toArray(new String[tokens.size()]);
+    }"
+processSingleHyphen,func_6960980d383b34756038e0ee743543ea3b6613f8f4cc78d3aaf070c13aedac47,"    private void processSingleHyphen(String hyphen)
+    {
+        tokens.add(hyphen);
+    }"

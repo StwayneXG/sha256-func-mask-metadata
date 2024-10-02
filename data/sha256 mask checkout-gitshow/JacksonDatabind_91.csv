@@ -1,2 +1,12 @@
-Old Method Name,New Method Name
-_hasCustomHandlers,func_ca6c43b4b97788416263744260755dac4897bc0cf9dbb38ac0038085fc747b19
+Old Method Name,New Method Name,Method Implementation
+_hasCustomHandlers,func_ca6c43b4b97788416263744260755dac4897bc0cf9dbb38ac0038085fc747b19,"    private boolean _hasCustomHandlers(JavaType t) {
+        if (t.isContainerType()) {
+            // First: value types may have both value and type handlers
+            JavaType ct = t.getContentType();
+            if (ct != null) {
+                return (ct.getValueHandler() != null) || (ct.getTypeHandler() != null);
+            // Second: map(-like) types may have value handler for key (but not type; keys are untyped)
+            }
+        }
+        return false;
+    }"

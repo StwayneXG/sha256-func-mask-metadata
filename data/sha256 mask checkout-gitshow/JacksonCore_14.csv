@@ -1,3 +1,9 @@
-Old Method Name,New Method Name
-_verifyRelease,func_4ea1e25406fc16730f1b1a3fa3c792c54f27462246f41615075127fd7502a095
-wrongBuf,func_2011c34855b31078a054f54268697536412152a76360ab8db674de383dbe89fa
+Old Method Name,New Method Name,Method Implementation
+_verifyRelease,func_4ea1e25406fc16730f1b1a3fa3c792c54f27462246f41615075127fd7502a095,"    protected final void _verifyRelease(byte[] toRelease, byte[] src) {
+        // 07-Mar-2016, tatu: As per [core#255], only prevent shrinking of buffer
+        if ((toRelease != src) && (toRelease.length <= src.length)) { throw wrongBuf(); }
+    }"
+wrongBuf,func_2011c34855b31078a054f54268697536412152a76360ab8db674de383dbe89fa,"    private IllegalArgumentException wrongBuf() {
+        // sanity check failed; trying to return different, smaller buffer.
+return new IllegalArgumentException(""Trying to release buffer not owned by the context""); 
+    }"

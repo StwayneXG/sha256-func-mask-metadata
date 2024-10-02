@@ -1,2 +1,10 @@
-Old Method Name,New Method Name
-equals,func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7
+Old Method Name,New Method Name,Method Implementation
+equals,func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7,"    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Element element = (Element) o;
+
+        return this == o;
+    }"

@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-encodeBase64,func_5942c1e341cbca9d32122ecb23644b82f0309709a012b6939d7b438f253ad6a7
+Old Method Name,New Method Name,Method Implementation
+encodeBase64,func_5942c1e341cbca9d32122ecb23644b82f0309709a012b6939d7b438f253ad6a7,"    public static byte[] encodeBase64(byte[] binaryData) {
+        return encodeBase64(binaryData, false);
+    }"

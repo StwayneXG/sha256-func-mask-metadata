@@ -1,2 +1,11 @@
-Old Method Name,New Method Name
-setValue,func_4d9bc18c082d2ceb433b4ebcda9d05f6064595bbd4983517094467610d5f0468
+Old Method Name,New Method Name,Method Implementation
+setValue,func_4d9bc18c082d2ceb433b4ebcda9d05f6064595bbd4983517094467610d5f0468,"    public String setValue(String val) {
+        String oldVal = parent.get(this.key);
+        if (parent != null) {
+            int i = parent.indexOfKey(this.key);
+            if (i != Attributes.NotFound)
+                parent.vals[i] = val;
+        }
+        this.val = val;
+        return Attributes.checkNotNull(oldVal);
+    }"

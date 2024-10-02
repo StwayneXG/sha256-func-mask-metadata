@@ -1,2 +1,6 @@
-Old Method Name,New Method Name
-paxHeaders,func_9ad4e45855a9ef42dcb86b1bc5c248736a5f86dd0da7e5411c55a2e51d88402d
+Old Method Name,New Method Name,Method Implementation
+paxHeaders,func_9ad4e45855a9ef42dcb86b1bc5c248736a5f86dd0da7e5411c55a2e51d88402d,"    private void paxHeaders() throws IOException{
+        final Map<String, String> headers = parsePaxHeaders(this);
+        getNextEntry(); // Get the actual file entry
+        applyPaxHeadersToCurrentEntry(headers);
+    }"

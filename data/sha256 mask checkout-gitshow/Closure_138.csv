@@ -1,4 +1,58 @@
-Old Method Name,New Method Name
-traverseName,func_f8b9146c9f8b3433b508daa9e4202d5501a74e50783c9d7568967168d30115c1
-getPreciserScopeKnowingConditionOutcome,func_fac75769ba394d08e34409c38ca9ea53b01bd3d3d5f671a00355672d63e91539
-TypeRestriction,func_de7148003becb13669014754f586c90546bc3861cd6dc9f030c67e53f8ae364e
+Old Method Name,New Method Name,Method Implementation
+getPreciserScopeKnowingConditionOutcome,func_fac75769ba394d08e34409c38ca9ea53b01bd3d3d5f671a00355672d63e91539,"  public FlowScope getPreciserScopeKnowingConditionOutcome(Node condition,
+      FlowScope blindScope, boolean outcome) {
+    if (condition.getType() == CALL && condition.getChildCount() == 2) {
+      Node callee = condition.getFirstChild();
+      Node param = condition.getLastChild();
+      if (callee.getType() == GETPROP && param.isQualifiedName()) {
+        JSType paramType =  getTypeIfRefinable(param, blindScope);
+        if (paramType != null) {
+        Node left = callee.getFirstChild();
+        Node right = callee.getLastChild();
+        if (left.getType() == NAME && ""goog"".equals(left.getString()) &&
+            right.getType() == STRING) {
+          Function<TypeRestriction, JSType> restricter =
+              restricters.get(right.getString());
+          if (restricter != null) {
+            return restrictParameter(param, paramType, blindScope, restricter,
+                outcome);
+            }
+          }
+        }
+      }
+    }
+    return nextPreciserScopeKnowingConditionOutcome(
+        condition, blindScope, outcome);
+  }"
+traverseName,func_f8b9146c9f8b3433b508daa9e4202d5501a74e50783c9d7568967168d30115c1,"  private FlowScope traverseName(Node n, FlowScope scope) {
+    String varName = n.getString();
+    Node value = n.getFirstChild();
+    JSType type = n.getJSType();
+    if (value != null) {
+      scope = traverse(value, scope);
+      updateScopeForTypeChange(scope, n, n.getJSType() /* could be null */,
+          getJSType(value));
+      return scope;
+    } else {
+      StaticSlot<JSType> var = scope.getSlot(varName);
+      if (var != null &&
+          !(var.isTypeInferred() && unflowableVarNames.contains(varName))) {
+        // There are two situations where we don't want to use type information
+        // from the scope, even if we have it.
+
+        // 1) The var is escaped in a weird way, e.g.,
+        // function f() { var x = 3; function g() { x = null } (x); }
+
+        // 2) We're reading type information from another scope for an
+        // inferred variable.
+        // var t = null; function f() { (t); }
+
+          type = var.getType();
+          if (type == null) {
+            type = getNativeType(UNKNOWN_TYPE);
+        }
+      }
+    }
+    n.setJSType(type);
+    return scope;
+  }"

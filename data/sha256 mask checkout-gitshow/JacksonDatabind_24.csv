@@ -1,2 +1,10 @@
-Old Method Name,New Method Name
-withDateFormat,func_c05c70038a35373a77cd81fd991afe50e8e864a41ca8c215c9502cea20155b81
+Old Method Name,New Method Name,Method Implementation
+withDateFormat,func_c05c70038a35373a77cd81fd991afe50e8e864a41ca8c215c9502cea20155b81,"    public BaseSettings withDateFormat(DateFormat df) {
+        if (_dateFormat == df) {
+            return this;
+        }
+        TimeZone tz = (df == null) ? _timeZone : df.getTimeZone();
+        return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,
+                _typeResolverBuilder, df, _handlerInstantiator, _locale,
+                tz, _defaultBase64);
+    }"

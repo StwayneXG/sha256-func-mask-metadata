@@ -1,5 +1,32 @@
-Old Method Name,New Method Name
-withSettingsUsing,func_2edfcce1388e3f974221466b986047b89f58f12bec9b2e5c38f1c906b706f056
-newDeepStubMock,func_1d531558677a280bd120dced67691230bfda7e611f27eecb373912ff62693800
-deepStub,func_ffc91d804594d5788096fc6fe1c57c34b0c6b70c1f3a550e3b1792a24e6dd086
-propagateSerializationSettings,func_8628d653131bbeaaf8820b5d1c99c95ca30cf0ba9614c153357c4e80288db567
+Old Method Name,New Method Name,Method Implementation
+newDeepStubMock,func_1d531558677a280bd120dced67691230bfda7e611f27eecb373912ff62693800,"    private Object newDeepStubMock(GenericMetadataSupport returnTypeGenericMetadata) {
+        return mockitoCore().mock(
+                returnTypeGenericMetadata.rawType(),
+                withSettingsUsing(returnTypeGenericMetadata)
+        );
+    }"
+deepStub,func_ffc91d804594d5788096fc6fe1c57c34b0c6b70c1f3a550e3b1792a24e6dd086,"    private Object deepStub(InvocationOnMock invocation, GenericMetadataSupport returnTypeGenericMetadata) throws Throwable {
+        InternalMockHandler<Object> handler = new MockUtil().getMockHandler(invocation.getMock());
+        InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
+
+        // matches invocation for verification
+        for (StubbedInvocationMatcher stubbedInvocationMatcher : container.getStubbedInvocations()) {
+            if (container.getInvocationForStubbing().matches(stubbedInvocationMatcher.getInvocation())) {
+                return stubbedInvocationMatcher.answer(invocation);
+            }
+        }
+
+        // record deep stub answer
+        return recordDeepStubAnswer(
+                newDeepStubMock(returnTypeGenericMetadata),
+                container
+        );
+    }"
+withSettingsUsing,func_2edfcce1388e3f974221466b986047b89f58f12bec9b2e5c38f1c906b706f056,"    private MockSettings withSettingsUsing(GenericMetadataSupport returnTypeGenericMetadata) {
+        MockSettings mockSettings = returnTypeGenericMetadata.hasRawExtraInterfaces() ?
+                withSettings().extraInterfaces(returnTypeGenericMetadata.rawExtraInterfaces())
+                : withSettings();
+
+        return mockSettings.serializable()
+                .defaultAnswer(returnsDeepStubsAnswerUsing(returnTypeGenericMetadata));
+    }"

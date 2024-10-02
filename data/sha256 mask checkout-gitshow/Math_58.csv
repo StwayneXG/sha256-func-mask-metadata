@@ -1,2 +1,30 @@
-Old Method Name,New Method Name
-fit,func_da4270e3735a3418c9d462af2e17d045132dede43df058e85b1f0399fcf96f1b
+Old Method Name,New Method Name,Method Implementation
+fit,func_da4270e3735a3418c9d462af2e17d045132dede43df058e85b1f0399fcf96f1b,"    public double[] fit(double[] initialGuess) {
+        final ParametricUnivariateRealFunction f = new ParametricUnivariateRealFunction() {
+                private final ParametricUnivariateRealFunction g = new Gaussian.Parametric();
+
+                public double value(double x, double[] p) {
+                    double v = Double.POSITIVE_INFINITY;
+                    try {
+                        v = g.value(x, p);
+                    } catch (NotStrictlyPositiveException e) {
+                        // Do nothing.
+                    }
+                    return v;
+                }
+
+                public double[] gradient(double x, double[] p) {
+                    double[] v = { Double.POSITIVE_INFINITY,
+                                   Double.POSITIVE_INFINITY,
+                                   Double.POSITIVE_INFINITY };
+                    try {
+                        v = g.gradient(x, p);
+                    } catch (NotStrictlyPositiveException e) {
+                        // Do nothing.
+                    }
+                    return v;
+                }
+            };
+
+        return fit(f, initialGuess);
+    }"

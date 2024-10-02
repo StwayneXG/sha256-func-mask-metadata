@@ -1,3 +1,2 @@
-Old Method Name,New Method Name
-HashMap,func_774aac06880874d828a176c533db72d287c5fba72db9028bbc29194c969a5166
-readObject,func_9139b229341ea525b0806042d05618828508090be907934ae658b0d3e6ac4a09
+Old Method Name,New Method Name,Method Implementation
+HashMap,func_774aac06880874d828a176c533db72d287c5fba72db9028bbc29194c969a5166,

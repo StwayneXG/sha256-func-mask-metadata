@@ -1,6 +1,56 @@
-Old Method Name,New Method Name
-MappingIterator,func_e71b9b56640b63bc6df228583a42d62ebedf4de3e0ee81cf9f40f98f887f92ba
-close,func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36
-_resync,func_b34c1d9a5a2d4e96ab3c43febfd023f846b67ba2ad196511ac7fc084b95100ea
-hasNextValue,func_824defef12f2e9c63225aaaf3aab678a7b04a77be3bc2bd3371a4fd137e1ff99
-nextValue,func_8189e425896c4e52066ff7ed2ece6fbf4fc66100f96a3162010bb5a7fae7c304
+Old Method Name,New Method Name,Method Implementation
+hasNextValue,func_824defef12f2e9c63225aaaf3aab678a7b04a77be3bc2bd3371a4fd137e1ff99,"    public boolean hasNextValue() throws IOException
+    {
+        if (_parser == null) {
+            return false;
+            // fall-through
+        }
+        if (!_hasNextChecked) {
+            JsonToken t = _parser.getCurrentToken();
+            _hasNextChecked = true;
+            if (t == null) { // un-initialized or cleared; find next
+                t = _parser.nextToken();
+                // If EOF, no more, or if we hit END_ARRAY (although we don't clear the token).
+                if (t == null || t == JsonToken.END_ARRAY) {
+                    JsonParser jp = _parser;
+                    _parser = null;
+                    if (_closeParser) {
+                        jp.close();
+                    }
+                    return false;
+                }
+            }
+            // fall through
+        }
+        return true;
+    }"
+MappingIterator,func_e71b9b56640b63bc6df228583a42d62ebedf4de3e0ee81cf9f40f98f887f92ba,
+nextValue,func_8189e425896c4e52066ff7ed2ece6fbf4fc66100f96a3162010bb5a7fae7c304,"    public T nextValue() throws IOException
+    {
+        if (!_hasNextChecked) {
+            if (!hasNextValue()) {
+                return _throwNoSuchElement();
+            }
+        }
+        if (_parser == null) {
+            return _throwNoSuchElement();
+        }
+        _hasNextChecked = false;
+
+        try {
+            T value;
+            if (_updatedValue == null) {
+                value = _deserializer.deserialize(_parser, _context);
+            } else{
+                _deserializer.deserialize(_parser, _context, _updatedValue);
+                value = _updatedValue;
+            }
+            return value;
+        } finally {
+            /* 24-Mar-2015, tatu: As per [#733], need to mark token consumed no
+             *   matter what, to avoid infinite loop for certain failure cases.
+             *   For 2.6 need to improve further.
+             */
+            _parser.clearCurrentToken();
+        }
+    }"

@@ -1,2 +1,5 @@
-Old Method Name,New Method Name
-setOptions,func_c35c2079053d8b805ae8670832d3cec90693a0de169336bd565108f61dcc587d
+Old Method Name,New Method Name,Method Implementation
+setOptions,func_c35c2079053d8b805ae8670832d3cec90693a0de169336bd565108f61dcc587d,"    protected void setOptions(final Options options) {
+        this.options = options;
+        this.requiredOptions = options.getRequiredOptions();
+    }"

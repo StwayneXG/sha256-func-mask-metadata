@@ -1,2 +1,23 @@
-Old Method Name,New Method Name
-parseInto,func_a6a7bacb74c7bcaf3b8fcb6d51c70068850524d35919876ba7f654716bb07bd4
+Old Method Name,New Method Name,Method Implementation
+parseInto,func_a6a7bacb74c7bcaf3b8fcb6d51c70068850524d35919876ba7f654716bb07bd4,"        public int parseInto(DateTimeParserBucket bucket, String text, int position) {
+            if (position >= text.length()) {
+                return ~position;
+            }
+
+            char a = text.charAt(position);
+            char b = iValue;
+
+            if (a != b) {
+                a = Character.toUpperCase(a);
+                b = Character.toUpperCase(b);
+                if (a != b) {
+                    a = Character.toLowerCase(a);
+                    b = Character.toLowerCase(b);
+                    if (a != b) {
+                        return ~position;
+                    }
+                }
+            }
+
+            return position + 1;
+        }"

@@ -1,2 +1,24 @@
-Old Method Name,New Method Name
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
+Old Method Name,New Method Name,Method Implementation
+visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364,"    public void visit(NodeTraversal t, Node node, Node parent) {
+      Node nameNode = null;
+      switch (node.getType()) {
+        case Token.NAME:
+          nameNode = node;
+          break;
+        case Token.VAR:
+          if (node.hasOneChild()) {
+            nameNode = node.getFirstChild();
+          }
+          break;
+        case Token.ASSIGN:
+          nameNode = node.getFirstChild();
+          break;
+      }
+
+      if (nameNode != null) {
+        JSDocInfo info = node.getJSDocInfo();
+        if (info != null && info.hasEnumParameterType()) {
+          registry.identifyEnumName(nameNode.getQualifiedName());
+        }
+      }
+    }"

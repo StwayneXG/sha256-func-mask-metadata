@@ -1,6 +1,97 @@
-Old Method Name,New Method Name
-CoreOperationCompare,func_664ffc001d963ef2c084d446bdce593a87549a847afe6433b8241c2e6e085219
-computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f
-getSymbol,func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157
-equal,func_f9d6cd1ed5cf1ead7b54873537748e0daa8f1390cd61555b68089fca063444f3
-CoreOperationNotEqual,func_ee2d20a3254a1bc29ae2d1ea10d6ff9095031cfb48f25667faabb1dc4a4a6908
+Old Method Name,New Method Name,Method Implementation
+equal,func_f9d6cd1ed5cf1ead7b54873537748e0daa8f1390cd61555b68089fca063444f3,"    protected boolean equal(
+        EvalContext context,
+        Expression left,
+        Expression right) 
+    {
+        Object l = left.compute(context);
+        Object r = right.compute(context);
+
+        if (l instanceof InitialContext) {
+            ((EvalContext) l).reset();
+        }
+
+        if (l instanceof SelfContext) {
+            l = ((EvalContext) l).getSingleNodePointer();
+        }
+
+        if (r instanceof InitialContext) {
+            ((EvalContext) r).reset();
+        }
+
+        if (r instanceof SelfContext) {
+            r = ((EvalContext) r).getSingleNodePointer();
+        }
+
+        if (l instanceof Collection) {
+            l = ((Collection) l).iterator();
+        }
+
+        if (r instanceof Collection) {
+            r = ((Collection) r).iterator();
+        }
+
+        if (l instanceof Iterator && r instanceof Iterator) {
+            return findMatch((Iterator) l, (Iterator) r);
+        }
+        if (l instanceof Iterator) {
+            return contains((Iterator) l, r);
+        }
+        if (r instanceof Iterator) {
+            return contains((Iterator) r, l);
+        }
+        return equal(l, r);
+    }"
+equal,func_f9d6cd1ed5cf1ead7b54873537748e0daa8f1390cd61555b68089fca063444f3,"    protected boolean equal(
+        EvalContext context,
+        Expression left,
+        Expression right) 
+    {
+        Object l = left.compute(context);
+        Object r = right.compute(context);
+
+        if (l instanceof InitialContext) {
+            ((EvalContext) l).reset();
+        }
+
+        if (l instanceof SelfContext) {
+            l = ((EvalContext) l).getSingleNodePointer();
+        }
+
+        if (r instanceof InitialContext) {
+            ((EvalContext) r).reset();
+        }
+
+        if (r instanceof SelfContext) {
+            r = ((EvalContext) r).getSingleNodePointer();
+        }
+
+        if (l instanceof Collection) {
+            l = ((Collection) l).iterator();
+        }
+
+        if (r instanceof Collection) {
+            r = ((Collection) r).iterator();
+        }
+
+        if (l instanceof Iterator && r instanceof Iterator) {
+            return findMatch((Iterator) l, (Iterator) r);
+        }
+        if (l instanceof Iterator) {
+            return contains((Iterator) l, r);
+        }
+        if (r instanceof Iterator) {
+            return contains((Iterator) r, l);
+        }
+        return equal(l, r);
+    }"
+computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f,"    public Object computeValue(EvalContext context) {
+        return equal(context, args[0], args[1]) ? Boolean.FALSE : Boolean.TRUE;
+    }"
+computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f,"    public Object computeValue(EvalContext context) {
+        return equal(context, args[0], args[1]) ? Boolean.FALSE : Boolean.TRUE;
+    }"
+CoreOperationNotEqual,func_ee2d20a3254a1bc29ae2d1ea10d6ff9095031cfb48f25667faabb1dc4a4a6908,
+getSymbol,func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157,"    public String getSymbol() {
+        return ""!="";
+    }"

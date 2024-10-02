@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-getHeaderMap,func_6b416b68f631a701d95cb625b7b2ddc46abd7276c19f60df4848a36082458055
+Old Method Name,New Method Name,Method Implementation
+getHeaderMap,func_6b416b68f631a701d95cb625b7b2ddc46abd7276c19f60df4848a36082458055,"    public Map<String, Integer> getHeaderMap() {
+        return new LinkedHashMap<String, Integer>(this.headerMap);
+    }"

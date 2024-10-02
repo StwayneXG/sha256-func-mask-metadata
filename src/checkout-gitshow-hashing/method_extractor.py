@@ -45,11 +45,11 @@ class MethodExtractor:
         current_file = None
 
         for i, line in enumerate(lines):
-            if line.startswith('+++') or line.startswith('---'):
+            if line.startswith('+++'):
                 current_file = line[4:].strip()
                 continue
 
-            if line.startswith('+') or line.startswith('-'):
+            if line.startswith('+'):
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):
@@ -67,7 +67,7 @@ class MethodExtractor:
         method_implementations = {}
 
         for file_path, method_names in methods.items():
-            content = open(base_path + file_path).read()
+            content = open(base_path + file_path, errors='ignore').read()
             try:
                 tree = javalang.parse.parse(content)
             except javalang.parser.JavaSyntaxError:

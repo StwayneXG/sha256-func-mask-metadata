@@ -1,4 +1,52 @@
-Old Method Name,New Method Name
-_isShapeWrittenUsingIndex,func_e167c5f00413848d5a9e857c5ae3a31b539a5456acfe64f01dd3c87f7c76fba3
-createContextual,func_23381e48edd64361fa64570e98b9cb14a3292cd2f07a01f2e4084d1f665d2f3b
-construct,func_b252d4eb5acf5aeaef1ec528741970ad0ba0a3e92c9333fa17668ddd892d9805
+Old Method Name,New Method Name,Method Implementation
+construct,func_b252d4eb5acf5aeaef1ec528741970ad0ba0a3e92c9333fa17668ddd892d9805,"    public static EnumSerializer construct(Class<?> enumClass, SerializationConfig config,
+            BeanDescription beanDesc, JsonFormat.Value format)
+    {
+        /* 08-Apr-2015, tatu: As per [databind#749], we can not statically determine
+         *   between name() and toString(), need to construct `EnumValues` with names,
+         *   handle toString() case dynamically (for example)
+         */
+        EnumValues v = EnumValues.constructFromName(config, (Class<Enum<?>>) enumClass);
+        Boolean serializeAsIndex = _isShapeWrittenUsingIndex(enumClass, format, true);
+        return new EnumSerializer(v, serializeAsIndex);
+    }"
+_isShapeWrittenUsingIndex,func_e167c5f00413848d5a9e857c5ae3a31b539a5456acfe64f01dd3c87f7c76fba3,"    protected static Boolean _isShapeWrittenUsingIndex(Class<?> enumClass,
+            JsonFormat.Value format, boolean fromClass)
+    {
+        JsonFormat.Shape shape = (format == null) ? null : format.getShape();
+        if (shape == null) {
+            return null;
+        }
+        // i.e. ""default"", check dynamically
+        if (shape == Shape.ANY || shape == Shape.SCALAR) {
+            return null;
+        }
+        // 19-May-2016, tatu: also consider ""natural"" shape
+        if (shape == Shape.STRING || shape == Shape.NATURAL) {
+            return Boolean.FALSE;
+        }
+        // 01-Oct-2014, tatu: For convenience, consider ""as-array"" to also mean 'yes, use index')
+        if (shape.isNumeric() || (shape == Shape.ARRAY)) {
+            return Boolean.TRUE;
+        }
+        // 07-Mar-2017, tatu: Also means `OBJECT` not available as property annotation...
+        throw new IllegalArgumentException(String.format(
+                ""Unsupported serialization shape (%s) for Enum %s, not supported as %s annotation"",
+                    shape, enumClass.getName(), (fromClass? ""class"" : ""property"")));
+    }"
+createContextual,func_23381e48edd64361fa64570e98b9cb14a3292cd2f07a01f2e4084d1f665d2f3b,"    public JsonSerializer<?> createContextual(SerializerProvider serializers,
+            BeanProperty property) throws JsonMappingException
+    {
+        if (property != null) {
+            JsonFormat.Value format = findFormatOverrides(serializers,
+                    property, handledType());
+            if (format != null) {
+                Boolean serializeAsIndex = _isShapeWrittenUsingIndex(property.getType().getRawClass(),
+                        format, false);
+                if (serializeAsIndex != _serializeAsIndex) {
+                    return new EnumSerializer(_values, serializeAsIndex);
+                }
+            }
+        }
+        return this;
+    }"

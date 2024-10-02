@@ -1,5 +1,66 @@
-Old Method Name,New Method Name
-write,func_10fd874b68dad080ed706762c8e163dabb20514bddae38fb159c56f714a3b143
-getBytesWritten,func_59f9e8b541068611536ebdc81a4fc8f1044f748fe1bda1ae4de8c298389dee98
-getCount,func_f967abcd5ad080483d315ce1a6b5c939a3f23810de37ab67f6f58362b3a2d01c
-setLongFileMode,func_1ce760ad3e190ccab46ea031898d0cf9d6f2cc6f2fd9ed0d6a57cd9ce62e3de6
+Old Method Name,New Method Name,Method Implementation
+write,func_10fd874b68dad080ed706762c8e163dabb20514bddae38fb159c56f714a3b143,"    public void write(byte[] wBuf, int wOffset, int numToWrite) throws IOException {
+        if ((currBytes + numToWrite) > currSize) {
+            throw new IOException(""request to write '"" + numToWrite
+                                  + ""' bytes exceeds size in header of '""
+                                  + currSize + ""' bytes for entry '""
+                                  + currName + ""'"");
+
+            //
+            // We have to deal with assembly!!!
+            // The programmer can be writing little 32 byte chunks for all
+            // we know, and we must assemble complete records for writing.
+            // REVIEW Maybe this should be in TarBuffer? Could that help to
+            // eliminate some of the buffer copying.
+            //
+        }
+
+        if (assemLen > 0) {
+            if ((assemLen + numToWrite) >= recordBuf.length) {
+                int aLen = recordBuf.length - assemLen;
+
+                System.arraycopy(assemBuf, 0, recordBuf, 0,
+                                 assemLen);
+                System.arraycopy(wBuf, wOffset, recordBuf,
+                                 assemLen, aLen);
+                buffer.writeRecord(recordBuf);
+
+                currBytes += recordBuf.length;
+                wOffset += aLen;
+                numToWrite -= aLen;
+                assemLen = 0;
+            } else {
+                System.arraycopy(wBuf, wOffset, assemBuf, assemLen,
+                                 numToWrite);
+
+                wOffset += numToWrite;
+                assemLen += numToWrite;
+                numToWrite = 0;
+            }
+        }
+
+        //
+        // When we get here we have EITHER:
+        // o An empty ""assemble"" buffer.
+        // o No bytes to write (numToWrite == 0)
+        //
+        while (numToWrite > 0) {
+            if (numToWrite < recordBuf.length) {
+                System.arraycopy(wBuf, wOffset, assemBuf, assemLen,
+                                 numToWrite);
+
+                assemLen += numToWrite;
+
+                break;
+            }
+
+            buffer.writeRecord(wBuf, wOffset);
+
+            int num = recordBuf.length;
+
+            currBytes += num;
+            numToWrite -= num;
+            wOffset += num;
+        }
+        count(numToWrite);
+    }"

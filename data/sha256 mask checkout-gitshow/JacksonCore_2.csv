@@ -1,8 +1,46 @@
-Old Method Name,New Method Name
-_parseNumber,func_a9466727e20c2e512ebc6efc894aafd8c34f96683d99b21b183685de0f3bb767
-_skipWSOrEnd,func_7ca694888297869c96568f5403b30c1344bd82fa8162864b2d6524988660520b
-_verifyRootSpace,func_66b2374ab614da57ccd6b5b448a01656442e61cbc7c2f1dcddedfca0168e75c3
-_skipWS,func_ceb83ba6aba031c9cf73cd3d161d5a78d17026b9c3211a25dd5b4f790503f370
-_parseNumber2,func_ac1a5794bb75c747eb12d43b574930fef2d28b3f9cb8653389630f555fd70dd9
-_parseFloat,func_c6277837b12b49beed8e1b6f569b3e31de1f52461da0dae2f1cf1dd606630014
-_parserNumber2,func_4f424ee35cae2164aa0d87985a811f0173e6b3a476bf1d8075d0dc4d14c75fe4
+Old Method Name,New Method Name,Method Implementation
+_skipWSOrEnd,func_7ca694888297869c96568f5403b30c1344bd82fa8162864b2d6524988660520b,"    private int _skipWSOrEnd() throws IOException
+    {
+        final int[] codes = _icWS;
+        while ((_inputPtr < _inputEnd) || loadMore()) {
+            final int i = _inputBuffer[_inputPtr++] & 0xFF;
+            switch (codes[i]) {
+            case 0: // done!
+                return i;
+            case 1: // skip
+                continue;
+            case 2: // 2-byte UTF
+                _skipUtf8_2(i);
+                break;
+            case 3: // 3-byte UTF
+                _skipUtf8_3(i);
+                break;
+            case 4: // 4-byte UTF
+                _skipUtf8_4(i);
+                break;
+            case INT_LF:
+                ++_currInputRow;
+                _currInputRowStart = _inputPtr;
+                break;
+            case INT_CR:
+                _skipCR();
+                break;
+            case '/':
+                _skipComment();
+                break;
+            case '#':
+                if (!_skipYAMLComment()) {
+                    return i;
+                }
+                break;
+            default: // e.g. -1
+                if (i < 32) {
+                    _throwInvalidSpace(i);
+                }
+                _reportInvalidChar(i);
+            }
+        }
+        // We ran out of input...
+        _handleEOF();
+        return -1;
+    }"

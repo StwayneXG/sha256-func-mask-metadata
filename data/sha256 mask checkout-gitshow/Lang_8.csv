@@ -1,3 +1,2 @@
-Old Method Name,New Method Name
-TimeZoneNameRule,func_c2e77eeea04ff7806609cc04b75598018420708318203a81f9046667cc3a691f
-appendTo,func_3eab074b08e27040286e214b1d3f8922e924248f9cf28b152a29e4ae583edaec
+Old Method Name,New Method Name,Method Implementation
+TimeZoneNameRule,func_c2e77eeea04ff7806609cc04b75598018420708318203a81f9046667cc3a691f,

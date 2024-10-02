@@ -1,3 +1,7 @@
-Old Method Name,New Method Name
-getFunctionValue,func_e782074a26bf7651b9f00459c238ed7af35653f4f97c09171e48d8ef5a423adb
-getResult,func_08ee68146638e332f70b995df585efad842cd335af321534ab0bfb9c6b2b89ce
+Old Method Name,New Method Name,Method Implementation
+getFunctionValue,func_e782074a26bf7651b9f00459c238ed7af35653f4f97c09171e48d8ef5a423adb,"    public double getFunctionValue() {
+        return optimizer.getFunctionValue();
+    }"
+getResult,func_08ee68146638e332f70b995df585efad842cd335af321534ab0bfb9c6b2b89ce,"    public double getResult() {
+        return optimizer.getResult();
+    }"

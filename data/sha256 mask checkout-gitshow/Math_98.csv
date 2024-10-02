@@ -1,3 +1,35 @@
-Old Method Name,New Method Name
-isValidCoordinate,func_510217fbd4d3b2cb245c8153da8956033dff730f35744038510056c1b81f5e87
-operate,func_2c29d39181de8f853de5e48ba983a5c88612b9dbaa5ab32c7748800a0840aeb8
+Old Method Name,New Method Name,Method Implementation
+operate,func_2c29d39181de8f853de5e48ba983a5c88612b9dbaa5ab32c7748800a0840aeb8,"    public double[] operate(double[] v) throws IllegalArgumentException {
+        final int nRows = this.getRowDimension();
+        final int nCols = this.getColumnDimension();
+        if (v.length != nCols) {
+            throw new IllegalArgumentException(""vector has wrong length"");
+        }
+        final double[] out = new double[v.length];
+        for (int row = 0; row < nRows; row++) {
+            final double[] dataRow = data[row];
+            double sum = 0;
+            for (int i = 0; i < nCols; i++) {
+                sum += dataRow[i] * v[i];
+            }
+            out[row] = sum;
+        }
+        return out;
+    }"
+operate,func_2c29d39181de8f853de5e48ba983a5c88612b9dbaa5ab32c7748800a0840aeb8,"    public double[] operate(double[] v) throws IllegalArgumentException {
+        final int nRows = this.getRowDimension();
+        final int nCols = this.getColumnDimension();
+        if (v.length != nCols) {
+            throw new IllegalArgumentException(""vector has wrong length"");
+        }
+        final double[] out = new double[v.length];
+        for (int row = 0; row < nRows; row++) {
+            final double[] dataRow = data[row];
+            double sum = 0;
+            for (int i = 0; i < nCols; i++) {
+                sum += dataRow[i] * v[i];
+            }
+            out[row] = sum;
+        }
+        return out;
+    }"

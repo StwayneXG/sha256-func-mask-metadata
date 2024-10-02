@@ -1,3 +1,28 @@
-Old Method Name,New Method Name
-printTo,func_313f9383bffb6e6f932de99cde54f3cfedecff7f8aefc96e92721c4d977ec9ca
-calculatePrintedLength,func_fd867ba171af4686c09db178129fc5ec55b6daeff932fc35cf2fc36c061ac6fa
+Old Method Name,New Method Name,Method Implementation
+calculatePrintedLength,func_fd867ba171af4686c09db178129fc5ec55b6daeff932fc35cf2fc36c061ac6fa,"        int calculatePrintedLength(int value);
+        
+        void printTo(StringBuffer buf, int value);
+        
+        void printTo(Writer out, int value) throws IOException;
+        
+        /**
+         * @return new position after parsing affix, or ~position of failure
+         */
+        int parse(String periodStr, int position);
+
+        /**
+         * @return position where affix starts, or original ~position if not found
+         */
+        int scan(String periodStr, int position);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Implements an affix where the text does not vary by the amount.
+     */
+    static class SimpleAffix implements PeriodFieldAffix {
+        private final String iText;
+
+        SimpleAffix(String text) {
+            iText = text;
+        }"

@@ -1,15 +1,209 @@
-Old Method Name,New Method Name
-hasAnyTemplateInternal,func_5d432d93ed666b946acdc0f4e0e5c0718b630e271b82cdef2413a89eef48b5ad
-for,func_10c22bcf4c768b515be4e94bcafc71bf3e8fb5f70b2584bcc8c7533217f2e7f9
-tryMergeFunctionPiecewise,func_8311843303e412e7883fcb805307d8ef73b8bdf2f8c7161981fdcbe0418f26fa
-isSubtype,func_10a7e27de4cb3435cb9b4437ec0b665c5fc84aa5d389d603521b1cb29fa6eb53
-isInvariant,func_da9db65764f03293456881a1a47052fd4d1c3b112c5cea2ac0b13a6abec67c51
-hasTemplatedParameterType,func_4983e201229cc5c0599049766de093363932eb3f9730f3109db732becf901c91
-getTopMostDefiningType,func_367ce48ca0a9b3849c6fe12dea8bc38b4f8d642c2d195b81d7dec72164b7de7d
-getTypesUnderInequality,func_b3f787070801fad9da25df144448b48772f1d566c897af706f5e6d1d63ecf3c8
-hasEqualCallType,func_435dded1678145ffd43ce846f8d203c6ad6542ff4963d631bf820e9db7fb3188
-differsFrom,func_5071105ff56b978be14f76a912842b0441b7bf9ebbf35ac4ffbafbc211967165
-hasAlternate,func_816f225669a6d029d5d871a727c63a71853c0dfaeaef44a912e08ffb97c53c0f
-checkEquivalenceHelper,func_6abb34ce9381796f81d1fc977d9033be9c19ad0ae7ecb2bf7abdebaa7a513ca1
-isEquivalentTo,func_e43adbe284df5b1790e6f9aa661c8aba5167ed1ab69cb547ed9c7a5420946898
-RecordType,func_22a91d228f0ba98bdc4b65ef155558c5eb4935122dfb507e1604aede157b551d
+Old Method Name,New Method Name,Method Implementation
+isSubtype,func_10a7e27de4cb3435cb9b4437ec0b665c5fc84aa5d389d603521b1cb29fa6eb53,"  public boolean isSubtype(JSType that) {
+    if (JSType.isSubtypeHelper(this, that)) {
+      return true;
+    }
+
+    // Top of the record types is the empty record, or OBJECT_TYPE.
+    if (registry.getNativeObjectType(
+            JSTypeNative.OBJECT_TYPE).isSubtype(that)) {
+      return true;
+    }
+
+    // A type is a subtype of a record type if it itself is a record
+    // type and it has at least the same members as the parent record type
+    // with the same types.
+    if (!that.isRecordType()) {
+      return false;
+    }
+
+    return RecordType.isSubtype(this, that.toMaybeRecordType());
+  }"
+hasEqualCallType,func_435dded1678145ffd43ce846f8d203c6ad6542ff4963d631bf820e9db7fb3188,"  public boolean hasEqualCallType(FunctionType otherType) {
+    return this.call.checkArrowEquivalenceHelper(otherType.call, false);
+  }"
+tryMergeFunctionPiecewise,func_8311843303e412e7883fcb805307d8ef73b8bdf2f8c7161981fdcbe0418f26fa,"  private FunctionType tryMergeFunctionPiecewise(
+      FunctionType other, boolean leastSuper) {
+    Node newParamsNode = null;
+    if (call.hasEqualParameters(other.call, false)) {
+      newParamsNode = call.parameters;
+    } else {
+      // If the parameters are not equal, don't try to merge them.
+      // Someday, we should try to merge the individual params.
+      return null;
+    }
+
+    JSType newReturnType = leastSuper ?
+        call.returnType.getLeastSupertype(other.call.returnType) :
+        call.returnType.getGreatestSubtype(other.call.returnType);
+
+    ObjectType newTypeOfThis = null;
+    if (isEquivalent(typeOfThis, other.typeOfThis)) {
+      newTypeOfThis = typeOfThis;
+    } else {
+      JSType maybeNewTypeOfThis = leastSuper ?
+          typeOfThis.getLeastSupertype(other.typeOfThis) :
+          typeOfThis.getGreatestSubtype(other.typeOfThis);
+      if (maybeNewTypeOfThis instanceof ObjectType) {
+        newTypeOfThis = (ObjectType) maybeNewTypeOfThis;
+      } else {
+        newTypeOfThis = leastSuper ?
+            registry.getNativeObjectType(JSTypeNative.OBJECT_TYPE) :
+            registry.getNativeObjectType(JSTypeNative.NO_OBJECT_TYPE);
+      }
+    }
+
+    boolean newReturnTypeInferred =
+        call.returnTypeInferred || other.call.returnTypeInferred;
+
+    return new FunctionType(
+        registry, null, null,
+        new ArrowType(
+            registry, newParamsNode, newReturnType, newReturnTypeInferred),
+        newTypeOfThis, null, false, false);
+  }"
+getTopMostDefiningType,func_367ce48ca0a9b3849c6fe12dea8bc38b4f8d642c2d195b81d7dec72164b7de7d,"  public ObjectType getTopMostDefiningType(String propertyName) {
+    Preconditions.checkState(isConstructor() || isInterface());
+    Preconditions.checkArgument(getInstanceType().hasProperty(propertyName));
+    FunctionType ctor = this;
+
+    if (isInterface()) {
+      return getTopDefiningInterface(this.getInstanceType(), propertyName);
+    }
+
+    ObjectType topInstanceType = null;
+    do {
+      topInstanceType = ctor.getInstanceType();
+      ctor = ctor.getSuperClassConstructor();
+    } while (ctor != null
+        && ctor.getPrototype().hasProperty(propertyName));
+
+    return topInstanceType;
+  }"
+isEquivalentTo,func_e43adbe284df5b1790e6f9aa661c8aba5167ed1ab69cb547ed9c7a5420946898,"  public final boolean isEquivalentTo(JSType that) {
+    return checkEquivalenceHelper(that, false);
+  }"
+checkEquivalenceHelper,func_6abb34ce9381796f81d1fc977d9033be9c19ad0ae7ecb2bf7abdebaa7a513ca1,"  boolean checkEquivalenceHelper(JSType that, boolean tolerateUnknowns) {
+    if (this == that) {
+      return true;
+    }
+
+    boolean thisUnknown = isUnknownType();
+    boolean thatUnknown = that.isUnknownType();
+    if (thisUnknown || thatUnknown) {
+      if (tolerateUnknowns) {
+        // If we're checking for invariance, the unknown type is invariant
+        // with everyone.
+        // If we're checking data flow, then two types are the same if they're
+        // both unknown.
+        return thisUnknown && thatUnknown;
+      } else if (thisUnknown && thatUnknown &&
+          (isNominalType() ^ that.isNominalType())) {
+        // If they're both unknown, but one is a nominal type and the other
+        // is not, then we should fail out immediately. This ensures that
+        // we won't unbox the unknowns further down.
+        return false;
+      }
+    }
+
+    if (isUnionType() && that.isUnionType()) {
+      return this.toMaybeUnionType().checkUnionEquivalenceHelper(
+          that.toMaybeUnionType(), tolerateUnknowns);
+    }
+
+    if (isFunctionType() && that.isFunctionType()) {
+      return this.toMaybeFunctionType().checkFunctionEquivalenceHelper(
+          that.toMaybeFunctionType(), tolerateUnknowns);
+    }
+
+    if (isRecordType() && that.isRecordType()) {
+      return this.toMaybeRecordType().checkRecordEquivalenceHelper(
+          that.toMaybeRecordType(), tolerateUnknowns);
+    }
+
+    ParameterizedType thisParamType = toMaybeParameterizedType();
+    ParameterizedType thatParamType = that.toMaybeParameterizedType();
+    if (thisParamType != null || thatParamType != null) {
+      // Check if one type is parameterized, but the other is not.
+      boolean paramsMatch = false;
+      if (thisParamType != null && thatParamType != null) {
+        paramsMatch = thisParamType.getParameterType().checkEquivalenceHelper(
+            thatParamType.getParameterType(), tolerateUnknowns);
+      } else if (tolerateUnknowns) {
+        // If one of the type parameters is unknown, but the other is not,
+        // then we consider these the same for the purposes of data flow
+        // and invariance.
+        paramsMatch = true;
+      } else {
+        paramsMatch = false;
+      }
+
+      JSType thisRootType = thisParamType == null ?
+          this : thisParamType.getReferencedTypeInternal();
+      JSType thatRootType = thatParamType == null ?
+          that : thatParamType.getReferencedTypeInternal();
+      return paramsMatch &&
+          thisRootType.checkEquivalenceHelper(thatRootType, tolerateUnknowns);
+    }
+
+    if (isNominalType() && that.isNominalType()) {
+      return toObjectType().getReferenceName().equals(
+          that.toObjectType().getReferenceName());
+    }
+
+    // Unbox other proxies.
+    if (this instanceof ProxyObjectType) {
+      return ((ProxyObjectType) this)
+          .getReferencedTypeInternal().checkEquivalenceHelper(
+              that, tolerateUnknowns);
+    }
+
+    if (that instanceof ProxyObjectType) {
+      return checkEquivalenceHelper(
+          ((ProxyObjectType) that).getReferencedTypeInternal(),
+          tolerateUnknowns);
+    }
+
+    // Relies on the fact that for the base {@link JSType}, only one
+    // instance of each sub-type will ever be created in a given registry, so
+    // there is no need to verify members. If the object pointers are not
+    // identical, then the type member must be different.
+    return this == that;
+  }"
+differsFrom,func_5071105ff56b978be14f76a912842b0441b7bf9ebbf35ac4ffbafbc211967165,"  public final boolean differsFrom(JSType that) {
+    return !checkEquivalenceHelper(that, true);
+  }"
+isInvariant,func_da9db65764f03293456881a1a47052fd4d1c3b112c5cea2ac0b13a6abec67c51,"  public final boolean isInvariant(JSType that) {
+    return checkEquivalenceHelper(that, false);
+  }"
+for,func_10c22bcf4c768b515be4e94bcafc71bf3e8fb5f70b2584bcc8c7533217f2e7f9,
+isSubtype,func_10a7e27de4cb3435cb9b4437ec0b665c5fc84aa5d389d603521b1cb29fa6eb53,"  public boolean isSubtype(JSType that) {
+    if (JSType.isSubtypeHelper(this, that)) {
+      return true;
+    }
+
+    // Top of the record types is the empty record, or OBJECT_TYPE.
+    if (registry.getNativeObjectType(
+            JSTypeNative.OBJECT_TYPE).isSubtype(that)) {
+      return true;
+    }
+
+    // A type is a subtype of a record type if it itself is a record
+    // type and it has at least the same members as the parent record type
+    // with the same types.
+    if (!that.isRecordType()) {
+      return false;
+    }
+
+    return RecordType.isSubtype(this, that.toMaybeRecordType());
+  }"
+RecordType,func_22a91d228f0ba98bdc4b65ef155558c5eb4935122dfb507e1604aede157b551d,
+for,func_10c22bcf4c768b515be4e94bcafc71bf3e8fb5f70b2584bcc8c7533217f2e7f9,
+hasAlternate,func_816f225669a6d029d5d871a727c63a71853c0dfaeaef44a912e08ffb97c53c0f,"  private boolean hasAlternate(JSType type, boolean tolerateUnknowns) {
+    for (JSType alternate : alternates) {
+      if (alternate.checkEquivalenceHelper(type, tolerateUnknowns)) {
+        return true;
+      }
+    }
+    return false;
+  }"

@@ -1,5 +1,60 @@
-Old Method Name,New Method Name
-newHashSet,func_ebb10a3aabe379fcf39b0536cffe6f2716d6ffc6f658488be8cda8c1fc9b3b7c
-canInlineReferenceDirectly,func_e30d7067750fa7c4ed3751ca2319cbdc8ff82f8badd52c3e7907519d2d1bf207
-get,func_2998b3232d29e8dc5a78d97a32ce83f556f3ed31b057077503df05641dd79158
-apply,func_97a5e41b45ddd2b2381046e77ccfa5c45d3553b81b66aeba7ed5c460c660f93f
+Old Method Name,New Method Name,Method Implementation
+apply,func_97a5e41b45ddd2b2381046e77ccfa5c45d3553b81b66aeba7ed5c460c660f93f,"      public boolean apply(Node n) {
+        if (n.isName()) {
+          return n.getString().equals(""eval"")
+            || (!fnName.isEmpty()
+                && n.getString().equals(fnName))
+            || (!fnRecursionName.isEmpty()
+                && n.getString().equals(fnRecursionName));
+        }
+        return false;
+      }"
+canInlineReferenceDirectly,func_e30d7067750fa7c4ed3751ca2319cbdc8ff82f8badd52c3e7907519d2d1bf207,"  private CanInlineResult canInlineReferenceDirectly(
+      Node callNode, Node fnNode) {
+    if (!isDirectCallNodeReplacementPossible(fnNode)) {
+      return CanInlineResult.NO;
+    }
+
+    Node block = fnNode.getLastChild();
+    // CALL NODE: [ NAME, ARG1, ARG2, ... ]
+    Node cArg = callNode.getFirstChild().getNext();
+
+    // Functions called via 'call' and 'apply' have a this-object as
+    // the first parameter, but this is not part of the called function's
+    // parameter list.
+    if (!callNode.getFirstChild().isName()) {
+      if (NodeUtil.isFunctionObjectCall(callNode)) {
+        // TODO(johnlenz): Support replace this with a value.
+        if (cArg == null || !cArg.isThis()) {
+          return CanInlineResult.NO;
+        }
+        cArg = cArg.getNext();
+      } else {
+        // "".apply"" call should be filtered before this.
+        Preconditions.checkState(!NodeUtil.isFunctionObjectApply(callNode));
+      }
+    }
+
+    Node fnParam = NodeUtil.getFunctionParameters(fnNode).getFirstChild();
+    while (cArg != null || fnParam != null) {
+      if (fnParam != null) {
+        if (cArg != null) {
+          if (NodeUtil.mayEffectMutableState(cArg, compiler)
+              && NodeUtil.getNameReferenceCount(
+                  block, fnParam.getString()) > 1) {
+            return CanInlineResult.NO;
+          }
+        }
+        fnParam = fnParam.getNext();
+      }
+      // Limit the inlining
+      if (cArg != null) {
+        if (NodeUtil.mayHaveSideEffects(cArg, compiler)) {
+        return CanInlineResult.NO;
+        }
+        cArg = cArg.getNext();
+      }
+    }
+
+    return CanInlineResult.YES;
+  }"

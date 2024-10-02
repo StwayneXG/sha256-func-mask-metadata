@@ -1,2 +1,60 @@
-Old Method Name,New Method Name
-flatten,func_3ab675f2b94ec6889fc354439d5f31c7278f7a7ef414645c774017e1bdac24dc
+Old Method Name,New Method Name,Method Implementation
+flatten,func_3ab675f2b94ec6889fc354439d5f31c7278f7a7ef414645c774017e1bdac24dc,"    protected String[] flatten(Options options, String[] arguments, boolean stopAtNonOption)
+    {
+        List tokens = new ArrayList();
+
+        boolean eatTheRest = false;
+
+        for (int i = 0; i < arguments.length; i++)
+        {
+            String arg = arguments[i];
+
+            if (""--"".equals(arg))
+            {
+                eatTheRest = true;
+                tokens.add(""--"");
+            }
+            else if (""-"".equals(arg))
+            {
+                tokens.add(""-"");
+            }
+            else if (arg.startsWith(""-""))
+            {
+                String opt = Util.stripLeadingHyphens(arg);
+
+                if (options.hasOption(opt))
+                {
+                    tokens.add(arg);
+                }
+                else
+                {
+                    if (options.hasOption(arg.substring(0, 2)))
+                    {
+                        // the format is --foo=value or -foo=value
+                        // the format is a special properties option (-Dproperty=value)
+                        tokens.add(arg.substring(0, 2)); // -D
+                        tokens.add(arg.substring(2)); // property=value
+                    }
+                    else
+                    {
+                        eatTheRest = stopAtNonOption;
+                        tokens.add(arg);
+                    }
+                }
+            }
+            else
+            {
+                tokens.add(arg);
+            }
+
+            if (eatTheRest)
+            {
+                for (i++; i < arguments.length; i++)
+                {
+                    tokens.add(arguments[i]);
+                }
+            }
+        }
+
+        return (String[]) tokens.toArray(new String[tokens.size()]);
+    }"

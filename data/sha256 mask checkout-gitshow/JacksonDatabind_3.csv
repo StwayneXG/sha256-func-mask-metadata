@@ -1,3 +1,59 @@
-Old Method Name,New Method Name
-_deserializeCustom,func_c1184b118df9499d4af89c26871c87444f57138f9d7ae45cad6cc0cf9c104cad
-deserialize,func_3ef7bf7f4c1cd006818ce9adec9eb72d84c1ea317a8b4ab197c49791f7e7d9ef
+Old Method Name,New Method Name,Method Implementation
+_deserializeCustom,func_c1184b118df9499d4af89c26871c87444f57138f9d7ae45cad6cc0cf9c104cad,"    protected final String[] _deserializeCustom(JsonParser jp, DeserializationContext ctxt) throws IOException
+    {
+        final ObjectBuffer buffer = ctxt.leaseObjectBuffer();
+        Object[] chunk = buffer.resetAndStart();
+        final JsonDeserializer<String> deser = _elementDeserializer;
+        
+        int ix = 0;
+        JsonToken t;
+        
+        while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
+            // Ok: no need to convert Strings, but must recognize nulls
+            String value = (t == JsonToken.VALUE_NULL) ? null : deser.deserialize(jp, ctxt);
+            if (ix >= chunk.length) {
+                chunk = buffer.appendCompletedChunk(chunk);
+                ix = 0;
+            }
+            chunk[ix++] = value;
+        }
+        String[] result = buffer.completeAndClearBuffer(chunk, ix, String.class);
+        ctxt.returnObjectBuffer(buffer);
+        return result;
+    }"
+deserialize,func_3ef7bf7f4c1cd006818ce9adec9eb72d84c1ea317a8b4ab197c49791f7e7d9ef,"    public String[] deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException
+    {
+        // Ok: must point to START_ARRAY (or equivalent)
+        if (!jp.isExpectedStartArrayToken()) {
+            return handleNonArray(jp, ctxt);
+        }
+        if (_elementDeserializer != null) {
+            return _deserializeCustom(jp, ctxt);
+        }
+
+        final ObjectBuffer buffer = ctxt.leaseObjectBuffer();
+        Object[] chunk = buffer.resetAndStart();
+        
+        int ix = 0;
+        JsonToken t;
+        
+        while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
+            // Ok: no need to convert Strings, but must recognize nulls
+            String value;
+            if (t == JsonToken.VALUE_STRING) {
+                value = jp.getText();
+            } else if (t == JsonToken.VALUE_NULL) {
+                value = _elementDeserializer.getNullValue();
+            } else {
+                value = _parseString(jp, ctxt);
+            }
+            if (ix >= chunk.length) {
+                chunk = buffer.appendCompletedChunk(chunk);
+                ix = 0;
+            }
+            chunk[ix++] = value;
+        }
+        String[] result = buffer.completeAndClearBuffer(chunk, ix, String.class);
+        ctxt.returnObjectBuffer(buffer);
+        return result;
+    }"

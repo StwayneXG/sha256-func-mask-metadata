@@ -1,2 +1,33 @@
-Old Method Name,New Method Name
-renderWrappedText,func_f1f8ba46d0c5507adc9b073f48a788aa74f4fbe2302f3c6d605c297596b882bc
+Old Method Name,New Method Name,Method Implementation
+renderWrappedText,func_f1f8ba46d0c5507adc9b073f48a788aa74f4fbe2302f3c6d605c297596b882bc,"    protected StringBuffer renderWrappedText(StringBuffer sb, int width, 
+                                             int nextLineTabStop, String text)
+    {
+        int pos = findWrapPos(text, width, 0);
+
+        if (pos == -1)
+        {
+            sb.append(rtrim(text));
+
+            return sb;
+        }
+        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);
+
+        // all following lines must be padded with nextLineTabStop space 
+        // characters
+        final String padding = createPadding(nextLineTabStop);
+
+        while (true)
+        {
+            text = padding + text.substring(pos).trim();
+            pos = findWrapPos(text, width, nextLineTabStop);
+
+            if (pos == -1)
+            {
+                sb.append(text);
+
+                return sb;
+            }
+
+            sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);
+        }
+    }"

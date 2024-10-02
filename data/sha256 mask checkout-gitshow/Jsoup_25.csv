@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-toString,func_bbb522f7e532f10d2d79413a98bdec613444b049a3c98639fb17831d712a2ca2
+Old Method Name,New Method Name,Method Implementation
+toString,func_bbb522f7e532f10d2d79413a98bdec613444b049a3c98639fb17831d712a2ca2,"    public String toString() {
+        return tagName;
+    }"

@@ -1,3 +1,4 @@
-Old Method Name,New Method Name
-hashCode,func_2c96c87e86e2612010258b35137766f73a4b95c46bb44d9e87160937bfd70fda
-equals,func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7
+Old Method Name,New Method Name,Method Implementation
+hashCode,func_2c96c87e86e2612010258b35137766f73a4b95c46bb44d9e87160937bfd70fda,"    public int hashCode() {
+        return 1;
+    }"

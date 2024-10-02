@@ -1,2 +1,14 @@
-Old Method Name,New Method Name
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
+Old Method Name,New Method Name,Method Implementation
+visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364,"    public void visit(NodeTraversal t, Node n, Node parent) {
+      NameInformation ns = null;
+      if (NodeUtil.isVarDeclaration(n)) {
+        ns = createNameInformation(t, n, parent);
+      } else if (NodeUtil.isFunctionDeclaration(n)) {
+        ns = createNameInformation(t, n.getFirstChild(), n);
+      }
+      if (ns != null) {
+        JsName jsName = getName(ns.name, true);
+        jsName.externallyDefined = true;
+        externalNames.add(ns.name);
+      }
+    }"

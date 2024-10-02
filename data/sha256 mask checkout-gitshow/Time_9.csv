@@ -1,3 +1,22 @@
-Old Method Name,New Method Name
-forOffsetMillis,func_bc9665822831144ec3615bbf4fdabe757c6382611e17f1bca13a57f1e25a398a
-forOffsetHoursMinutes,func_cef93e6cb71527b4e201a896f65a7974c471ee1be2f2e5db453cfa7ab0ffc1ac
+Old Method Name,New Method Name,Method Implementation
+forOffsetHoursMinutes,func_cef93e6cb71527b4e201a896f65a7974c471ee1be2f2e5db453cfa7ab0ffc1ac,"    public static DateTimeZone forOffsetHoursMinutes(int hoursOffset, int minutesOffset) throws IllegalArgumentException {
+        if (hoursOffset == 0 && minutesOffset == 0) {
+            return DateTimeZone.UTC;
+        }
+        if (minutesOffset < 0 || minutesOffset > 59) {
+            throw new IllegalArgumentException(""Minutes out of range: "" + minutesOffset);
+        }
+        int offset = 0;
+        try {
+            int hoursInMinutes = FieldUtils.safeMultiply(hoursOffset, 60);
+            if (hoursInMinutes < 0) {
+                minutesOffset = FieldUtils.safeAdd(hoursInMinutes, -minutesOffset);
+            } else {
+                minutesOffset = FieldUtils.safeAdd(hoursInMinutes, minutesOffset);
+            }
+            offset = FieldUtils.safeMultiply(minutesOffset, DateTimeConstants.MILLIS_PER_MINUTE);
+        } catch (ArithmeticException ex) {
+            throw new IllegalArgumentException(""Offset is too large"");
+        }
+        return forOffsetMillis(offset);
+    }"

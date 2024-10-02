@@ -5,10 +5,7 @@ REPO_DIR="/root/data/Defects4J/repos/"
 
 for proj in $(defects4j pids); do
     for bug in $(cut -f1 -d',' "$D4J_HOME/framework/projects/$proj/commit-db"); do
-        echo "Checking out $proj-$bug"
         python3.9 src/checkout-gitshow-hashing/main.py --project $proj --bug_num $bug
         rm -rf $REPO_DIR/${proj}_${bug}
-        break
     done
-    break
 done

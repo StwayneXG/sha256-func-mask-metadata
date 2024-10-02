@@ -1,2 +1,5 @@
-Old Method Name,New Method Name
-clone,func_b5d61dc89a35d2c924b28c9760765da94039e94184c50f87dde54532f126b4ac
+Old Method Name,New Method Name,Method Implementation
+clone,func_b5d61dc89a35d2c924b28c9760765da94039e94184c50f87dde54532f126b4ac,"    public Object clone() throws CloneNotSupportedException {
+        Object clone = createCopy(0, getItemCount() - 1);
+        return clone;
+    }"

@@ -1,4 +1,9 @@
-Old Method Name,New Method Name
-canReadEntryData,func_2ae037d249d409f4d4cbc3ff283c73a53f88f656fe62a00b8dd01a9244195673
-read,func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925
-supportsCompressedSizeFor,func_b39af3c4b4e1d35a62a0d78baf63abd0ce0424cda833e3c94fa1585e6aa3217d
+Old Method Name,New Method Name,Method Implementation
+canReadEntryData,func_2ae037d249d409f4d4cbc3ff283c73a53f88f656fe62a00b8dd01a9244195673,"    public boolean canReadEntryData(final ArchiveEntry ae) {
+        if (ae instanceof ZipArchiveEntry) {
+            final ZipArchiveEntry ze = (ZipArchiveEntry) ae;
+            return ZipUtil.canHandleEntryData(ze)
+                && supportsDataDescriptorFor(ze);
+        }
+        return false;
+    }"

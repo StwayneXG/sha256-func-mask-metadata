@@ -1,4 +1,7 @@
-Old Method Name,New Method Name
-addRefInternal,func_73535aa268af8c08e805018a745bb671642fd72ca8a4621612602bec310f5786
-updateSimpleDeclaration,func_27643447f11d0b0e8684535541c64b90c54ef25bab1840898143cde4e1470ee5
-appendPropForAlias,func_b06f0ed8bdf8331dc47c53d06879b86b10b9cea776b9efcbd6ee0620b473425a
+Old Method Name,New Method Name,Method Implementation
+addRefInternal,func_73535aa268af8c08e805018a745bb671642fd72ca8a4621612602bec310f5786,"    void addRefInternal(Ref ref) {
+      if (refs == null) {
+        refs = new LinkedList<Ref>();
+      }
+      refs.add(ref);
+    }"

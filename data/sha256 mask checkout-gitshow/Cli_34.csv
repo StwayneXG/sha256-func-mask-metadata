@@ -1,3 +1,12 @@
-Old Method Name,New Method Name
-reset,func_01be30bb4a27765c37462e6bf2a0bf8b6c109f9be9d81e6fd56455db1a736a43
-toString,func_bbb522f7e532f10d2d79413a98bdec613444b049a3c98639fb17831d712a2ca2
+Old Method Name,New Method Name,Method Implementation
+reset,func_01be30bb4a27765c37462e6bf2a0bf8b6c109f9be9d81e6fd56455db1a736a43,"    private static void reset()
+    {
+        description = null;
+        argName = null;
+        longopt = null;
+        type = null;
+        required = false;
+        numberOfArgs = Option.UNINITIALIZED;
+        optionalArg = false;
+        valuesep = (char) 0;
+    }"

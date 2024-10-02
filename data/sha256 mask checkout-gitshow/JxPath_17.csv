@@ -1,4 +1,47 @@
-Old Method Name,New Method Name
-setPosition,func_002939834dda9ab2144d4f817ad1dfff002d351cee0a720580022e0c0368346d
-testAttr,func_dfb005649aa16a6eb6c4aac49dfd29ade81f8a049bd1479b067baaf968753177
-JDOMAttributeIterator,func_fadba6fcab53bf47249a46a7d425941af81ab3fe7bdc333c98648cb41c31c7c6
+Old Method Name,New Method Name,Method Implementation
+setPosition,func_002939834dda9ab2144d4f817ad1dfff002d351cee0a720580022e0c0368346d,"    public boolean setPosition(int position) {
+        if (attributes == null) {
+            return false;
+        }
+        this.position = position;
+        return position >= 1 && position <= attributes.size();
+    }"
+testAttr,func_dfb005649aa16a6eb6c4aac49dfd29ade81f8a049bd1479b067baaf968753177,"    private boolean testAttr(Attr attr) {
+        String nodePrefix = DOMNodePointer.getPrefix(attr);
+        String nodeLocalName = DOMNodePointer.getLocalName(attr);
+
+        if (nodePrefix != null && nodePrefix.equals(""xmlns"")) {
+            return false;
+        }
+
+        if (nodePrefix == null && nodeLocalName.equals(""xmlns"")) {
+            return false;
+        }
+
+        String testLocalName = name.getName();
+        if (testLocalName.equals(""*"") || testLocalName.equals(nodeLocalName)) {
+            String testPrefix = name.getPrefix();
+
+            if (equalStrings(testPrefix, nodePrefix)) {
+                return true;
+            }
+            String testNS = null;
+            if (testPrefix != null) {
+                testNS = parent.getNamespaceURI(testPrefix);
+            }
+            String nodeNS = null;
+            if (nodePrefix != null) {
+                nodeNS = parent.getNamespaceURI(nodePrefix);
+            }
+            return equalStrings(testNS, nodeNS);
+        }
+        return false;
+    }"
+JDOMAttributeIterator,func_fadba6fcab53bf47249a46a7d425941af81ab3fe7bdc333c98648cb41c31c7c6,
+setPosition,func_002939834dda9ab2144d4f817ad1dfff002d351cee0a720580022e0c0368346d,"    public boolean setPosition(int position) {
+        if (attributes == null) {
+            return false;
+        }
+        this.position = position;
+        return position >= 1 && position <= attributes.size();
+    }"

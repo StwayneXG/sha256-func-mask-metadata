@@ -1,2 +1,28 @@
-Old Method Name,New Method Name
-useForType,func_37728a874166683cf12be00e88dd208d8c8de8c882f31aca14cff155ad6009d7
+Old Method Name,New Method Name,Method Implementation
+useForType,func_37728a874166683cf12be00e88dd208d8c8de8c882f31aca14cff155ad6009d7,"        public boolean useForType(JavaType t)
+        {
+            switch (_appliesFor) {
+            case NON_CONCRETE_AND_ARRAYS:
+                while (t.isArrayType()) {
+                    t = t.getContentType();
+                }
+                // fall through
+            case OBJECT_AND_NON_CONCRETE:
+//                return t.isJavaLangObject() || 
+                return (t.getRawClass() == Object.class)
+                        || (!t.isConcrete()
+                                // [databind#88] Should not apply to JSON tree models:
+                        || TreeNode.class.isAssignableFrom(t.getRawClass()));
+
+            case NON_FINAL:
+                while (t.isArrayType()) {
+                    t = t.getContentType();
+                }
+                // [Issue#88] Should not apply to JSON tree models:
+                return !t.isFinal() && !TreeNode.class.isAssignableFrom(t.getRawClass());
+            default:
+            //case JAVA_LANG_OBJECT:
+//                return t.isJavaLangObject();
+                return (t.getRawClass() == Object.class);
+            }
+        }"

@@ -1,4 +1,10 @@
-Old Method Name,New Method Name
-same,func_0967115f2813a3541eaef77de9d9d5773f1c0c04314b0bbfe4ff3b3b1c55b5d5
-isA,func_71f3e092eb1bfbdf58d98f58b5baad158f8268458b7facf6e3d08e47628ec0f9
-eq,func_7d601f9d20703a97b8cb530538dbbadaa3e4bdfa5f333977e4232f51eebdc47a
+Old Method Name,New Method Name,Method Implementation
+isA,func_71f3e092eb1bfbdf58d98f58b5baad158f8268458b7facf6e3d08e47628ec0f9,"    public static <T> T isA(Class<T> clazz) {
+        return reportMatcher(new InstanceOf(clazz)).<T>returnNull();
+    }"
+eq,func_7d601f9d20703a97b8cb530538dbbadaa3e4bdfa5f333977e4232f51eebdc47a,"    public static boolean eq(boolean value) {
+        return reportMatcher(new Equals(value)).returnFalse();
+    }"
+same,func_0967115f2813a3541eaef77de9d9d5773f1c0c04314b0bbfe4ff3b3b1c55b5d5,"    public static <T> T same(T value) {
+        return reportMatcher(new Same(value)).<T>returnNull();
+    }"

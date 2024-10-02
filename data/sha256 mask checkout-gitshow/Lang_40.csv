@@ -1,2 +1,7 @@
-Old Method Name,New Method Name
-containsIgnoreCase,func_0e072ada71869290e2b354676f748b178c798f9ce25173c0530dbce070e962fc
+Old Method Name,New Method Name,Method Implementation
+containsIgnoreCase,func_0e072ada71869290e2b354676f748b178c798f9ce25173c0530dbce070e962fc,"    public static boolean containsIgnoreCase(String str, String searchStr) {
+        if (str == null || searchStr == null) {
+            return false;
+        }
+        return contains(str.toUpperCase(), searchStr.toUpperCase());
+    }"

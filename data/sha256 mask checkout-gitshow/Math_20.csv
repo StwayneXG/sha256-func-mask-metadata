@@ -1,2 +1,5 @@
-Old Method Name,New Method Name
-repairAndDecode,func_ab7a7c2389743b88210a4233511bfb0c8abf876cea83235dd4039a5d6f66e145
+Old Method Name,New Method Name,Method Implementation
+repairAndDecode,func_ab7a7c2389743b88210a4233511bfb0c8abf876cea83235dd4039a5d6f66e145,"        public double[] repairAndDecode(final double[] x) {
+            return
+                decode(x);
+        }"

@@ -1,4 +1,1 @@
-Old Method Name,New Method Name
-getPosition,func_0cb42ea17d40a210a1ad3f03010971430b52e93fbece39abcb70b5033def857a
-getTypeWithProperty,func_a75855903e2ba4bc5d7ededa0ba73617021ff1dc6bacf29b58fd1e1a4b3c618b
-mayThrowException,func_0c0c7311a5f026865336bd5665773c7f54c6ddccf50f10b1c23a16652fa09f01
+Old Method Name,New Method Name,Method Implementation

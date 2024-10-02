@@ -1,3 +1,18 @@
-Old Method Name,New Method Name
-equals,func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7
-ZipArchiveEntry,func_09afb891397ae58959e46496196d8d5ed5dcf8d7962d41063476f8a5a51e6054
+Old Method Name,New Method Name,Method Implementation
+equals,func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7,"    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        ZipArchiveEntry other = (ZipArchiveEntry) obj;
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        return true;
+    }"

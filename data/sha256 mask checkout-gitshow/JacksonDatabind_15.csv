@@ -1,11 +1,73 @@
-Old Method Name,New Method Name
-findConvertingSerializer,func_451a3b9b2ede5d6e2463bb2a30f76b3b15efaae1429bfee573038e0376cf5588
-acceptJsonFormatVisitor,func_8857c3e62de73816d78a5c5411cef2101d27ca91297b2694da39d483ce0f8fb1
-hashCode,func_2c96c87e86e2612010258b35137766f73a4b95c46bb44d9e87160937bfd70fda
-serialize,func_010e98269cdf95fbc494a106e1f903a326f81dd0e05db5a99edd182af5e39685
-serializeWithType,func_4c57155c70d427b5bd840cc1926d5cf8f914c21229933ffca8593bfa41c26d1b
-return,func_7187f0675eb3827939741acf7342ba78836ecec21a31ecf3f34a55309d3bee8a
-createContextual,func_23381e48edd64361fa64570e98b9cb14a3292cd2f07a01f2e4084d1f665d2f3b
-removeIgnorableTypes,func_6d8a443e7f95b514e1675fcd1b79317d332cb91116697f21af72cdc8b295bb31
-isEmpty,func_eacba67c557dd37a1964a55f7edb1508238edb8005d5c5e87b6fa581ae1aa5dc
-_findSerializer,func_ce5943961329f3572ba243ef43407bcea51317c2ba48e989b1195631891374d8
+Old Method Name,New Method Name,Method Implementation
+return,func_7187f0675eb3827939741acf7342ba78836ecec21a31ecf3f34a55309d3bee8a,
+findConvertingSerializer,func_451a3b9b2ede5d6e2463bb2a30f76b3b15efaae1429bfee573038e0376cf5588,"    protected JsonSerializer<Object> findConvertingSerializer(SerializerProvider provider,
+            BeanPropertyWriter prop)
+        throws JsonMappingException
+    {
+        final AnnotationIntrospector intr = provider.getAnnotationIntrospector();
+        if (intr != null) {
+            AnnotatedMember m = prop.getMember();
+            if (m != null) {
+                Object convDef = intr.findSerializationConverter(m);
+                if (convDef != null) {
+                    Converter<Object,Object> conv = provider.converterInstance(prop.getMember(), convDef);
+                    JavaType delegateType = conv.getOutputType(provider.getTypeFactory());
+                    // [databind#731]: Should skip if nominally java.lang.Object
+                    JsonSerializer<?> ser = provider.findValueSerializer(delegateType, prop);
+                    return new StdDelegatingSerializer(conv, delegateType, ser);
+                }
+            }
+        }
+        return null;
+    }"
+serializeWithType,func_4c57155c70d427b5bd840cc1926d5cf8f914c21229933ffca8593bfa41c26d1b,"    public void serializeWithType(Object value, JsonGenerator gen, SerializerProvider provider,
+            TypeSerializer typeSer) throws IOException
+    {
+        /* 03-Oct-2012, tatu: This is actually unlikely to work ok... but for now,
+         *    let's give it a chance?
+         */
+        Object delegateValue = convertValue(value);
+        _delegateSerializer.serializeWithType(delegateValue, gen, provider, typeSer);
+    }"
+serialize,func_010e98269cdf95fbc494a106e1f903a326f81dd0e05db5a99edd182af5e39685,"    public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException
+    {
+        Object delegateValue = convertValue(value);
+        // should we accept nulls?
+        if (delegateValue == null) {
+            provider.defaultSerializeNull(gen);
+            return;
+        }
+        // 02-Apr-2015, tatu: As per [databind#731] may need to do dynamic lookup
+        _delegateSerializer.serialize(delegateValue, gen, provider);
+    }"
+createContextual,func_23381e48edd64361fa64570e98b9cb14a3292cd2f07a01f2e4084d1f665d2f3b,"    public JsonSerializer<?> createContextual(SerializerProvider provider, BeanProperty property)
+        throws JsonMappingException
+    {
+        JsonSerializer<?> delSer = _delegateSerializer;
+        JavaType delegateType = _delegateType;
+
+        if (delSer == null) {
+            // Otherwise, need to locate serializer to delegate to. For that we need type information...
+            if (delegateType == null) {
+                delegateType = _converter.getOutputType(provider.getTypeFactory());
+            }
+            /* 02-Apr-2015, tatu: For ""dynamic case"", where type is only specified as
+             *    java.lang.Object (or missing generic), [databind#731]
+             */
+                delSer = provider.findValueSerializer(delegateType);
+        }
+        if (delSer instanceof ContextualSerializer) {
+            delSer = provider.handleSecondaryContextualization(delSer, property);
+        }
+        return (delSer == _delegateSerializer) ? this
+                : withDelegate(_converter, delegateType, delSer);
+    }"
+acceptJsonFormatVisitor,func_8857c3e62de73816d78a5c5411cef2101d27ca91297b2694da39d483ce0f8fb1,"    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint)
+        throws JsonMappingException
+    {
+        /* 03-Sep-2012, tatu: Not sure if this can be made to really work
+         *    properly... but for now, try this:
+         */
+        // 02-Apr-2015, tatu: For dynamic case, very little we can do
+        _delegateSerializer.acceptJsonFormatVisitor(visitor, typeHint);
+    }"

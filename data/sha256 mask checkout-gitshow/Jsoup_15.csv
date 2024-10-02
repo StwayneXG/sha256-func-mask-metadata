@@ -1,2 +1,6 @@
-Old Method Name,New Method Name
-anythingElse,func_5fe684275a87e2d5d8cc308aa00e6e4ff75fa742d9e1df78fe8af3e1a7af2394
+Old Method Name,New Method Name,Method Implementation
+anythingElse,func_5fe684275a87e2d5d8cc308aa00e6e4ff75fa742d9e1df78fe8af3e1a7af2394,"        private boolean anythingElse(Token t, TreeBuilder tb) {
+            tb.insert(""html"");
+            tb.transition(BeforeHead);
+            return tb.process(t);
+        }"

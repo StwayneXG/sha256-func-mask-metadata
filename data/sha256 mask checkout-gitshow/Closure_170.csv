@@ -1,3 +1,8 @@
-Old Method Name,New Method Name
-isAssignChain,func_c0ed70900295f450c8e6197f3dcf2cd3b3618dc82cc6c19db0b2817b29e1ec9c
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
+Old Method Name,New Method Name,Method Implementation
+visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364,"  public void visit(NodeTraversal t, Node n, Node parent) {
+    // TODO(user): While the helpers do a subtree traversal on the AST, the
+    // compiler pass itself only traverse the AST to look for function
+    // declarations to perform dataflow analysis on. We could combine
+    // the traversal in DataFlowAnalysis's computeEscaped later to save some
+    // time.
+  }"

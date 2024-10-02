@@ -1,2 +1,5 @@
-Old Method Name,New Method Name
-inSpecificScope,func_119a8aeb7a9d4484ef328c622fc097f5ef6c619cfbeb117d0cf39aa7366ff98a
+Old Method Name,New Method Name,Method Implementation
+inSpecificScope,func_119a8aeb7a9d4484ef328c622fc097f5ef6c619cfbeb117d0cf39aa7366ff98a,"    private boolean inSpecificScope(String targetName, String[] baseTypes, String[] extraTypes) {
+        specificScopeTarget[0] = targetName;
+        return inSpecificScope(specificScopeTarget, baseTypes, extraTypes);
+    }"

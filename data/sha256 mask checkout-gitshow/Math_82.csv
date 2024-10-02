@@ -1,2 +1,17 @@
-Old Method Name,New Method Name
-getPivotRow,func_96f325440c9ba6f264491037ac01de745ae8bfb17f5313feb1abdc73644e8fd7
+Old Method Name,New Method Name,Method Implementation
+getPivotRow,func_96f325440c9ba6f264491037ac01de745ae8bfb17f5313feb1abdc73644e8fd7,"    private Integer getPivotRow(final int col, final SimplexTableau tableau) {
+        double minRatio = Double.MAX_VALUE;
+        Integer minRatioPos = null;
+        for (int i = tableau.getNumObjectiveFunctions(); i < tableau.getHeight(); i++) {
+            final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);
+            final double entry = tableau.getEntry(i, col);
+            if (MathUtils.compareTo(entry, 0, epsilon) >= 0) {
+                final double ratio = rhs / entry;
+                if (ratio < minRatio) {
+                    minRatio = ratio;
+                    minRatioPos = i; 
+                }
+            }
+        }
+        return minRatioPos;
+    }"

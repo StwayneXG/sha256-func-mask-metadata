@@ -1,6 +1,39 @@
-Old Method Name,New Method Name
-mergeWithLanguage,func_9a24894187b2ede98c7adf26d59bece0e3a559fac16fffb52d9149683f1f0ef0
-guessLanguages,func_791587b679cd04d865878a85d4c5e20e3143f04b86280462ecefae5d775ec8d4
-getMaxPhonemes,func_84ac45dea7ebf5906963ea190c14b135369915b38d9e17be70f711addbb03373
-applyFinalRules,func_7af57a1cbbce2afc05906e4a59fd8709f43f5bc89b35c29d81315e41e5515381
-getLContext,func_2504496be562ab56e723a63fdaafe6cc0c28e6254c68c0ff5d7566acd7b4ec51
+Old Method Name,New Method Name,Method Implementation
+guessLanguages,func_791587b679cd04d865878a85d4c5e20e3143f04b86280462ecefae5d775ec8d4,
+applyFinalRules,func_7af57a1cbbce2afc05906e4a59fd8709f43f5bc89b35c29d81315e41e5515381,"    private PhonemeBuilder applyFinalRules(final PhonemeBuilder phonemeBuilder,
+                                           final Map<String, List<Rule>> finalRules) {
+        if (finalRules == null) {
+            throw new NullPointerException(""finalRules can not be null"");
+        }
+        if (finalRules.isEmpty()) {
+            return phonemeBuilder;
+        }
+
+        final Set<Rule.Phoneme> phonemes = new TreeSet<Rule.Phoneme>(Rule.Phoneme.COMPARATOR);
+
+        for (final Rule.Phoneme phoneme : phonemeBuilder.getPhonemes()) {
+            PhonemeBuilder subBuilder = PhonemeBuilder.empty(phoneme.getLanguages());
+            final String phonemeText = phoneme.getPhonemeText().toString();
+
+            for (int i = 0; i < phonemeText.length();) {
+                final RulesApplication rulesApplication =
+                        new RulesApplication(finalRules, phonemeText, subBuilder, i, maxPhonemes).invoke();
+                final boolean found = rulesApplication.isFound();
+                subBuilder = rulesApplication.getPhonemeBuilder();
+
+                if (!found) {
+                    // not found, appending as-is
+                    subBuilder.append(phonemeText.subSequence(i, i + 1));
+                }
+
+                i = rulesApplication.getI();
+            }
+
+            // the phonemes map orders the phonemes only based on their text, but ignores the language set
+            // when adding new phonemes, check for equal phonemes and merge their language set, otherwise
+            // phonemes with the same text but different language set get lost
+            phonemes.addAll(subBuilder.getPhonemes());
+        }
+
+        return new PhonemeBuilder(phonemes);
+    }"

@@ -1,4 +1,30 @@
-Old Method Name,New Method Name
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
-enterScope,func_b4ba8c56706b8a80a3c51268a6596661e82c86db5497c10e3ec4d340a0b368cf
-shouldTraverse,func_39f3fcb265b6ed66d67e51b2215a3de41fe1bdf1e42d8db721462b340524c4c3
+Old Method Name,New Method Name,Method Implementation
+enterScope,func_b4ba8c56706b8a80a3c51268a6596661e82c86db5497c10e3ec4d340a0b368cf,"  public void enterScope(NodeTraversal t) {
+    Node declarationRoot = t.getScopeRoot();
+    Renamer renamer;
+    if (nameStack.isEmpty()) {
+      // If the contextual renamer is being used the starting context can not
+      // be a function.
+      Preconditions.checkState(
+          declarationRoot.getType() != Token.FUNCTION ||
+          !(rootRenamer instanceof ContextualRenamer));
+      Preconditions.checkState(t.inGlobalScope());
+      renamer = rootRenamer;
+    } else {
+      renamer = nameStack.peek().forChildScope();
+    }
+
+    if (declarationRoot.getType() == Token.FUNCTION) {
+      for (Node c = declarationRoot.getFirstChild().getNext().getFirstChild(); c != null; c = c.getNext()) {
+        String name = c.getString();
+        renamer.addDeclaredName(name);
+      }
+      Node functionBody = declarationRoot.getLastChild();
+      findDeclaredNames(functionBody, null, renamer);
+    }  else 
+    if (declarationRoot.getType() != Token.FUNCTION) {
+      // Add the block declarations
+      findDeclaredNames(declarationRoot, null, renamer);
+    }
+    nameStack.push(renamer);
+  }"

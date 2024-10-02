@@ -1,2 +1,10 @@
-Old Method Name,New Method Name
-html,func_e5e239560bc125a20ff2ac1fea50915bc198dd4f5b5256ec447a8a71e00132b3
+Old Method Name,New Method Name,Method Implementation
+html,func_e5e239560bc125a20ff2ac1fea50915bc198dd4f5b5256ec447a8a71e00132b3,"    public String html() {
+        StringBuilder accum = new StringBuilder();
+        try {
+            html(accum, (new Document("""")).outputSettings()); // output settings a bit funky, but this html() seldom used
+        } catch (IOException e) { // ought never happen
+            throw new SerializationException(e);
+        }
+        return accum.toString();
+    }"

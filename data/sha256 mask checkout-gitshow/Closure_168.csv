@@ -1,2 +1,25 @@
-Old Method Name,New Method Name
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
+Old Method Name,New Method Name,Method Implementation
+visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364,"    public void visit(NodeTraversal t, Node node, Node parent) {
+      Node nameNode = null;
+      switch (node.getType()) {
+        case Token.VAR:
+          for (Node child = node.getFirstChild();
+               child != null; child = child.getNext()) {
+            identifyNameNode(
+                child, child.getFirstChild(),
+                NodeUtil.getBestJSDocInfo(child));
+          }
+          break;
+        case Token.EXPR_RESULT:
+          Node firstChild = node.getFirstChild();
+          if (firstChild.isAssign()) {
+            identifyNameNode(
+                firstChild.getFirstChild(), firstChild.getLastChild(),
+                firstChild.getJSDocInfo());
+          } else {
+            identifyNameNode(
+                firstChild, null, firstChild.getJSDocInfo());
+          }
+          break;
+      }
+    }"

@@ -1,2 +1,7 @@
-Old Method Name,New Method Name
-optimize,func_e46f92236739147cf70e66ce916967fdaad76faf563a9db97c08370a24a1e574
+Old Method Name,New Method Name,Method Implementation
+optimize,func_e46f92236739147cf70e66ce916967fdaad76faf563a9db97c08370a24a1e574,"    public UnivariateRealPointValuePair optimize(final FUNC f,
+                                                 final GoalType goal,
+                                                 final double min, final double max)
+        throws FunctionEvaluationException {
+        return optimize(f, goal, min, max, 0);
+    }"

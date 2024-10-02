@@ -1,4 +1,47 @@
-Old Method Name,New Method Name
-binomialCoefficientDouble,func_d3e71dd34d69920c6e3556a1d58e42bd148285d17c1fa6bbe28db20cb1548652
-binomialCoefficient,func_00e3d5e595b1941c15c80888e7874aa049ac076fef9d9f11ddeaba2e47ceeb7b
-binomialCoefficientLog,func_bc768b0a5fcc2a8ee2f08d550757f3c93965e4b51409a9b55e309b319d53a310
+Old Method Name,New Method Name,Method Implementation
+binomialCoefficientDouble,func_d3e71dd34d69920c6e3556a1d58e42bd148285d17c1fa6bbe28db20cb1548652,"    public static double binomialCoefficientDouble(final int n, final int k) {
+        
+  
+        return Math.floor(Math.exp(binomialCoefficientLog(n, k)) + 0.5);
+    }"
+binomialCoefficient,func_00e3d5e595b1941c15c80888e7874aa049ac076fef9d9f11ddeaba2e47ceeb7b,"    public static long binomialCoefficient(final int n, final int k) {
+        if (n < k) {
+            throw new IllegalArgumentException(
+                ""must have n >= k for binomial coefficient (n,k)"");
+        }
+        if (n < 0) {
+            throw new IllegalArgumentException(
+                ""must have n >= 0 for binomial coefficient (n,k)"");
+        }
+        if ((n == k) || (k == 0)) {
+            return 1;
+        }
+        if ((k == 1) || (k == n - 1)) {
+            return n;
+        }
+        long result = Math.round(binomialCoefficientDouble(n, k));
+        if (result == Long.MAX_VALUE) {
+            throw new ArithmeticException(
+                ""result too large to represent in a long integer"");
+        }
+        // Use symmetry for large k
+        
+        // We use the formula
+        // (n choose k) = n! / (n-k)! / k!
+        // (n choose k) == ((n-k+1)*...*n) / (1*...*k)
+        // which could be written
+        // (n choose k) == (n-1 choose k-1) * n / k
+            // For n <= 61, the naive implementation cannot overflow.
+            // For n > 61 but n <= 66, the result cannot overflow,
+            // but we must take care not to overflow intermediate values.
+                // We know that (result * i) is divisible by j,
+                // but (result * i) may overflow, so we split j:
+                // Filter out the gcd, d, so j/d and i/d are integer.
+                // result is divisible by (j/d) because (j/d)
+                // is relative prime to (i/d) and is a divisor of
+                // result * (i/d).
+            // For n > 66, a result overflow might occur, so we check
+            // the multiplication, taking care to not overflow
+            // unnecessary.
+        return result;
+    }"

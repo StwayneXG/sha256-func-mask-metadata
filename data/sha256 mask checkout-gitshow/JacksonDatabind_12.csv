@@ -1,2 +1,8 @@
-Old Method Name,New Method Name
-isCachable,func_9263aac8f147d5db729ff3328544637f42450f45e54efabbb8fb1000b0829442
+Old Method Name,New Method Name,Method Implementation
+isCachable,func_9263aac8f147d5db729ff3328544637f42450f45e54efabbb8fb1000b0829442,"    public boolean isCachable() {
+        /* As per [databind#735], existence of value or key deserializer (only passed
+         * if annotated to use non-standard one) should also prevent caching.
+         */
+        return (_valueTypeDeserializer == null)
+                && (_ignorableProperties == null);
+    }"

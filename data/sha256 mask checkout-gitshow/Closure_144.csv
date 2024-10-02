@@ -1,10 +1,40 @@
-Old Method Name,New Method Name
-build,func_44575cf5b28512d75644bf54a517dcef304ff809fd511747621b4d64f19aac66
-cloneWithNewReturnType,func_cb8405a8e99cd49a5b0797e595da8ad11fc0348a2f41a0a97aaeb54fd57e8cf0
-maybeDeclareQualifiedName,func_b3bdeb1850cba5d015be5e9b7b585a30746c6749df4647af12ba354b1abd8af2
-error,func_ca00fccfb408989eddc401062c4d1219a6aceb6b9b55412357f1790862e8f178
-addParameter,func_fe206c1be343ea62f7758dcdc9d48224d1384da57c01299d47d4a2de3db06331
-FunctionTypeBuilder,func_1c2fff420f243d8127dcf198fddb41b3ece4ad0a9e92e5648d5cab16977225ca
-getFunctionType,func_4a58f0cec6da67f2adbcc827e69d6ce932d4f9533c18a23e0aea5f261f942780
-withReturnType,func_4ed0e690bd70e8acd667cffe59f17822f060065332951d7e877695dccc387368
-isFunctionTypeDeclaration,func_c66b1e8bce766a3553ab98602bf1696f3eff0a36582961549e83c29fd4c41e5d
+Old Method Name,New Method Name,Method Implementation
+addParameter,func_fe206c1be343ea62f7758dcdc9d48224d1384da57c01299d47d4a2de3db06331,"  private boolean addParameter(FunctionParamBuilder builder,
+      JSType paramType, boolean warnedAboutArgList,
+      boolean isOptional, boolean isVarArgs) {
+    boolean emittedWarning = false;
+    if (isOptional) {
+      // Remembering that an optional parameter has been encountered
+      // so that if a non optional param is encountered later, an
+      // error can be reported.
+      if (!builder.addOptionalParams(paramType) && !warnedAboutArgList) {
+        reportWarning(VAR_ARGS_MUST_BE_LAST);
+        emittedWarning = true;
+      }
+    } else if (isVarArgs) {
+      if (!builder.addVarArgs(paramType) && !warnedAboutArgList) {
+        reportWarning(VAR_ARGS_MUST_BE_LAST);
+        emittedWarning = true;
+      }
+    } else {
+      if (!builder.addRequiredParams(paramType) && !warnedAboutArgList) {
+        // An optional parameter was seen and this argument is not an optional
+        // or var arg so it is an error.
+        if (builder.hasVarArgs()) {
+          reportWarning(VAR_ARGS_MUST_BE_LAST);
+        } else {
+          reportWarning(OPTIONAL_ARG_AT_END);
+        }
+        emittedWarning = true;
+      }
+    }
+    return emittedWarning;
+  }"
+error,func_ca00fccfb408989eddc401062c4d1219a6aceb6b9b55412357f1790862e8f178,
+cloneWithNewReturnType,func_cb8405a8e99cd49a5b0797e595da8ad11fc0348a2f41a0a97aaeb54fd57e8cf0,"  FunctionType cloneWithNewReturnType(JSType newReturnType, boolean inferred) {
+    return new FunctionType(
+        registry, null, null,
+        new ArrowType(
+            registry, call.parameters, newReturnType, inferred),
+        typeOfThis, null, false, false);
+  }"

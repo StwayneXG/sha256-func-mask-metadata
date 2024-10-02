@@ -1,4 +1,37 @@
-Old Method Name,New Method Name
-traverseFunction,func_9cce1996259debae5f73bab03a813274db8c09ff5cf098cc4e5039a72045f26d
-makeError,func_f441819a52d16eeafab0bf4fd2272a8f50f8339c55c055bc80daaf653ec69216
-isDirective,func_5121a46ffc3ae098c5df17b4acf93a70215a2d4713469c45e9ee1c3301f36889
+Old Method Name,New Method Name,Method Implementation
+traverseFunction,func_9cce1996259debae5f73bab03a813274db8c09ff5cf098cc4e5039a72045f26d,"  private void traverseFunction(Node n, Node parent) {
+    Preconditions.checkState(n.getChildCount() == 3);
+    Preconditions.checkState(n.isFunction());
+
+    final Node fnName = n.getFirstChild();
+
+    boolean isFunctionExpression = (parent != null)
+        && NodeUtil.isFunctionExpression(n);
+
+    if (!isFunctionExpression) {
+      // Functions declarations are in the scope containing the declaration.
+      traverseBranch(fnName, n);
+    }
+
+    curNode = n;
+    pushScope(n);
+
+    if (isFunctionExpression) {
+      // Function expression names are only accessible within the function
+      // scope.
+      traverseBranch(fnName, n);
+    }
+
+    final Node args = fnName.getNext();
+    final Node body = args.getNext();
+
+    // Args
+    traverseBranch(args, n);
+
+    // Body
+    Preconditions.checkState(body.getNext() == null &&
+            body.isBlock());
+    traverseBranch(body, n);
+
+    popScope();
+  }"

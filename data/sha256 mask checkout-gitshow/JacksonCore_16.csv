@@ -1,3 +1,11 @@
-Old Method Name,New Method Name
-nextToken,func_4c6b2fde954725a43a9fa25b2d036ebbdeaabd9dee354b65ab06270b71e87d6d
-JsonParserSequence,func_627bac22565d1c428a2de98d9df61bd3435ba3265463e48881e3108196bb7493
+Old Method Name,New Method Name,Method Implementation
+nextToken,func_4c6b2fde954725a43a9fa25b2d036ebbdeaabd9dee354b65ab06270b71e87d6d,"    public JsonToken nextToken() throws IOException, JsonParseException
+    {
+        JsonToken t = delegate.nextToken();
+        if (t != null) return t;
+        while (switchToNext()) {
+            t = delegate.nextToken();
+            if (t != null) return t;
+        }
+        return null;
+    }"

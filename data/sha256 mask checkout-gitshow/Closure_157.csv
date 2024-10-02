@@ -1,10 +1,61 @@
-Old Method Name,New Method Name
-transformNumberAsString,func_44af4d91e680d0db594b17d6105158f4a6d78a9ae2c907ac67c8ca9e6ee68087
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
-transformAsString,func_6d8b5a7cc748152dac89c82dcaff140adc18e9319d5e9a5b5fe8dd8ce6ceb7ea
-getSimpleNumber,func_7d1041886bfa430d5b36d908c10b10c967e3c60f148b9f8e2aa7763006d14a22
-getStringValue,func_314308fbed7dd0d8cdfacf3256a17ed0bbe2188f6969dadad517d4fecf3713c2
-getProperty,func_d1d6ea11811550923f97c1d053a17ef414295c89fb89f403c911122d78b7feb6
-appendHexJavaScriptRepresentation,func_02290f61eacbbd6e3430556c87adac342a1e0c4af3fe3b236fc907deb2ac9da7
-processPrototypeParent,func_c04a63b6b8e8a1f74d106bf2ca0c5dc6064c455977dce1a098ae36f8740a5216
-isSimpleNumber,func_027adfb1bcffa03d22d1db6fdaa09910aea4ded0a26e04901d7da85b726611fd
+Old Method Name,New Method Name,Method Implementation
+processPrototypeParent,func_c04a63b6b8e8a1f74d106bf2ca0c5dc6064c455977dce1a098ae36f8740a5216,"    private void processPrototypeParent(Node n, CompilerInput input) {
+      switch (n.getType()) {
+        // Foo.prototype.getBar = function() { ... }
+        case Token.GETPROP:
+        case Token.GETELEM:
+          Node dest = n.getFirstChild().getNext();
+          if (dest.getType() == Token.STRING) {
+            markPrototypePropertyCandidate(dest, input);
+          }
+          break;
+
+        // Foo.prototype = { ""getBar"" : function() { ... } }
+        case Token.ASSIGN:
+        case Token.CALL:
+          Node map;
+          if (n.getType() == Token.ASSIGN) {
+            map = n.getFirstChild().getNext();
+          } else {
+            map = n.getLastChild();
+          }
+          if (map.getType() == Token.OBJECTLIT) {
+            // Remember this node so that we can avoid processing it again when
+            // the traversal reaches it.
+            prototypeObjLits.add(map);
+
+            for (Node key = map.getFirstChild();
+                 key != null; key = key.getNext()) {
+              if (key.getType() != Token.NUMBER) {
+               // May be STRING, GET, or SET
+                markPrototypePropertyCandidate(key, input);
+              }
+            }
+          }
+          break;
+      }
+    }"
+visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364,"    public void visit(NodeTraversal t, Node n, Node parent) {
+      switch (n.getType()) {
+        case Token.GETPROP:
+        case Token.GETELEM:
+          Node dest = n.getFirstChild().getNext();
+          if (dest.getType() == Token.STRING) {
+            reservedNames.add(dest.getString());
+          }
+      }
+    }"
+transformAsString,func_6d8b5a7cc748152dac89c82dcaff140adc18e9319d5e9a5b5fe8dd8ce6ceb7ea,"    private Node transformAsString(AstNode n) {
+      Node ret;
+      if (n instanceof Name) {
+        ret = transformNameAsString((Name)n);
+      } else {
+        ret = transform(n);
+        Preconditions.checkState(ret.getType() == Token.NUMBER
+            || ret.getType() == Token.STRING);
+        if (ret.getType() == Token.STRING) {
+        ret.putBooleanProp(Node.QUOTED_PROP, true);
+        }
+      }
+      return ret;
+    }"

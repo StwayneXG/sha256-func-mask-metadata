@@ -1,3 +1,19 @@
-Old Method Name,New Method Name
-combinator,func_05d98bade315636161c05a5f6188c0a0d7c3f9b417f6d38140c4af1829d084e6
-consumeSubQuery,func_30ee264b2a7e92e3e15bee49cbb8395ce7f8556ed2ac95dc6f0f38c77a22950d
+Old Method Name,New Method Name,Method Implementation
+combinator,func_05d98bade315636161c05a5f6188c0a0d7c3f9b417f6d38140c4af1829d084e6,"    private void combinator(char combinator) {
+        tq.consumeWhitespace();
+        String subQuery = tq.consumeToAny(combinators);
+        
+        Elements output;
+        if (combinator == '>')
+            output = filterForChildren(elements, select(subQuery, elements));
+        else if (combinator == ' ')
+            output = filterForDescendants(elements, select(subQuery, elements));
+        else if (combinator == '+')
+            output = filterForAdjacentSiblings(elements, select(subQuery, root));
+        else if (combinator == '~')
+            output = filterForGeneralSiblings(elements, select(subQuery, root));
+        else
+            throw new IllegalStateException(""Unknown combinator: "" + combinator);
+        
+        elements.clear(); elements.addAll(output);
+    }"

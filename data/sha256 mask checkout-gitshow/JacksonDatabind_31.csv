@@ -1,8 +1,34 @@
-Old Method Name,New Method Name
-writeRawValue,func_e5ba4b6fa9f9568c47ec892f14bf06688d4709cf8b14a3adc5b0d227e24e13d8
-writeNumber,func_f7c7e742e582217c784ff00a4266344b9817b8e71ed07c574d400cdc653f6c93
-writeNull,func_55f2f7f139dc4e15703890126da66bc3924ba967242d40ed6803087e390c79e9
-writeString,func_0bb6ceed2c9bb8bc6de3d32771083a79347ba343352ca639a7b77073ecc24559
-writeBoolean,func_1e3e3ebd86e485527cd0be2e57cb851ad31cea05075f28bb34aac4b8cca8ae63
-_appendValue,func_ce17a67c5f436aadb847f5189b95eec34beda045775e8b8b3e76ba272191a8c9
-writeTree,func_9ca3bcba6b2c69c1b92265ea9c1b3bca031f47e6c72210ed94f1734607932754
+Old Method Name,New Method Name,Method Implementation
+writeTree,func_9ca3bcba6b2c69c1b92265ea9c1b3bca031f47e6c72210ed94f1734607932754,"    public void writeTree(TreeNode node) throws IOException
+    {
+        if (node == null) {
+            writeNull();
+            return;
+        }
+
+        if (_objectCodec == null) {
+            // as with 'writeObject()', is codec optional?
+            _append(JsonToken.VALUE_EMBEDDED_OBJECT, node);
+        } else {
+            _objectCodec.writeTree(this, node);
+        }
+    }"
+writeBoolean,func_1e3e3ebd86e485527cd0be2e57cb851ad31cea05075f28bb34aac4b8cca8ae63,"    public void writeBoolean(boolean state) throws IOException {
+        _append(state ? JsonToken.VALUE_TRUE : JsonToken.VALUE_FALSE);
+    }"
+writeString,func_0bb6ceed2c9bb8bc6de3d32771083a79347ba343352ca639a7b77073ecc24559,"    public void writeString(String text) throws IOException {
+        if (text == null) {
+            writeNull();
+        } else {
+            _append(JsonToken.VALUE_STRING, text);
+        }
+    }"
+writeRawValue,func_e5ba4b6fa9f9568c47ec892f14bf06688d4709cf8b14a3adc5b0d227e24e13d8,"    public void writeRawValue(String text) throws IOException {
+        _append(JsonToken.VALUE_EMBEDDED_OBJECT, new RawValue(text));
+    }"
+writeNumber,func_f7c7e742e582217c784ff00a4266344b9817b8e71ed07c574d400cdc653f6c93,"    public void writeNumber(short i) throws IOException {
+        _append(JsonToken.VALUE_NUMBER_INT, Short.valueOf(i));
+    }"
+writeNull,func_55f2f7f139dc4e15703890126da66bc3924ba967242d40ed6803087e390c79e9,"    public void writeNull() throws IOException {
+        _append(JsonToken.VALUE_NULL);
+    }"

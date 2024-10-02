@@ -1,2 +1,22 @@
-Old Method Name,New Method Name
-isPrototypePropertyAssign,func_fb85c98d806cff952107c4a5e503c15b0d419e908a89e2caf09a8c8aa58f7f44
+Old Method Name,New Method Name,Method Implementation
+isPrototypePropertyAssign,func_fb85c98d806cff952107c4a5e503c15b0d419e908a89e2caf09a8c8aa58f7f44,"    private boolean isPrototypePropertyAssign(Node assign) {
+      Node n = assign.getFirstChild();
+      if (n != null && NodeUtil.isVarOrSimpleAssignLhs(n, assign)
+          && n.getType() == Token.GETPROP
+          ) {
+        // We want to exclude the assignment itself from the usage list
+        boolean isChainedProperty =
+            n.getFirstChild().getType() == Token.GETPROP;
+
+        if (isChainedProperty) {
+          Node child = n.getFirstChild().getFirstChild().getNext();
+
+          if (child.getType() == Token.STRING &&
+              child.getString().equals(""prototype"")) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }"

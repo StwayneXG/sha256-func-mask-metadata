@@ -1,2 +1,18 @@
-Old Method Name,New Method Name
-isJSIdentifier,func_4042cde3f957eb2bfcf080003564a91c47a23c6d611c2ff6c2261765bf40db30
+Old Method Name,New Method Name,Method Implementation
+isJSIdentifier,func_4042cde3f957eb2bfcf080003564a91c47a23c6d611c2ff6c2261765bf40db30,"    public static boolean isJSIdentifier(String s) {
+      int length = s.length();
+
+      if (length == 0 ||
+          !Character.isJavaIdentifierStart(s.charAt(0))) {
+        return false;
+      }
+
+      for (int i = 1; i < length; i++) {
+        if (
+            !Character.isJavaIdentifierPart(s.charAt(i))) {
+          return false;
+        }
+      }
+
+      return true;
+    }"

@@ -1,10 +1,13 @@
-Old Method Name,New Method Name
-withSettingsUsing,func_2edfcce1388e3f974221466b986047b89f58f12bec9b2e5c38f1c906b706f056
-recordDeepStubMock,func_d2ed30a2968abc2fef43935cf1e8c8019df964aecc4adc1b99d51181882c462a
-SerializableAnswer,func_ed23bdb192db3e7c64da5c1aa7570880fa76160c656ff445fa81e647d52b5c96
-instantiateMockitoCoreIfNeeded,func_5417def6afbe6e298139ea0bde3e19c89fdaf0b94e075d8c892b33798ffe34e5
-ReturnsEmptyValues,func_a9cf732bebfccdfa7cf565a08cb3c963b5a0e972bc02d4d51f0a91330749ae6e
-instantiateDelegateIfNeeded,func_41748b5a1cb8e1af1499742ec56a78fbf964e6770f6d4578a8cfac9a87e5d47f
-answer,func_0db52f4076c082518412afd3dd3576e2cb0c63703fd7fed5e23ade60efef31d9
-MockitoCore,func_c49bed82d6c34d905644522066d720da4165ace10f4370e3f7a3a701fefcae65
-ReturnsDeepStubs,func_c8153ee6616b9a5d2b739021b3ac340a74fae912d059ec84f7cfe3bc0adbaca4
+Old Method Name,New Method Name,Method Implementation
+recordDeepStubMock,func_d2ed30a2968abc2fef43935cf1e8c8019df964aecc4adc1b99d51181882c462a,"    private Object recordDeepStubMock(final Object mock, InvocationContainerImpl container) throws Throwable {
+
+        container.addAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return mock;
+            }
+        }, false);
+
+        return mock;
+    }"
+MockitoCore,func_c49bed82d6c34d905644522066d720da4165ace10f4370e3f7a3a701fefcae65,
+ReturnsEmptyValues,func_a9cf732bebfccdfa7cf565a08cb3c963b5a0e972bc02d4d51f0a91330749ae6e,

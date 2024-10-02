@@ -1,5 +1,17 @@
-Old Method Name,New Method Name
-withParams,func_b043ec263a01752f7f3ccd33c5208ee1e5459f36523aaa19eedc32594cb30e00
-newInstance,func_030f4d1fd745b53f1dde5a010f942bf306cbb709a28d885915bfc24bcd6eb746
-paramsMatch,func_420bf57b4f450a74b661b4ae45aefce90f2da9ae07a5d14d819da7777afdc18e
-withOuterClass,func_429750cf9f94879321ec950b9bb86d4e32da10bd6984f663a56bdc3130805e4a
+Old Method Name,New Method Name,Method Implementation
+newInstance,func_030f4d1fd745b53f1dde5a010f942bf306cbb709a28d885915bfc24bcd6eb746,"    public <T> T newInstance(Class<T> cls) {
+        if (outerClassInstance == null) {
+            return noArgConstructor(cls);
+        }
+        return withOuterClass(cls);
+    }"
+withOuterClass,func_429750cf9f94879321ec950b9bb86d4e32da10bd6984f663a56bdc3130805e4a,"    private <T> T withOuterClass(Class<T> cls) {
+        try {
+            //this is kind of overengineered because we don't need to support more params
+            //however, I know we will be needing it :)
+            Constructor<T> c = cls.getDeclaredConstructor(outerClassInstance.getClass());
+            return c.newInstance(outerClassInstance);
+        } catch (Exception e) {
+            throw paramsException(cls, e);
+        }
+    }"

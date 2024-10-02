@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-getPct,func_031354802813669f9d5660a66035cf0e284607a8c182a37950b72edf1492de4b
+Old Method Name,New Method Name,Method Implementation
+getPct,func_031354802813669f9d5660a66035cf0e284607a8c182a37950b72edf1492de4b,"    public double getPct(Object v) {
+        return getCumPct((Comparable<?>) v);
+    }"

@@ -1,2 +1,8 @@
-Old Method Name,New Method Name
-isShortOption,func_6fd50232a8beea2e04da398e9ac27a301d8e700842e54705cd699fc8d59e1b80
+Old Method Name,New Method Name,Method Implementation
+isShortOption,func_6fd50232a8beea2e04da398e9ac27a301d8e700842e54705cd699fc8d59e1b80,"    private boolean isShortOption(String token)
+    {
+        // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)
+        return token.startsWith(""-"") && token.length() >= 2 && options.hasShortOption(token.substring(1, 2));
+
+        // remove leading ""-"" and ""=value""
+    }"

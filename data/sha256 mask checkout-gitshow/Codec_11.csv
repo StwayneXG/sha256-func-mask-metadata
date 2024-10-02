@@ -1,7 +1,31 @@
-Old Method Name,New Method Name
-isWhitespace,func_0bd0b1520f57d56411ff8e3bedde954d3a91b7d92390ceb4796da3d06dddb088
-getUnsignedOctet,func_fe57340c975aad076b49616afe179afb83aea00edd68163484b33d30879e1141
-encodeByte,func_7c2d0c5bacdf3cd8f6d28c75d7a93da1b89e2afd2ab1a06b8b33e2de52f1c841
-encodeQuotedPrintable,func_8e798a665035ebf68fea69cf1536b29d020cac95abbe24cc0942ce2db79bed89
-decodeQuotedPrintable,func_b67262c3ea281c6b72e498ba689f59d3698e4913ca8903576bc04ebcda966df0
-BitSet,func_afd13017c4e4cfc0657677f403fe53f57740a03b4be4fe3d4ff988435bc4e749
+Old Method Name,New Method Name,Method Implementation
+encodeQuotedPrintable,func_8e798a665035ebf68fea69cf1536b29d020cac95abbe24cc0942ce2db79bed89,"    private static final void encodeQuotedPrintable(int b, ByteArrayOutputStream buffer) {
+        buffer.write(ESCAPE_CHAR);
+        char hex1 = Character.toUpperCase(Character.forDigit((b >> 4) & 0xF, 16));
+        char hex2 = Character.toUpperCase(Character.forDigit(b & 0xF, 16));
+        buffer.write(hex1);
+        buffer.write(hex2);
+    }"
+decodeQuotedPrintable,func_b67262c3ea281c6b72e498ba689f59d3698e4913ca8903576bc04ebcda966df0,"    public static final byte[] decodeQuotedPrintable(byte[] bytes) throws DecoderException {
+        if (bytes == null) {
+            return null;
+        }
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        for (int i = 0; i < bytes.length; i++) {
+            final int b = bytes[i];
+            if (b == ESCAPE_CHAR) {
+                try {
+                    // if the next octet is a CR we have found a soft line break
+                    int u = Utils.digit16(bytes[++i]);
+                    int l = Utils.digit16(bytes[++i]);
+                    buffer.write((char) ((u << 4) + l));
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw new DecoderException(""Invalid quoted-printable encoding"", e);
+                }
+            } else {
+                // every other octet is appended except for CR & LF
+                buffer.write(b);
+            }
+        }
+        return buffer.toByteArray();
+    }"

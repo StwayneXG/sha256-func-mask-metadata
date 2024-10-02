@@ -1,4 +1,4 @@
-Old Method Name,New Method Name
-getCreatorIndex,func_4b43a80dd3b93ea71d23ce503d3e7b0651c6618cba56e81cb03c6a871d3af49c
-setAndReturn,func_163e2087c96d499b519488dbd70f6dd1c23f6be7817fc36f03bfed492cd8856f
-getPropertyIndex,func_01ba5f9a947c8eab2d01787a6aedcb3009f948bb227d64bb6d0d318ec78ea0c1
+Old Method Name,New Method Name,Method Implementation
+setAndReturn,func_163e2087c96d499b519488dbd70f6dd1c23f6be7817fc36f03bfed492cd8856f,"    public Object setAndReturn(Object instance, Object value) throws IOException {
+        return _delegate.setAndReturn(instance, value);
+    }"

@@ -1,2 +1,15 @@
-Old Method Name,New Method Name
-getReverseAbstractInterpreter,func_1855cd528f60f1d13b640ef1cc20f4b6a3aa353e27fd282492c5b1baa64a953a
+Old Method Name,New Method Name,Method Implementation
+getReverseAbstractInterpreter,func_1855cd528f60f1d13b640ef1cc20f4b6a3aa353e27fd282492c5b1baa64a953a,"  public ReverseAbstractInterpreter getReverseAbstractInterpreter() {
+    if (abstractInterpreter == null) {
+      ChainableReverseAbstractInterpreter interpreter =
+          new SemanticReverseAbstractInterpreter(
+              getCodingConvention(), getTypeRegistry());
+      if (options.closurePass) {
+        interpreter = new ClosureReverseAbstractInterpreter(
+            getCodingConvention(), getTypeRegistry())
+            .append(interpreter).getFirst();
+      }
+      abstractInterpreter = interpreter;
+    }
+    return abstractInterpreter;
+  }"

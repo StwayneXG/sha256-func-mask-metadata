@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-getNumericalMean,func_dc75b466e43a09cac57fd741ca491df5564992274743859969be7830f7088430
+Old Method Name,New Method Name,Method Implementation
+getNumericalMean,func_dc75b466e43a09cac57fd741ca491df5564992274743859969be7830f7088430,"    public double getNumericalMean() {
+        return (double) (getSampleSize() * getNumberOfSuccesses()) / (double) getPopulationSize();
+    }"

@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-canBeCalled,func_70db27433552d0e5130981d1299a477012ac25f1c22b533f6080b90af66a8f2e
+Old Method Name,New Method Name,Method Implementation
+canBeCalled,func_70db27433552d0e5130981d1299a477012ac25f1c22b533f6080b90af66a8f2e,"  public boolean canBeCalled() {
+    return isRegexpType();
+  }"

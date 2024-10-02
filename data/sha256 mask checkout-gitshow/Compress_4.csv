@@ -1,4 +1,28 @@
-Old Method Name,New Method Name
-createArchiveEntry,func_b9de2ac1eea870b9af2ad7fb80272a11a4abe14a6b13bffda429c3bc96890ce4
-perform,func_fc6d1833bae465ef7440b1e9bb35166072b442aa191429923b02989cb1492317
-close,func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36
+Old Method Name,New Method Name,Method Implementation
+close,func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36,"    public void close() throws IOException {
+        finish();
+        if (raf != null) {
+            raf.close();
+        }
+        if (out != null) {
+            out.close();
+        }
+    }"
+close,func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36,"    public void close() throws IOException {
+        finish();
+        if (raf != null) {
+            raf.close();
+        }
+        if (out != null) {
+            out.close();
+        }
+    }"
+close,func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36,"    public void close() throws IOException {
+        finish();
+        if (raf != null) {
+            raf.close();
+        }
+        if (out != null) {
+            out.close();
+        }
+    }"

@@ -1,20 +1,58 @@
-Old Method Name,New Method Name
-anyFloat,func_3cb4b69fd852d0e7ac5fb202cbdf4e4a3aec72870ca1c6af464c862338739da4
-anyBoolean,func_da2aaa6ba8f1edd605fd201c4d72baeb36539c2c332636945eec40fc696a08d2
-anyString,func_5471a0aa880de4771fc0988aa93038ac6816cb17de7bb9a17d3cca01be68490d
-anySet,func_629915a66fcba1833f3aa967cb29c48ffd0d46438f16e9b43b2d8dc2ddcb9443
-anyDouble,func_14c930ba7b559475b70e1b3fd47f6139d2ea001909231a3a5480669051f2c602
-anyList,func_706e4e29c5c8b9a38cb527c3fadbd5812add90d43d2b119064c13311e7b1f8c5
-anyCollectionOf,func_3cb8d5e006c89f008afa83858a489c04d41867ce57ea7d2f9a9b6321801099e3
-anyByte,func_d19165efdb48ce479ae6163ceeface17b469d64d224f415a352985c81879d0d4
-anyListOf,func_49a8a828a412d59cb502fd648c57873555dfd7219e3a246a4d1467f727bae93c
-anyCollection,func_ccd19f4c25026d8f713f820daf18581d3ca72a0d95572e115e33dc3994dfc0e1
-anyObject,func_f4062ac643c1045e2a2c64905b1da347bf11216f45a4d47e9ebf1d7f5d1174bf
-anyMapOf,func_e85ab6fa64e23f744be7f5257bac5add48182b3be3eb7baea493d423221010c3
-any,func_d6a7cd2a7371b1a15d543196979ff74fdb027023ebf187d5d329be11055c77fd
-anyLong,func_4c86a5493557d830275e2f241e72059b76c2a3fa1930b97107d3724c3b96c579
-anyChar,func_09586571b79131a91ff6ae50a8ad1266b352611994ca47eaa349280272691ac1
-anyInt,func_bf6459d7fd9ac9cf126584c63909bc0463cf07fd165dead164617db3549c1074
-anyShort,func_38813d24f1c268302fd5144b542609396098e14c17b4cc0330f4f42c6dd35432
-anyMap,func_7ef54fe5598d1e4ee7b7bf76a6a9078aa4fea0274c577e4b10130125a1830336
-anySetOf,func_6f57f3edb66efd7764c7cc93b39ccb6cf9feb45bc72f910e886c6b5c51e7e5ac
+Old Method Name,New Method Name,Method Implementation
+anyCollectionOf,func_3cb8d5e006c89f008afa83858a489c04d41867ce57ea7d2f9a9b6321801099e3,"    public static <T> Collection<T> anyCollectionOf(Class<T> clazz) {
+        return (Collection) reportMatcher(Any.ANY).returnList();
+    }"
+anyString,func_5471a0aa880de4771fc0988aa93038ac6816cb17de7bb9a17d3cca01be68490d,"    public static String anyString() {
+        return reportMatcher(Any.ANY).returnString();
+    }"
+anyFloat,func_3cb4b69fd852d0e7ac5fb202cbdf4e4a3aec72870ca1c6af464c862338739da4,"    public static float anyFloat() {
+        return reportMatcher(Any.ANY).returnZero();
+    }"
+anyList,func_706e4e29c5c8b9a38cb527c3fadbd5812add90d43d2b119064c13311e7b1f8c5,"    public static List anyList() {
+        return reportMatcher(Any.ANY).returnList();
+    }"
+anyMap,func_7ef54fe5598d1e4ee7b7bf76a6a9078aa4fea0274c577e4b10130125a1830336,"    public static Map anyMap() {
+        return reportMatcher(Any.ANY).returnMap();
+    }"
+anyShort,func_38813d24f1c268302fd5144b542609396098e14c17b4cc0330f4f42c6dd35432,"    public static short anyShort() {
+        return reportMatcher(Any.ANY).returnZero();
+    }"
+anyListOf,func_49a8a828a412d59cb502fd648c57873555dfd7219e3a246a4d1467f727bae93c,"    public static <T> List<T> anyListOf(Class<T> clazz) {
+        return (List) reportMatcher(Any.ANY).returnList();
+    }"
+anyLong,func_4c86a5493557d830275e2f241e72059b76c2a3fa1930b97107d3724c3b96c579,"    public static long anyLong() {
+        return reportMatcher(Any.ANY).returnZero();
+    }"
+any,func_d6a7cd2a7371b1a15d543196979ff74fdb027023ebf187d5d329be11055c77fd,"    public static <T> T any(Class<T> clazz) {
+        return (T) reportMatcher(Any.ANY).returnFor(clazz);
+    }"
+anySetOf,func_6f57f3edb66efd7764c7cc93b39ccb6cf9feb45bc72f910e886c6b5c51e7e5ac,"    public static <T> Set<T> anySetOf(Class<T> clazz) {
+        return (Set) reportMatcher(Any.ANY).returnSet();
+    }"
+anyDouble,func_14c930ba7b559475b70e1b3fd47f6139d2ea001909231a3a5480669051f2c602,"    public static double anyDouble() {
+        return reportMatcher(Any.ANY).returnZero();
+    }"
+anyBoolean,func_da2aaa6ba8f1edd605fd201c4d72baeb36539c2c332636945eec40fc696a08d2,"    public static boolean anyBoolean() {
+        return reportMatcher(Any.ANY).returnFalse();
+    }"
+anyMapOf,func_e85ab6fa64e23f744be7f5257bac5add48182b3be3eb7baea493d423221010c3,"    public static <K, V>  Map<K, V> anyMapOf(Class<K> keyClazz, Class<V> valueClazz) {
+        return reportMatcher(Any.ANY).returnMap();
+    }"
+anyCollection,func_ccd19f4c25026d8f713f820daf18581d3ca72a0d95572e115e33dc3994dfc0e1,"    public static Collection anyCollection() {
+        return reportMatcher(Any.ANY).returnList();
+    }"
+anyObject,func_f4062ac643c1045e2a2c64905b1da347bf11216f45a4d47e9ebf1d7f5d1174bf,"    public static <T> T anyObject() {
+        return (T) reportMatcher(Any.ANY).returnNull();
+    }"
+anyByte,func_d19165efdb48ce479ae6163ceeface17b469d64d224f415a352985c81879d0d4,"    public static byte anyByte() {
+        return reportMatcher(Any.ANY).returnZero();
+    }"
+anyInt,func_bf6459d7fd9ac9cf126584c63909bc0463cf07fd165dead164617db3549c1074,"    public static int anyInt() {
+        return reportMatcher(Any.ANY).returnZero();
+    }"
+anySet,func_629915a66fcba1833f3aa967cb29c48ffd0d46438f16e9b43b2d8dc2ddcb9443,"    public static Set anySet() {
+        return reportMatcher(Any.ANY).returnSet();
+    }"
+anyChar,func_09586571b79131a91ff6ae50a8ad1266b352611994ca47eaa349280272691ac1,"    public static char anyChar() {
+        return reportMatcher(Any.ANY).returnChar();
+    }"

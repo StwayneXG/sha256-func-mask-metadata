@@ -1,4 +1,17 @@
-Old Method Name,New Method Name
-getOrCreateConstructor,func_022298a3816ea5c18e6ae0f9cdb049d0d69d0eec6d6eb3f637db9f5524f399cf
-resolveInternal,func_6c3fc4622610f2823e111fe40995a170b372910bdaa05440faa6bf70f3f060dc
-apply,func_97a5e41b45ddd2b2381046e77ccfa5c45d3553b81b66aeba7ed5c460c660f93f
+Old Method Name,New Method Name,Method Implementation
+apply,func_97a5e41b45ddd2b2381046e77ccfa5c45d3553b81b66aeba7ed5c460c660f93f,"    public boolean apply(JSType type) {
+      ObjectType objectType = ObjectType.cast(type);
+      if (objectType == null) {
+        reportWarning(EXTENDS_NON_OBJECT, fnName, type.toString());
+      } else if (objectType.isUnknownType() &&
+          // If this has a supertype that hasn't been resolved yet,
+          // then we can assume this type will be ok once the super
+          // type resolves.
+          (objectType.getImplicitPrototype() == null ||
+           objectType.getImplicitPrototype().isResolved())) {
+        reportWarning(RESOLVED_TAG_EMPTY, ""@extends"", fnName);
+      } else {
+        return true;
+      }
+      return false;
+    }"

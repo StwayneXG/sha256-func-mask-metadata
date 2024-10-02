@@ -1,9 +1,30 @@
-Old Method Name,New Method Name
-reduce,func_4c7e98bfa0c750beb52cf2ddf452297d55681dc9efa8e9725d4334e981ae61ad
-computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f
-findMatch,func_af61d67d9918322220fc6246e3951dc0b5d42b19a4422f7d904b5315370f9dc4
-compare,func_1241626eb8ca542931d74f9ac0f6b294e791ff041ab106789b514331e74c9830
-getSymbol,func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157
-evaluateCompare,func_4fa44b9c91a6b8c4740c461a6758da75e9d35af4a4d8055a7f3af117f107e3e7
-compute,func_b04a12f6483ea24a706bfd0c10197a687d4e54868fec136ddee9e41ee8f53c47
-containsMatch,func_923153104b0ba75d69b6b659b93bd08d86325dc903e5a78d4e5794b382a69c58
+Old Method Name,New Method Name,Method Implementation
+computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }"
+getSymbol,func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157,"    public String getSymbol() {
+        return ""<="";
+    }"
+computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }"
+getSymbol,func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157,"    public String getSymbol() {
+        return ""<="";
+    }"
+computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }"
+getSymbol,func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157,"    public String getSymbol() {
+        return ""<="";
+    }"
+computeValue,func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }"

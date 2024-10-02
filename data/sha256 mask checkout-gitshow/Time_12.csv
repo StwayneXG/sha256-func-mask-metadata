@@ -1,4 +1,31 @@
-Old Method Name,New Method Name
-fromCalendarFields,func_f547c8cd820c7f80dd93687d7e3cbc804624edc2886056df7eac3e89716282b5
-fromDateFields,func_bd102b2bb761d8a71d3316050794d6466ad2f0cf8c79fadb58aeef7581b6cfa8
-toDateTimeAtMidnight,func_609bdf46ea399f252c58fc1d3fd7f36f8d6542573df47e13e91be6bd8a739677
+Old Method Name,New Method Name,Method Implementation
+fromCalendarFields,func_f547c8cd820c7f80dd93687d7e3cbc804624edc2886056df7eac3e89716282b5,"    public static LocalDateTime fromCalendarFields(Calendar calendar) {
+        if (calendar == null) {
+            throw new IllegalArgumentException(""The calendar must not be null"");
+        }
+        int yearOfEra = calendar.get(Calendar.YEAR);
+        return new LocalDateTime(
+            yearOfEra,
+            calendar.get(Calendar.MONTH) + 1,
+            calendar.get(Calendar.DAY_OF_MONTH),
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            calendar.get(Calendar.SECOND),
+            calendar.get(Calendar.MILLISECOND)
+        );
+    }"
+fromCalendarFields,func_f547c8cd820c7f80dd93687d7e3cbc804624edc2886056df7eac3e89716282b5,"    public static LocalDateTime fromCalendarFields(Calendar calendar) {
+        if (calendar == null) {
+            throw new IllegalArgumentException(""The calendar must not be null"");
+        }
+        int yearOfEra = calendar.get(Calendar.YEAR);
+        return new LocalDateTime(
+            yearOfEra,
+            calendar.get(Calendar.MONTH) + 1,
+            calendar.get(Calendar.DAY_OF_MONTH),
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            calendar.get(Calendar.SECOND),
+            calendar.get(Calendar.MILLISECOND)
+        );
+    }"

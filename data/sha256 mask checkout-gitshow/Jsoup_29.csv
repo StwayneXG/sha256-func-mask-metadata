@@ -1,2 +1,6 @@
-Old Method Name,New Method Name
-title,func_aaf2320646108059a87ab5017a86aee454f5378ed95003dbb2e12f4ca5266e0e
+Old Method Name,New Method Name,Method Implementation
+title,func_aaf2320646108059a87ab5017a86aee454f5378ed95003dbb2e12f4ca5266e0e,"    public String title() {
+        // title is a preserve whitespace tag (for document output), but normalised here
+        Element titleEl = getElementsByTag(""title"").first();
+        return titleEl != null ? titleEl.text().trim() : """";
+    }"

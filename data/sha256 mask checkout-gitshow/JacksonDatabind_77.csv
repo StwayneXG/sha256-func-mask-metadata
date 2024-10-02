@@ -1,3 +1,2 @@
-Old Method Name,New Method Name
-checkIllegalTypes,func_1bdd8d74694ad36f6a9968316245d53319f3d5a1d1d693fc82c204cde22c9093
-createBeanDeserializer,func_c9dc55250949f28b089e634ed1250d2e203580b4814a7e2683bb076bed4e1ac0
+Old Method Name,New Method Name,Method Implementation
+checkIllegalTypes,func_1bdd8d74694ad36f6a9968316245d53319f3d5a1d1d693fc82c204cde22c9093,

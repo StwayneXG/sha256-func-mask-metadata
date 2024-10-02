@@ -1,2 +1,9 @@
-Old Method Name,New Method Name
-getGenericSignature,func_c1d5b5131066284ebcdba00fe0a4aabb71fcd8d57eda00b86a0f3e6ef529bcc5
+Old Method Name,New Method Name,Method Implementation
+getGenericSignature,func_c1d5b5131066284ebcdba00fe0a4aabb71fcd8d57eda00b86a0f3e6ef529bcc5,"    public StringBuilder getGenericSignature(StringBuilder sb)
+    {
+        _classSignature(_class, sb, false);
+        sb.append('<');
+        sb = _referencedType.getGenericSignature(sb);
+        sb.append(';');
+        return sb;
+    }"

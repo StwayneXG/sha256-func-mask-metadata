@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-compare,func_1241626eb8ca542931d74f9ac0f6b294e791ff041ab106789b514331e74c9830
+Old Method Name,New Method Name,Method Implementation
+compare,func_1241626eb8ca542931d74f9ac0f6b294e791ff041ab106789b514331e74c9830,"                public int compare(EventState es0, EventState es1) {
+                    return orderingSign * Double.compare(es0.getEventTime(), es1.getEventTime());
+                }"

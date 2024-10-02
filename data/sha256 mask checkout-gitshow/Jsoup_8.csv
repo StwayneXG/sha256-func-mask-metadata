@@ -1,3 +1,6 @@
-Old Method Name,New Method Name
-outerHtml,func_73daa08c9aa7b3d12713be3ac40ef6c61747666a931cb3be2cccf334b8be8201
-getOutputSettings,func_6e48895e02c2587367704efb0ef7eeebcd9bab47a9fde320b9151057bc29d76c
+Old Method Name,New Method Name,Method Implementation
+outerHtml,func_73daa08c9aa7b3d12713be3ac40ef6c61747666a931cb3be2cccf334b8be8201,"    public String outerHtml() {
+        StringBuilder accum = new StringBuilder(32*1024);
+        outerHtml(accum);
+        return accum.toString();
+    }"

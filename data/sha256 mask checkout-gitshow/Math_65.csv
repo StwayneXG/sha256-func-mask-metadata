@@ -1,3 +1,17 @@
-Old Method Name,New Method Name
-getRMS,func_58c30ae240b04b43c8c6d2bcf9d199e7652711bdb9a16c9b84545c8ddc188a4f
-getChiSquare,func_edf2df60240e4ef40973a02a70c9b6f913263f3eb9e3f7d7b9b396f331d5eae6
+Old Method Name,New Method Name,Method Implementation
+getRMS,func_58c30ae240b04b43c8c6d2bcf9d199e7652711bdb9a16c9b84545c8ddc188a4f,"    public double getRMS() {
+        double criterion = 0;
+        for (int i = 0; i < rows; ++i) {
+            final double residual = residuals[i];
+            criterion += residual * residual * residualsWeights[i];
+        }
+        return Math.sqrt(criterion / rows);
+    }"
+getChiSquare,func_edf2df60240e4ef40973a02a70c9b6f913263f3eb9e3f7d7b9b396f331d5eae6,"    public double getChiSquare() {
+        double chiSquare = 0;
+        for (int i = 0; i < rows; ++i) {
+            final double residual = residuals[i];
+            chiSquare += residual * residual / residualsWeights[i];
+        }
+        return chiSquare;
+    }"

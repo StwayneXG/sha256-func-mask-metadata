@@ -1,2 +1,9 @@
-Old Method Name,New Method Name
-handleBlockComment,func_cee9885ad1aafbaaf25012e6432bbf1aee3fa2add3fbbd605c8051468788e873
+Old Method Name,New Method Name,Method Implementation
+handleBlockComment,func_cee9885ad1aafbaaf25012e6432bbf1aee3fa2add3fbbd605c8051468788e873,"  private void handleBlockComment(Comment comment) {
+    if (comment.getValue().indexOf(""/* @"") != -1 || comment.getValue().indexOf(""\n * @"") != -1) {
+      errorReporter.warning(
+          SUSPICIOUS_COMMENT_WARNING,
+          sourceName,
+          comment.getLineno(), """", 0);
+    }
+  }"

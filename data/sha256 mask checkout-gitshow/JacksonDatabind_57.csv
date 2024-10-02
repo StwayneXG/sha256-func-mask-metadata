@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-readValues,func_585b84003536ef745dc044dffc9ed0e0af308393152b9219bcc9b85f376f291a
+Old Method Name,New Method Name,Method Implementation
+readValues,func_585b84003536ef745dc044dffc9ed0e0af308393152b9219bcc9b85f376f291a,"    public <T> Iterator<T> readValues(JsonParser p, Class<T> valueType) throws IOException {
+        return forType(valueType).readValues(p);
+    }"

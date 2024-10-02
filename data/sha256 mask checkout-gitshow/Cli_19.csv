@@ -1,2 +1,14 @@
-Old Method Name,New Method Name
-processOptionToken,func_31bbc0634b8fa675cbaff45d51599e65519313122fd52cc09d68968861bb2f6d
+Old Method Name,New Method Name,Method Implementation
+processOptionToken,func_31bbc0634b8fa675cbaff45d51599e65519313122fd52cc09d68968861bb2f6d,"    private void processOptionToken(String token, boolean stopAtNonOption)
+    {
+        if (options.hasOption(token))
+        {
+            currentOption = options.getOption(token);
+            tokens.add(token);
+        }
+        else if (stopAtNonOption)
+        {
+            eatTheRest = true;
+            tokens.add(token);
+        }
+    }"

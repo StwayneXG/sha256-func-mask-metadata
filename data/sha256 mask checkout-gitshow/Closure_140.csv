@@ -1,4 +1,11 @@
-Old Method Name,New Method Name
-getSourceRegion,func_6794a7d896aa85cb9f47b9b260bed99d1384caec9d470542f91e8fb420fd2f5f
-init,func_bb54068aea85faa7e487530083366be9962390af822e4c71ef1aca7033c83e66
-fillEmptyModules,func_4ca6bd796753836ccc96eea9145dc3fdec4607a5ae080f11df0c076cacf4dee0
+Old Method Name,New Method Name,Method Implementation
+getSourceRegion,func_6794a7d896aa85cb9f47b9b260bed99d1384caec9d470542f91e8fb420fd2f5f,"  public Region getSourceRegion(String sourceName, int lineNumber) {
+    if (lineNumber < 1) {
+      return null;
+    }
+    SourceFile input = getSourceFileByName(sourceName);
+    if (input != null) {
+      return input.getRegion(lineNumber);
+    }
+    return null;
+  }"

@@ -1,2 +1,10 @@
-Old Method Name,New Method Name
-hasSameMethod,func_543610ff609c978c42d1b78d8c90f195c469c8325046f8715ffb8f80a85c218d
+Old Method Name,New Method Name,Method Implementation
+hasSameMethod,func_543610ff609c978c42d1b78d8c90f195c469c8325046f8715ffb8f80a85c218d,"    public boolean hasSameMethod(Invocation candidate) {        
+        //not using method.equals() for 1 good reason:
+        //sometimes java generates forwarding methods when generics are in play see JavaGenericsForwardingMethodsTest
+        Method m1 = invocation.getMethod();
+        Method m2 = candidate.getMethod();
+        
+        	/* Avoid unnecessary cloning */
+        return m1.equals(m2);
+    }"

@@ -1,2 +1,25 @@
-Old Method Name,New Method Name
-read,func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925
+Old Method Name,New Method Name,Method Implementation
+read,func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925,"    public int read(byte[] buf, int offset, int numToRead) throws IOException {
+    	int totalRead = 0;
+
+        if (hasHitEOF || entryOffset >= entrySize) {
+            return -1;
+        }
+
+        if (currEntry == null) {
+            throw new IllegalStateException(""No current tar entry"");
+        }
+
+        numToRead = Math.min(numToRead, available());
+        
+        totalRead = is.read(buf, offset, numToRead);
+        count(totalRead);
+        
+        if (totalRead == -1) {
+            hasHitEOF = true;
+        } else {
+            entryOffset += totalRead;
+        }
+
+        return totalRead;
+    }"

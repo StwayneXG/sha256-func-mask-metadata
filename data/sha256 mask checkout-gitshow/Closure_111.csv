@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-caseTopType,func_dc052ca7835b6ab99b4efa55c07663ac5f5480eeb446ac7825e6143e3abaf040
+Old Method Name,New Method Name,Method Implementation
+caseTopType,func_dc052ca7835b6ab99b4efa55c07663ac5f5480eeb446ac7825e6143e3abaf040,"        protected JSType caseTopType(JSType topType) {
+          return topType;
+        }"

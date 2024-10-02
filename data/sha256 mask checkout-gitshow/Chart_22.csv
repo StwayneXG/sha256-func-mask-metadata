@@ -1,5 +1,19 @@
-Old Method Name,New Method Name
-removeRow,func_a78b520dcfd5e913852817c86478ede3c6e38a2100ed07fe6ea0243d58d0aedc
-removeObject,func_8fe9c6f71f004ca7caafef96180f64ca91c70942d9d5805fe962c32fbd4e9c0e
-removeColumn,func_8f679beac9ff8cf6c6bdb9240358e5c0277e5e8bfcb0e58b947789e4913cb5da
-getObject,func_5eacd4322caf39261d7a2e762b7f6ed323800f2193679e472a0b5896f0067e07
+Old Method Name,New Method Name,Method Implementation
+removeColumn,func_8f679beac9ff8cf6c6bdb9240358e5c0277e5e8bfcb0e58b947789e4913cb5da,"    public void removeColumn(int columnIndex) {
+        Comparable columnKey = getColumnKey(columnIndex);
+        removeColumn(columnKey);
+    }"
+getObject,func_5eacd4322caf39261d7a2e762b7f6ed323800f2193679e472a0b5896f0067e07,"    public Object getObject(int row, int column) {
+        Object result = null;
+        KeyedObjects rowData = (KeyedObjects) this.rows.get(row);
+        if (rowData != null) {
+            Comparable columnKey = (Comparable) this.columnKeys.get(column);
+            if (columnKey != null) {
+                int index = rowData.getIndex(columnKey);
+                if (index >= 0) {
+                    result = rowData.getObject(columnKey);
+                }
+            }
+        }
+        return result;
+    }"

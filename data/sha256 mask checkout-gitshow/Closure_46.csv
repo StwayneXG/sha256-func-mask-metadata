@@ -1,3 +1,19 @@
-Old Method Name,New Method Name
-getLeastSupertype,func_5c0546a59a43dd5daf07b57c182724f6d5c8cbd576de0a44cbade843ee998910
-getImplicitPrototype,func_1a2711d215b47c8a912076534d7bf807fe82ddf055ed8230c278f0c44702117d
+Old Method Name,New Method Name,Method Implementation
+getLeastSupertype,func_5c0546a59a43dd5daf07b57c182724f6d5c8cbd576de0a44cbade843ee998910,"  public JSType getLeastSupertype(JSType that) {
+    if (!that.isRecordType()) {
+      return super.getLeastSupertype(that);
+    }
+    RecordTypeBuilder builder = new RecordTypeBuilder(registry);
+    for (String property : properties.keySet()) {
+      if (that.toMaybeRecordType().hasProperty(property) &&
+          that.toMaybeRecordType().getPropertyType(property).isEquivalentTo(
+              getPropertyType(property))) {
+        builder.addProperty(property, getPropertyType(property),
+            getPropertyNode(property));
+      }
+    }
+    return builder.build();
+  }"
+getImplicitPrototype,func_1a2711d215b47c8a912076534d7bf807fe82ddf055ed8230c278f0c44702117d,"  public ObjectType getImplicitPrototype() {
+    return registry.getNativeObjectType(JSTypeNative.OBJECT_TYPE);
+  }"

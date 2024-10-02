@@ -1,7 +1,79 @@
-Old Method Name,New Method Name
-hashCode,func_2c96c87e86e2612010258b35137766f73a4b95c46bb44d9e87160937bfd70fda
-asKey,func_671a81217d325a8091ee84b822413fe76f7bdc69e6bd8c1d4e2c5b6457cdc437
-_fromClass,func_decf365054a16b95dc25b5439839138a6af65c9a4be68ef771e4c2ec13e60096
-equals,func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7
-toString,func_bbb522f7e532f10d2d79413a98bdec613444b049a3c98639fb17831d712a2ca2
-AsKey,func_f3a1adc36fb5fb71847d8031574384d1cd93ff33d9965dbbd4f2e8685a42eddb
+Old Method Name,New Method Name,Method Implementation
+_fromClass,func_decf365054a16b95dc25b5439839138a6af65c9a4be68ef771e4c2ec13e60096,"    protected JavaType _fromClass(ClassStack context, Class<?> rawType, TypeBindings bindings)
+    {
+        // Very first thing: small set of core types we know well:
+        JavaType result = _findWellKnownSimple(rawType);
+        if (result != null) {
+            return result;
+        }
+        // Barring that, we may have recently constructed an instance
+        boolean cachable = (bindings == null) || bindings.isEmpty();
+        if (cachable) {
+            result = _typeCache.get(rawType);
+        if (result != null) {
+            return result;
+            }
+        }
+
+        // 15-Oct-2015, tatu: recursive reference?
+        if (context == null) {
+            context = new ClassStack(rawType);
+        } else {
+            ClassStack prev = context.find(rawType);
+            if (prev != null) {
+                // Self-reference: needs special handling, then...
+                ResolvedRecursiveType selfRef = new ResolvedRecursiveType(rawType, EMPTY_BINDINGS);
+                prev.addSelfReference(selfRef);
+                return selfRef;
+            }
+            // no, but need to update context to allow for proper cycle resolution
+            context = context.child(rawType);
+        }
+
+        // First: do we have an array type?
+        if (rawType.isArray()) {
+            result = ArrayType.construct(_fromAny(context, rawType.getComponentType(), bindings),
+                    bindings);
+        } else {
+            // If not, need to proceed by first resolving parent type hierarchy
+            
+            JavaType superClass;
+            JavaType[] superInterfaces;
+
+            if (rawType.isInterface()) {
+                superClass = null;
+                superInterfaces = _resolveSuperInterfaces(context, rawType, bindings);
+            } else {
+                // Note: even Enums can implement interfaces, so can not drop those
+                superClass = _resolveSuperClass(context, rawType, bindings);
+                superInterfaces = _resolveSuperInterfaces(context, rawType, bindings);
+            }
+
+            // 19-Oct-2015, tatu: Bit messy, but we need to 'fix' java.util.Properties here...
+            if (rawType == Properties.class) {
+                result = MapType.construct(rawType, bindings, superClass, superInterfaces,
+                        CORE_TYPE_STRING, CORE_TYPE_STRING);
+            }
+            // And then check what flavor of type we got. Start by asking resolved
+            // super-type if refinement is all that is needed?
+            else if (superClass != null) {
+                result = superClass.refine(rawType, bindings, superClass, superInterfaces);
+            }
+            // if not, perhaps we are now resolving a well-known class or interface?
+            if (result == null) {
+                result = _fromWellKnownClass(context, rawType, bindings, superClass, superInterfaces); 
+                if (result == null) {
+                    result = _fromWellKnownInterface(context, rawType, bindings, superClass, superInterfaces);
+                    if (result == null) {
+                        // but if nothing else, ""simple"" class for now:
+                        result = _newSimpleType(rawType, bindings, superClass, superInterfaces);
+                    }
+                }
+            }
+        }
+        context.resolveSelfReferences(result);
+        if (cachable) {
+            _typeCache.putIfAbsent(rawType, result);
+        }
+        return result;
+    }"

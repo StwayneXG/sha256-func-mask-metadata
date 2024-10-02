@@ -1,4 +1,29 @@
-Old Method Name,New Method Name
-addPossibleSignature,func_9ae641a974019fb0fd55c4e04da636697686b009fec2ef3b835d77b6c1e53ec0
-processPrototypeParent,func_c04a63b6b8e8a1f74d106bf2ca0c5dc6064c455977dce1a098ae36f8740a5216
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
+Old Method Name,New Method Name,Method Implementation
+addPossibleSignature,func_9ae641a974019fb0fd55c4e04da636697686b009fec2ef3b835d77b6c1e53ec0,"  private void addPossibleSignature(String name, Node node, NodeTraversal t) {
+    boolean signatureAdded = false;
+    if (node.getType() == Token.FUNCTION) {
+      // The node we're looking at is a function, so we can add it directly
+      addSignature(name, node, t.getSourceName());
+      signatureAdded = true;
+    } else if (node.getType() == Token.NAME) {
+      String functionName = node.getString();
+      Scope.Var v = t.getScope().getVar(functionName);
+      if (v == null) {
+        if (compiler.isIdeMode()) {
+          return;
+        } else {
+          throw new IllegalStateException(
+              ""VarCheck should have caught this undefined function"");
+        }
+      }
+      Node function = v.getInitialValue();
+      if (function != null &&
+          function.getType() == Token.FUNCTION) {
+        addSignature(name, function, v.getInputName());
+        signatureAdded = true;
+      }
+    }
+    if (!signatureAdded) {
+      nonMethodProperties.add(name);
+    }
+  }"

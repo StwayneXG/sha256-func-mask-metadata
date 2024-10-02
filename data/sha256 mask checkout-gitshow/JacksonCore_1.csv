@@ -1,4 +1,19 @@
-Old Method Name,New Method Name
-_badBigDecimal,func_da26fa4a5b3a15282679107c235e734dd94e4aab82588997bd9563c3d2c64f89
-parseBigDecimal,func_8607033c64db3880cae93caa318b3aec6352b26e36d78cad2c175b45eb00add7
-contentsAsDecimal,func_a1d467e073f77276b2d49ebed1554da31155c153ba91e45613d59dd88db34793
+Old Method Name,New Method Name,Method Implementation
+contentsAsDecimal,func_a1d467e073f77276b2d49ebed1554da31155c153ba91e45613d59dd88db34793,"    public BigDecimal contentsAsDecimal()
+        throws NumberFormatException
+    {
+        // Already got a pre-cut array?
+        if (_resultArray != null) {
+            return NumberInput.parseBigDecimal(_resultArray);
+        }
+        // Or a shared buffer?
+        if (_inputStart >= 0) {
+            return NumberInput.parseBigDecimal(_inputBuffer, _inputStart, _inputLen);
+        }
+        // Or if not, just a single buffer (the usual case)
+        if (_segmentSize == 0) {
+            return NumberInput.parseBigDecimal(_currentSegment, 0, _currentSize);
+        }
+        // If not, let's just get it aggregated...
+        return NumberInput.parseBigDecimal(contentsAsArray());
+    }"

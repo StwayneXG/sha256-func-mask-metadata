@@ -1,2 +1,7 @@
-Old Method Name,New Method Name
-bracket,func_11c1eee0e02516b19e263d060a3c9f80535bee655ae7e1a3afe8ddd045135ed1
+Old Method Name,New Method Name,Method Implementation
+bracket,func_11c1eee0e02516b19e263d060a3c9f80535bee655ae7e1a3afe8ddd045135ed1,"    public static double[] bracket(UnivariateRealFunction function, 
+            double initial, double lowerBound, double upperBound) 
+    throws ConvergenceException, FunctionEvaluationException {
+        return bracket( function, initial, lowerBound, upperBound,
+            Integer.MAX_VALUE ) ;
+    }"

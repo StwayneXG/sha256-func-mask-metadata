@@ -1,7 +1,78 @@
-Old Method Name,New Method Name
-findEnclosingAttribute,func_4a1a8d349139cf8186f32cadc6ca3492e29ccb32e840825e02f034b0ba036b5e
-compareChildNodePointers,func_f286d1ada8c0ebe87a7b3595945fb684681f6446470f9a169e7faf61b057f953
-getLanguage,func_1cc042e6ea2b4c76987e9a9299fc24409fad3eb6d84499435fba6e9781a47d68
-stringValue,func_dbcc96aec884f7d5057672df21e7446c1415ca7669fdabac78e49f4d852d5a0a
-getValue,func_4d5dea6502a61411b3067ea168a7bf3e5657ca5d3f9388d82f1b4c0e6d5faa40
-getAbstractFactory,func_a9b4ee683974f42cbe24bb5c414b9554795ae541f62079222e3b6ebb26b100f3
+Old Method Name,New Method Name,Method Implementation
+stringValue,func_dbcc96aec884f7d5057672df21e7446c1415ca7669fdabac78e49f4d852d5a0a,"    private String stringValue(Node node) {
+        int nodeType = node.getNodeType();
+        if (nodeType == Node.COMMENT_NODE) {
+            String text = ((Comment) node).getData();
+            return text == null ? """" : text.trim();
+        }
+        if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
+            String text = node.getNodeValue();
+            return text == null ? """" : text.trim();
+        }
+        if (nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
+            String text = ((ProcessingInstruction) node).getData();
+            return text == null ? """" : text.trim();
+        }
+        NodeList list = node.getChildNodes();
+        StringBuffer buf = new StringBuffer(16);
+        for (int i = 0; i < list.getLength(); i++) {
+            Node child = list.item(i);
+            if (child.getNodeType() == Node.TEXT_NODE) {
+                buf.append(child.getNodeValue());
+            }
+            else {
+            buf.append(stringValue(child));
+            }
+        }
+        return buf.toString().trim();
+    }"
+getLanguage,func_1cc042e6ea2b4c76987e9a9299fc24409fad3eb6d84499435fba6e9781a47d68,"    protected String getLanguage() {
+        Node n = node;
+        while (n != null) {
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                Element e = (Element) n;
+                String attr = e.getAttribute(""xml:lang"");
+                if (attr != null && !attr.equals("""")) {
+                    return attr;
+                }
+            }
+            n = n.getParentNode();
+        }
+        return null;
+    }"
+getValue,func_4d5dea6502a61411b3067ea168a7bf3e5657ca5d3f9388d82f1b4c0e6d5faa40,"    public Object getValue() {
+        if (node instanceof Element) {
+            return ((Element) node).getTextTrim();
+        }
+        if (node instanceof Comment) {
+            String text = ((Comment) node).getText();
+            if (text != null) {
+                text = text.trim();
+            }
+            return text;
+        }
+        if (node instanceof Text) {
+            return ((Text) node).getTextTrim();
+        }
+        if (node instanceof CDATA) {
+            return ((CDATA) node).getTextTrim();
+        }
+        if (node instanceof ProcessingInstruction) {
+            String text = ((ProcessingInstruction) node).getData();
+            if (text != null) {
+                text = text.trim();
+            }
+            return text;
+        }
+        return null;
+    }"
+getAbstractFactory,func_a9b4ee683974f42cbe24bb5c414b9554795ae541f62079222e3b6ebb26b100f3,"    private AbstractFactory getAbstractFactory(JXPathContext context) {
+        AbstractFactory factory = context.getFactory();
+        if (factory == null) {
+            throw new JXPathException(
+                ""Factory is not set on the JXPathContext - cannot create path: ""
+                    + asPath());
+        }
+        return factory;
+    }"
+findEnclosingAttribute,func_4a1a8d349139cf8186f32cadc6ca3492e29ccb32e840825e02f034b0ba036b5e,

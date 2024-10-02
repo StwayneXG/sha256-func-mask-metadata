@@ -1,4 +1,4 @@
-Old Method Name,New Method Name
-rewindToMark,func_1966b9e3fc2dca049dc2b71e0a060be8a73f5b7b7e953de900988f827eb5ef9d
-acknowledgeSelfClosingFlag,func_6e26517e5179bb1f49118438262e163b61f3e3ef6f9cea01762eca69db0b75a7
-toString,func_bbb522f7e532f10d2d79413a98bdec613444b049a3c98639fb17831d712a2ca2
+Old Method Name,New Method Name,Method Implementation
+acknowledgeSelfClosingFlag,func_6e26517e5179bb1f49118438262e163b61f3e3ef6f9cea01762eca69db0b75a7,"    void acknowledgeSelfClosingFlag() {
+        selfClosingFlagAcknowledged = true;
+    }"

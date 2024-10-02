@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-extractMultilineTextualBlock,func_d59f3ded5f5d4c2b26e0325f8481fa862d60fd5e393fb81f8754da1c93cff873
+Old Method Name,New Method Name,Method Implementation
+extractMultilineTextualBlock,func_d59f3ded5f5d4c2b26e0325f8481fa862d60fd5e393fb81f8754da1c93cff873,"  private ExtractionInfo extractMultilineTextualBlock(JsDocToken token) {
+    return extractMultilineTextualBlock(token, WhitespaceOption.SINGLE_LINE);
+  }"

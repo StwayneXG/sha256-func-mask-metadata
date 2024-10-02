@@ -1,2 +1,13 @@
-Old Method Name,New Method Name
-toClass,func_9885dc21aa69c7299f08edc4752245f5014c02bca87eac98652fd1ad1b007d65
+Old Method Name,New Method Name,Method Implementation
+toClass,func_9885dc21aa69c7299f08edc4752245f5014c02bca87eac98652fd1ad1b007d65,"    public static Class<?>[] toClass(Object[] array) {
+        if (array == null) {
+            return null;
+        } else if (array.length == 0) {
+            return ArrayUtils.EMPTY_CLASS_ARRAY;
+        }
+        Class<?>[] classes = new Class[array.length];
+        for (int i = 0; i < array.length; i++) {
+            classes[i] = array[i].getClass();
+        }
+        return classes;
+    }"

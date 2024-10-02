@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-testNode,func_da01ee2bec4ed365d5b37d134e6952592c4399d681505ee0d414b9559386c1bb
+Old Method Name,New Method Name,Method Implementation
+testNode,func_da01ee2bec4ed365d5b37d134e6952592c4399d681505ee0d414b9559386c1bb,"    public boolean testNode(NodeTest test) {
+        return testNode(node, test);
+    }"

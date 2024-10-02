@@ -1,6 +1,46 @@
-Old Method Name,New Method Name
-reportOverflowLong,func_b9ab3b9231e9855c7ec0f8f0f7a4a552934f46119d1e7a49dfeceae8dffd9796
-reportOverflowInt,func_8ee24f590ce7a26edd62d48466e908eacc9d5c25620841617a2529a6715ba802
-_reportTooLongIntegral,func_944e8acca3be559ee46e373d2815068e2deafe7ed4c01655f1ecff8358fa7b26
-_finishString,func_beec8d1d1b3647125b92c6799ceef700bb058756b384b734285859ce99af2821
-convertNumberToInt,func_2d4014ddb4dec30b3ab27349bd83428192a727dd5e024777204d1804fd18a5cc
+Old Method Name,New Method Name,Method Implementation
+_reportTooLongIntegral,func_944e8acca3be559ee46e373d2815068e2deafe7ed4c01655f1ecff8358fa7b26,"    protected void _reportTooLongIntegral(int expType, String rawNum) throws IOException
+    {
+        final String numDesc = _longIntegerDesc(rawNum);
+        _reportError(""Numeric value (%s) out of range of %s"", numDesc,
+                (expType == NR_LONG) ? ""long"" : ""int"");
+    }"
+convertNumberToInt,func_2d4014ddb4dec30b3ab27349bd83428192a727dd5e024777204d1804fd18a5cc,"    protected void convertNumberToInt() throws IOException
+    {
+        // First, converting from long ought to be easy
+        if ((_numTypesValid & NR_LONG) != 0) {
+            // Let's verify it's lossless conversion by simple roundtrip
+            int result = (int) _numberLong;
+            if (((long) result) != _numberLong) {
+                _reportError(""Numeric value (""+getText()+"") out of range of int"");
+            }
+            _numberInt = result;
+        } else if ((_numTypesValid & NR_BIGINT) != 0) {
+            if (BI_MIN_INT.compareTo(_numberBigInt) > 0 
+                    || BI_MAX_INT.compareTo(_numberBigInt) < 0) {
+                reportOverflowInt();
+            }
+            _numberInt = _numberBigInt.intValue();
+        } else if ((_numTypesValid & NR_DOUBLE) != 0) {
+            // Need to check boundaries
+            if (_numberDouble < MIN_INT_D || _numberDouble > MAX_INT_D) {
+                reportOverflowInt();
+            }
+            _numberInt = (int) _numberDouble;
+        } else if ((_numTypesValid & NR_BIGDECIMAL) != 0) {
+            if (BD_MIN_INT.compareTo(_numberBigDecimal) > 0 
+                || BD_MAX_INT.compareTo(_numberBigDecimal) < 0) {
+                reportOverflowInt();
+            }
+            _numberInt = _numberBigDecimal.intValue();
+        } else {
+            _throwInternal();
+        }
+        _numTypesValid |= NR_INT;
+    }"
+reportOverflowInt,func_8ee24f590ce7a26edd62d48466e908eacc9d5c25620841617a2529a6715ba802,"    protected void reportOverflowInt() throws IOException {
+        reportOverflowInt(getText());
+    }"
+reportOverflowLong,func_b9ab3b9231e9855c7ec0f8f0f7a4a552934f46119d1e7a49dfeceae8dffd9796,"    protected void reportOverflowLong() throws IOException {
+        reportOverflowLong(getText());
+    }"

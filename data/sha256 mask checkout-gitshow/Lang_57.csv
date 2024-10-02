@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-isAvailableLocale,func_74afe233a5e4a4a076252dff64262ccf8e32ea45f3aa3d6c63bc0feabde213d6
+Old Method Name,New Method Name,Method Implementation
+isAvailableLocale,func_74afe233a5e4a4a076252dff64262ccf8e32ea45f3aa3d6c63bc0feabde213d6,"    public static boolean isAvailableLocale(Locale locale) {
+        return cAvailableLocaleSet.contains(locale);
+    }"

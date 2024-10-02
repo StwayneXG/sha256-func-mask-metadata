@@ -1,5 +1,31 @@
-Old Method Name,New Method Name
-CleaningVisitor,func_d79eaa8ebb210cf80ddcbd5ad40bd981832479709e935d5fb86d4ed8bc60eb6c
-head,func_9f2e6d33a3717ee826353a404ba4618d1aeeb6879ad7936bce8ed5f46814924d
-copySafeNodes,func_3c3ae43b8e3f76b74430f2a9f66b452c94467003e05970e0991256cded7d3be8
-tail,func_0c62f876ef1dea830de9f32c2f4b46dd6d74d50d15896e09ef5a2fcd4ac7e1d7
+Old Method Name,New Method Name,Method Implementation
+head,func_9f2e6d33a3717ee826353a404ba4618d1aeeb6879ad7936bce8ed5f46814924d,
+copySafeNodes,func_3c3ae43b8e3f76b74430f2a9f66b452c94467003e05970e0991256cded7d3be8,"    private int copySafeNodes(Element root, Element destination) {
+        List<Node> sourceChildren = root.childNodes();
+        int numDiscarded = 0;
+
+        for (Node source : sourceChildren) {
+            if (source instanceof Element) {
+                Element sourceEl = (Element) source;
+
+                if (whitelist.isSafeTag(sourceEl.tagName())) { // safe, clone and copy safe attrs
+                    ElementMeta meta = createSafeElement(sourceEl);
+                    Element destChild = meta.el;
+                    destination.appendChild(destChild);
+
+                    numDiscarded += meta.numAttribsDiscarded;
+                    numDiscarded += copySafeNodes(sourceEl, destChild);
+                } else {
+                    numDiscarded++;
+                    numDiscarded += copySafeNodes(sourceEl, destination);
+                }
+            } else if (source instanceof TextNode) {
+                TextNode sourceText = (TextNode) source;
+                TextNode destText = new TextNode(sourceText.getWholeText(), source.baseUri());
+                destination.appendChild(destText);
+            }
+        }
+        return numDiscarded;
+
+
+    }"

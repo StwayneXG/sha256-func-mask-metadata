@@ -1,6 +1,4 @@
-Old Method Name,New Method Name
-CharSequenceUtils,func_5626322b35cd77ff56393759d2ae30babbcc19ef1f158f4d63b3f696db1871ca
-equals,func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7
-newStringUtf8,func_76249c44bddeb672fbb2166009d4851ba450ef96d80f11800dd2f9e59f5536d4
-isDoubleMetaphoneEqual,func_293d4e3c09823aaa234fe2c686946fa3d7f5d962d9727e3514896a0e5dbf8905
-regionMatches,func_78944127aa923baec74b5f815d2d7f82f2d33bc603135ad909dc8a85b4ee1e5f
+Old Method Name,New Method Name,Method Implementation
+isDoubleMetaphoneEqual,func_293d4e3c09823aaa234fe2c686946fa3d7f5d962d9727e3514896a0e5dbf8905,"    public boolean isDoubleMetaphoneEqual(final String value1, final String value2) {
+        return isDoubleMetaphoneEqual(value1, value2, false);
+    }"

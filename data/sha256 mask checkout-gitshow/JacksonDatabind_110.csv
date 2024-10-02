@@ -1,3 +1,24 @@
-Old Method Name,New Method Name
-asList,func_139c1cd35052eb08790c3fbcaaac5e14a3ac7e01942e1c468a1a457c4aa52abf
-findForCollection,func_b5d653ecbb45546a37515e43b47533d225ba38e24d8e1e716f87cd23bcc1b9f4
+Old Method Name,New Method Name,Method Implementation
+findForCollection,func_b5d653ecbb45546a37515e43b47533d225ba38e24d8e1e716f87cd23bcc1b9f4,"    public static JsonDeserializer<?> findForCollection(DeserializationContext ctxt,
+            JavaType type)
+        throws JsonMappingException
+    {
+        JavaUtilCollectionsConverter conv;
+
+        // 10-Jan-2017, tatu: Some types from `java.util.Collections`/`java.util.Arrays` need bit of help...
+        if (type.hasRawClass(CLASS_AS_ARRAYS_LIST)) {
+            conv = converter(TYPE_AS_LIST, type, List.class);
+        } else if (type.hasRawClass(CLASS_SINGLETON_LIST)) {
+            conv = converter(TYPE_SINGLETON_LIST, type, List.class);
+        } else if (type.hasRawClass(CLASS_SINGLETON_SET)) {
+            conv = converter(TYPE_SINGLETON_SET, type, Set.class);
+        // [databind#2265]: we may have another impl type for unmodifiable Lists, check both
+        } else if (type.hasRawClass(CLASS_UNMODIFIABLE_LIST)) {
+            conv = converter(TYPE_UNMODIFIABLE_LIST, type, List.class);
+        } else if (type.hasRawClass(CLASS_UNMODIFIABLE_SET)) {
+            conv = converter(TYPE_UNMODIFIABLE_SET, type, Set.class);
+        } else {
+            return null;
+        }
+        return new StdDelegatingDeserializer<Object>(conv);
+    }"

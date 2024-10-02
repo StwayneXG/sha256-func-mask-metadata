@@ -1,3 +1,4 @@
-Old Method Name,New Method Name
-readTree,func_dbc73347b550c5d1ef7e8b8927b4b730dda3c2e44e83728fc7c572d6b91a5939
-_bindAsTreeOrNull,func_6bd908e7444892404539d82b35776da30ed60ae7cc1be7494c062030d8b33b6b
+Old Method Name,New Method Name,Method Implementation
+readTree,func_dbc73347b550c5d1ef7e8b8927b4b730dda3c2e44e83728fc7c572d6b91a5939,"    public <T extends TreeNode> T readTree(JsonParser p) throws IOException {
+        return (T) _bindAsTree(p);
+    }"

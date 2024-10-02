@@ -1,4 +1,1 @@
-Old Method Name,New Method Name
-createTempBuffer,func_39bf529d60475371249aa2f07ae4027b52c90fbde075bf4f014e1fb9fb112114
-read,func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925
-error,func_ca00fccfb408989eddc401062c4d1219a6aceb6b9b55412357f1790862e8f178
+Old Method Name,New Method Name,Method Implementation

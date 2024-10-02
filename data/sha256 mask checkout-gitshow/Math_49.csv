@@ -1,3 +1,21 @@
-Old Method Name,New Method Name
-ebeDivide,func_e9d9fa394e5890a398b826f1dd60ea88d153553abe64eb5363db75217b9e5c73
-ebeMultiply,func_ada7861f37d3f24afc11780fb0aab6a597fc264e2777ef79fedf9ae3e7c862f4
+Old Method Name,New Method Name,Method Implementation
+ebeDivide,func_e9d9fa394e5890a398b826f1dd60ea88d153553abe64eb5363db75217b9e5c73,"    public OpenMapRealVector ebeDivide(RealVector v) {
+        checkVectorDimensions(v.getDimension());
+        OpenMapRealVector res = new OpenMapRealVector(this);
+        Iterator iter = res.entries.iterator();
+        while (iter.hasNext()) {
+            iter.advance();
+            res.setEntry(iter.key(), iter.value() / v.getEntry(iter.key()));
+        }
+        return res;
+    }"
+ebeMultiply,func_ada7861f37d3f24afc11780fb0aab6a597fc264e2777ef79fedf9ae3e7c862f4,"    public OpenMapRealVector ebeMultiply(RealVector v) {
+        checkVectorDimensions(v.getDimension());
+        OpenMapRealVector res = new OpenMapRealVector(this);
+        Iterator iter = res.entries.iterator();
+        while (iter.hasNext()) {
+            iter.advance();
+            res.setEntry(iter.key(), iter.value() * v.getEntry(iter.key()));
+        }
+        return res;
+    }"

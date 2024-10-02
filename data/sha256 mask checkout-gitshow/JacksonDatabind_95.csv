@@ -1,4 +1,30 @@
-Old Method Name,New Method Name
-parseType,func_9a83440a001a8cec488ce11c327d90a9e8da9e6af9eeda9485f68918ab8a8a7a
-constructParametricType,func_37b0c8a6c903e78c9a3dfa34e52c49ba359888ec3b8e0219a5fcfb5146c6a619
-_fromParamType,func_df9a9e6a63eeb7b047b59870e2691af8b4bfea727db80b714f776ac3c89d164e
+Old Method Name,New Method Name,Method Implementation
+constructParametricType,func_37b0c8a6c903e78c9a3dfa34e52c49ba359888ec3b8e0219a5fcfb5146c6a619,"    public JavaType constructParametricType(Class<?> parametrized, Class<?>... parameterClasses) {
+        int len = parameterClasses.length;
+        JavaType[] pt = new JavaType[len];
+        for (int i = 0; i < len; ++i) {
+            pt[i] = _fromClass(null, parameterClasses[i], null);
+        }
+        return constructParametricType(parametrized, pt);
+    }"
+parseType,func_9a83440a001a8cec488ce11c327d90a9e8da9e6af9eeda9485f68918ab8a8a7a,"    protected JavaType parseType(MyTokenizer tokens)
+        throws IllegalArgumentException
+    {
+        if (!tokens.hasMoreTokens()) {
+            throw _problem(tokens, ""Unexpected end-of-string"");
+        }
+        Class<?> base = findClass(tokens.nextToken(), tokens);
+
+        // either end (ok, non generic type), or generics
+        if (tokens.hasMoreTokens()) {
+            String token = tokens.nextToken();
+            if (""<"".equals(token)) {
+                List<JavaType> parameterTypes = parseTypes(tokens);
+                TypeBindings b = TypeBindings.create(base, parameterTypes);
+                return _factory._fromClass(null, base, b);
+            }
+            // can be comma that separates types, or closing '>'
+            tokens.pushBack(token);
+        }
+        return _factory._fromClass(null, base, null);
+    }"

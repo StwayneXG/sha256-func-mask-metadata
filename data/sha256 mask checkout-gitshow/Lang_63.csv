@@ -1,3 +1,16 @@
-Old Method Name,New Method Name
-reduceAndCorrect,func_87535a883e4ea89513e08ad492c66389195c5201ff7020f3dd2fb32452074f5a
-formatPeriod,func_90339a73f4b578f5f0179617555beb2ad68e6e034121290f1c4e5f2ef8a2fd6f
+Old Method Name,New Method Name,Method Implementation
+formatPeriod,func_90339a73f4b578f5f0179617555beb2ad68e6e034121290f1c4e5f2ef8a2fd6f,"    public static String formatPeriod(long startMillis, long endMillis, String format) {
+        return formatPeriod(startMillis, endMillis, format, true, TimeZone.getDefault());
+    }"
+reduceAndCorrect,func_87535a883e4ea89513e08ad492c66389195c5201ff7020f3dd2fb32452074f5a,"    static int reduceAndCorrect(Calendar start, Calendar end, int field, int difference) {
+        end.add( field, -1 * difference );
+        int endValue = end.get(field);
+        int startValue = start.get(field);
+        if (endValue < startValue) {
+            int newdiff = startValue - endValue;
+            end.add( field, newdiff );
+            return newdiff;
+        } else {
+            return 0;
+        }
+    }"

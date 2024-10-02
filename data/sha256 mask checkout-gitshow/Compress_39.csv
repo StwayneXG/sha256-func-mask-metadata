@@ -1,3 +1,18 @@
-Old Method Name,New Method Name
-sanitize,func_af6a3bb0c72fe4a38d0b207abf0d849360b90ed074bbe2c4421fbf0dae53082c
-ArchiveUtils,func_03248731eaf8877ba090b28e430545150533361f561b964678fe03555feb83db
+Old Method Name,New Method Name,Method Implementation
+sanitize,func_af6a3bb0c72fe4a38d0b207abf0d849360b90ed074bbe2c4421fbf0dae53082c,"    public static String sanitize(String s) {
+        final char[] chars = s.toCharArray();
+        final int len = chars.length;
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            final char c = chars[i];
+            if (!Character.isISOControl(c)) {
+                Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+                if (block != null && block != Character.UnicodeBlock.SPECIALS) {
+                    sb.append(c);
+                    continue;
+                }
+            }
+            sb.append('?');
+        }
+        return sb.toString();
+    }"

@@ -1,2 +1,9 @@
-Old Method Name,New Method Name
-between,func_fbb27fbdc4f4dd04e21693a3b56c311cd37f743174c1bad4fc27467605426c28
+Old Method Name,New Method Name,Method Implementation
+between,func_fbb27fbdc4f4dd04e21693a3b56c311cd37f743174c1bad4fc27467605426c28,"    protected static int between(ReadableInstant start, ReadableInstant end, DurationFieldType field) {
+        if (start == null || end == null) {
+            throw new IllegalArgumentException(""ReadableInstant objects must not be null"");
+        }
+        Chronology chrono = DateTimeUtils.getInstantChronology(start);
+        int amount = field.getField(chrono).getDifference(end.getMillis(), start.getMillis());
+        return amount;
+    }"

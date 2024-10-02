@@ -1,6 +1,56 @@
-Old Method Name,New Method Name
-setAndReturn,func_163e2087c96d499b519488dbd70f6dd1c23f6be7817fc36f03bfed492cd8856f
-getNullValue,func_4d4c97f0fae9b692780bfa4ce6eafcd84f2a2bbc463d28d0d733df78a111b0db
-_reportMissingSetter,func_26d0d2ac305091f497902371904cb4188c7b42b511fbe464f44ede854599b4e3
-handleResolvedForwardReference,func_14d6193192218a4fcbc31bed387d6a253726d9e3ad2533abdce3b8be10248fe2
-withValueDeserializer,func_335b1ef9964b67077560f40624be396eda93d82f66aa9ea470e7da56d9af628b
+Old Method Name,New Method Name,Method Implementation
+withValueDeserializer,func_335b1ef9964b67077560f40624be396eda93d82f66aa9ea470e7da56d9af628b,"    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (_valueDeserializer == deser) {
+            return this;
+        }
+        // 07-May-2019, tatu: As per [databind#2303], must keep VD/NVP in-sync if they were
+        return new SetterlessProperty(this, deser, _nullProvider);
+    }"
+setAndReturn,func_163e2087c96d499b519488dbd70f6dd1c23f6be7817fc36f03bfed492cd8856f,"    public Object setAndReturn(Object instance, Object value) throws IOException
+    {
+        set(instance, value);
+        return instance;
+    }"
+withValueDeserializer,func_335b1ef9964b67077560f40624be396eda93d82f66aa9ea470e7da56d9af628b,"    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (_valueDeserializer == deser) {
+            return this;
+        }
+        // 07-May-2019, tatu: As per [databind#2303], must keep VD/NVP in-sync if they were
+        return new SetterlessProperty(this, deser, _nullProvider);
+    }"
+withValueDeserializer,func_335b1ef9964b67077560f40624be396eda93d82f66aa9ea470e7da56d9af628b,"    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (_valueDeserializer == deser) {
+            return this;
+        }
+        // 07-May-2019, tatu: As per [databind#2303], must keep VD/NVP in-sync if they were
+        return new SetterlessProperty(this, deser, _nullProvider);
+    }"
+withValueDeserializer,func_335b1ef9964b67077560f40624be396eda93d82f66aa9ea470e7da56d9af628b,"    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (_valueDeserializer == deser) {
+            return this;
+        }
+        // 07-May-2019, tatu: As per [databind#2303], must keep VD/NVP in-sync if they were
+        return new SetterlessProperty(this, deser, _nullProvider);
+    }"
+withValueDeserializer,func_335b1ef9964b67077560f40624be396eda93d82f66aa9ea470e7da56d9af628b,"    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (_valueDeserializer == deser) {
+            return this;
+        }
+        // 07-May-2019, tatu: As per [databind#2303], must keep VD/NVP in-sync if they were
+        return new SetterlessProperty(this, deser, _nullProvider);
+    }"
+setAndReturn,func_163e2087c96d499b519488dbd70f6dd1c23f6be7817fc36f03bfed492cd8856f,"    public Object setAndReturn(Object instance, Object value) throws IOException
+    {
+        set(instance, value);
+        return instance;
+    }"
+withValueDeserializer,func_335b1ef9964b67077560f40624be396eda93d82f66aa9ea470e7da56d9af628b,"    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (_valueDeserializer == deser) {
+            return this;
+        }
+        // 07-May-2019, tatu: As per [databind#2303], must keep VD/NVP in-sync if they were
+        return new SetterlessProperty(this, deser, _nullProvider);
+    }"
+getNullValue,func_4d4c97f0fae9b692780bfa4ce6eafcd84f2a2bbc463d28d0d733df78a111b0db,"    public AtomicReference<Object> getNullValue(DeserializationContext ctxt) throws JsonMappingException {
+        return new AtomicReference<Object>();
+    }"

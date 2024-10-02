@@ -1,3 +1,10 @@
-Old Method Name,New Method Name
-shouldReportThis,func_2514bbfd2ad002499a1aa872627df949c00598c13303ea7549c18b59449f3195
-shouldTraverse,func_39f3fcb265b6ed66d67e51b2215a3de41fe1bdf1e42d8db721462b340524c4c3
+Old Method Name,New Method Name,Method Implementation
+shouldReportThis,func_2514bbfd2ad002499a1aa872627df949c00598c13303ea7549c18b59449f3195,"  private boolean shouldReportThis(Node n, Node parent) {
+    if (assignLhsChild != null) {
+      // Always report a THIS on the left side of an assign.
+      return true;
+    }
+
+    // Also report a THIS with a property access.
+    return false;
+  }"

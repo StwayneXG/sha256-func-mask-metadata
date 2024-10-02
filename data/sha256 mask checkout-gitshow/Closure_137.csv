@@ -1,16 +1,138 @@
-Old Method Name,New Method Name
-stripConstIfReplaced,func_eb88cc04d16668a0f1fac843427dd0a83866ef106ba6a332788878057deb3499
-handleScopeVar,func_29647ffcc923f0a20a910c7fb6a79eec7f6fa627bed4821055c46c4f3bd6d840
-exitScope,func_159f774e61a4fc03a6ba8bcdaa964ea7f80f986e143aed41fa578a239faef8d3
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
-addCandidateNameReference,func_c2f71bfa6778116c77fe4f2af804f018f084b2746e33a9179e308d5ab147fdb0
-shouldTraverse,func_39f3fcb265b6ed66d67e51b2215a3de41fe1bdf1e42d8db721462b340524c4c3
-getNameSuffix,func_f2f11756363541ae96c3e7926c9b83f9f20fa2157543a991d4c1501db21e4abd
-enterScope,func_b4ba8c56706b8a80a3c51268a6596661e82c86db5497c10e3ec4d340a0b368cf
-newQualifiedNameNode,func_659a33cfac400e571ac5a5c0b4a727a03e4fcd1ca5b75fe598d895f5b380edc3
-of,func_28391d3bc64ec15cbb090426b04aa6b7649c3cc85f11230bb0105e02d15e3624
-newHashMap,func_8b65608fb200a7cdb6b3c87762a9536f307ad110470a7983b06ed00c96470ecf
-getOrginalNameInternal,func_e8233edd0f7e1009187cf32eca9a0692f881f70aaa816cff880923c15e2c7fa2
-isReferenceName,func_ffe1aed6e6268bc2ffa64b12043f3bee24c5f18fd3a6dd3390ee6c0c90611f93
-addDeclaredName,func_5776775ff6a8eabbe6493fd1a403b1610d96924452386a3fd64e9aa6847452c7
-process,func_19ed40bf62c399b8492efda5b9a9184b68cf4d9d4a165b38557b9d14201d0c03
+Old Method Name,New Method Name,Method Implementation
+shouldTraverse,func_39f3fcb265b6ed66d67e51b2215a3de41fe1bdf1e42d8db721462b340524c4c3,"  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+
+    switch (n.getType()) {
+      case Token.FUNCTION:
+        {
+          // Add recursive function name, if needed.
+          // NOTE: ""enterScope"" is called after we need to pick up this name.
+          Renamer renamer = nameStack.peek().forChildScope();
+
+          // If needed, add the function recursive name.
+          String name = n.getFirstChild().getString();
+          if (name != null && !name.isEmpty() && parent != null
+              && !NodeUtil.isFunctionDeclaration(n)) {
+            renamer.addDeclaredName(name);
+          }
+
+          nameStack.push(renamer);
+        }
+        break;
+
+      case Token.CATCH:
+        {
+          Renamer renamer = nameStack.peek().forChildScope();
+
+          String name = n.getFirstChild().getString();
+          renamer.addDeclaredName(name);
+
+          nameStack.push(renamer);
+        }
+        break;
+    }
+
+    return true;
+  }"
+getNameSuffix,func_f2f11756363541ae96c3e7926c9b83f9f20fa2157543a991d4c1501db21e4abd,"    private static String getNameSuffix(String name, int index) {
+      return name.substring(
+          index + ContextualRenamer.UNIQUE_ID_SEPARATOR.length(),
+          name.length());
+    }"
+handleScopeVar,func_29647ffcc923f0a20a910c7fb6a79eec7f6fa627bed4821055c46c4f3bd6d840,
+getOrginalNameInternal,func_e8233edd0f7e1009187cf32eca9a0692f881f70aaa816cff880923c15e2c7fa2,"    private static String getOrginalNameInternal(String name, int index) {
+      return name.substring(0, index);
+    }"
+visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364,"  public void visit(NodeTraversal t, Node n, Node parent) {
+    switch (n.getType()) {
+      case Token.NAME:
+        String newName = getReplacementName(n.getString());
+        if (newName != null) {
+          Renamer renamer = nameStack.peek();
+          if (renamer.stripConstIfReplaced()) {
+            // TODO(johnlenz): Do we need to do anything about the javadoc?
+            n.removeProp(Node.IS_CONSTANT_NAME);
+          }
+          n.setString(newName);
+          t.getCompiler().reportCodeChange();
+        }
+        break;
+
+      case Token.FUNCTION:
+        // Remove function recursive name (if any).
+        nameStack.pop();
+        break;
+
+      case Token.CATCH:
+        // Remove catch except name from the stack of names.
+        nameStack.pop();
+        break;
+    }
+  }"
+exitScope,func_159f774e61a4fc03a6ba8bcdaa964ea7f80f986e143aed41fa578a239faef8d3,"  public void exitScope(NodeTraversal t) {
+    if (!t.inGlobalScope()) {
+      nameStack.pop();
+    }
+  }"
+addDeclaredName,func_5776775ff6a8eabbe6493fd1a403b1610d96924452386a3fd64e9aa6847452c7,"    void addDeclaredName(String name);
+
+    /**
+     * @return A replacement name, null if oldName is unknown or should not
+     * be replaced.
+     */
+    String getReplacementName(String oldName);
+
+    /**
+     * @return Whether the constant-ness of a name should be removed.
+     */
+    boolean stripConstIfReplaced();
+
+    /**
+     * @return A Renamer for a scope within the scope of the current Renamer.
+     */
+    Renamer forChildScope();
+  }
+
+  /**
+   * Inverts the transformation by {@link ContextualRenamer}, when possible.
+   */
+  static class ContextualRenameInverter extends AbstractPostOrderCallback
+      implements CompilerPass {
+    private final AbstractCompiler compiler;
+
+    // The set of names referenced in the current scope.
+
+    // Stack reference sets.
+
+    // Name are globally unique initially, so we don't need a per-scope map.
+    private Map<Var, String> nameMap = Maps.newHashMap();
+
+    private ContextualRenameInverter(AbstractCompiler compiler) {
+      this.compiler = compiler;
+    }"
+newHashMap,func_8b65608fb200a7cdb6b3c87762a9536f307ad110470a7983b06ed00c96470ecf,
+process,func_19ed40bf62c399b8492efda5b9a9184b68cf4d9d4a165b38557b9d14201d0c03,"  public void process(Node externs, Node root) {
+    NodeTraversal.traverse(compiler, root,
+        new NormalizeStatements(compiler, assertOnChange));
+    removeDuplicateDeclarations(root);
+    if (MAKE_LOCAL_NAMES_UNIQUE) {
+      MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique();
+      NodeTraversal t = new NodeTraversal(compiler, renamer);
+      t.traverseRoots(externs, root);
+    }
+    // It is important that removeDuplicateDeclarations runs after
+    // MakeDeclaredNamesUnique in order for catch block exception names to be
+    // handled properly. Specifically, catch block exception names are
+    // only valid within the catch block, but our currect Scope logic
+    // has no concept of this and includes it in the containing function 
+    // (or global scope). MakeDeclaredNamesUnique makes the catch exception
+    // names unique so that removeDuplicateDeclarations() will properly handle
+    // cases where a function scope variable conflict with a exception name:
+    //   function f() {
+    //      try {throw 0;} catch(e) {e; /* catch scope 'e'*/}
+    //      var e = 1; // f scope 'e'
+    //   }
+    // otherwise 'var e = 1' would be rewritten as 'e = 1'.
+    // TODO(johnlenz): Introduce a seperate scope for catch nodes. 
+    new PropogateConstantAnnotations(compiler, assertOnChange)
+        .process(externs, root);
+  }"

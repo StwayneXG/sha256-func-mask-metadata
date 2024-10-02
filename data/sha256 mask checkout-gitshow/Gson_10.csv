@@ -1,2 +1,8 @@
-Old Method Name,New Method Name
-write,func_10fd874b68dad080ed706762c8e163dabb20514bddae38fb159c56f714a3b143
+Old Method Name,New Method Name,Method Implementation
+write,func_10fd874b68dad080ed706762c8e163dabb20514bddae38fb159c56f714a3b143,"      @Override void write(JsonWriter writer, Object value)
+          throws IOException, IllegalAccessException {
+        Object fieldValue = field.get(value);
+        TypeAdapter t =
+          new TypeAdapterRuntimeTypeWrapper(context, typeAdapter, fieldType.getType());
+        t.write(writer, fieldValue);
+      }"

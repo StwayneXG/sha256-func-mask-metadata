@@ -1,6 +1,152 @@
-Old Method Name,New Method Name
-collapseDeclarationOfNameAndDescendants,func_a702570a6977badd7c788f0d02edca4f3f77d30183846098bc9108abcd151528
-updateObjLitOrFunctionDeclarationAtAssignNode,func_454a5c1a160a2b72d9b28ef1c9647317495bbba24c351ce676a0591ac9944e70
-updateObjLitOrFunctionDeclarationAtVarNode,func_51672823956b69c1830dffe6e38c73521a0c093061fd1d004e2d0acb82592939
-updateObjLitOrFunctionDeclaration,func_bd1b39e1943bc5812c497ede2ffb6c8a1fd55efdad26b61f2a9ae0316be5427e
-updateFunctionDeclarationAtFunctionNode,func_b0ac33dfa06bac26856ea8817b87c89cd1173d32a4fb1f2b61e1281a59a2c0c3
+Old Method Name,New Method Name,Method Implementation
+updateObjLitOrFunctionDeclarationAtAssignNode,func_454a5c1a160a2b72d9b28ef1c9647317495bbba24c351ce676a0591ac9944e70,"  private void updateObjLitOrFunctionDeclarationAtAssignNode(
+      Name n, String alias) {
+    // NOTE: It's important that we don't add additional nodes
+    // (e.g. a var node before the exprstmt) because the exprstmt might be
+    // the child of an if statement that's not inside a block).
+
+    Ref ref = n.declaration;
+    Node rvalue = ref.node.getNext();
+    Node varNode = new Node(Token.VAR);
+    Node varParent = ref.node.getAncestor(3);
+    Node gramps = ref.node.getAncestor(2);
+    boolean isObjLit = rvalue.getType() == Token.OBJECTLIT;
+    boolean insertedVarNode = false;
+
+    if (isObjLit && n.canEliminate()) {
+      // Eliminate the object literal altogether.
+      varParent.replaceChild(gramps, varNode);
+      ref.node = null;
+      insertedVarNode = true;
+
+    } else if (!n.isSimpleName()) {
+      // Create a VAR node to declare the name.
+      if (rvalue.getType() == Token.FUNCTION) {
+        checkForHosedThisReferences(rvalue, n.docInfo, n);
+      }
+
+      ref.node.getParent().removeChild(rvalue);
+
+      Node nameNode = NodeUtil.newName(
+          compiler.getCodingConvention(),
+          alias, ref.node.getAncestor(2), n.fullName());
+
+      if (ref.node.getLastChild().getBooleanProp(Node.IS_CONSTANT_NAME)) {
+        nameNode.putBooleanProp(Node.IS_CONSTANT_NAME, true);
+      }
+
+      varNode.addChildToBack(nameNode);
+      nameNode.addChildToFront(rvalue);
+      varParent.replaceChild(gramps, varNode);
+
+      // Update the node ancestry stored in the reference.
+      ref.node = nameNode;
+      insertedVarNode = true;
+    }
+
+    if (isObjLit) {
+        declareVarsForObjLitValues(
+            n, alias, rvalue,
+            varNode, varParent.getChildBefore(varNode), varParent);
+
+    }
+      addStubsForUndeclaredProperties(n, alias, varParent, varNode);
+
+    if (insertedVarNode) {
+      if (!varNode.hasChildren()) {
+        varParent.removeChild(varNode);
+      }
+      compiler.reportCodeChange();
+    }
+  }"
+updateObjLitOrFunctionDeclaration,func_bd1b39e1943bc5812c497ede2ffb6c8a1fd55efdad26b61f2a9ae0316be5427e,"  private void updateObjLitOrFunctionDeclaration(Name n, String alias) {
+    if (n.declaration == null) {
+      // Some names do not have declarations, because they
+      // are only defined in local scopes.
+      return;
+    }
+
+    if (n.declaration.getTwin() != null) {
+      // Twin declarations will get handled when normal references
+      // are handled.
+      return;
+    }
+
+    switch (n.declaration.node.getParent().getType()) {
+      case Token.ASSIGN:
+        updateObjLitOrFunctionDeclarationAtAssignNode(n, alias);
+        break;
+      case Token.VAR:
+        updateObjLitOrFunctionDeclarationAtVarNode(n);
+        break;
+      case Token.FUNCTION:
+        updateFunctionDeclarationAtFunctionNode(n);
+        break;
+    }
+  }"
+collapseDeclarationOfNameAndDescendants,func_a702570a6977badd7c788f0d02edca4f3f77d30183846098bc9108abcd151528,"  private void collapseDeclarationOfNameAndDescendants(Name n, String alias) {
+    boolean canCollapseChildNames = n.canCollapseUnannotatedChildNames();
+
+    // Handle this name first so that nested object literals get unrolled.
+    if (n.canCollapse() && canCollapseChildNames) {
+      updateObjLitOrFunctionDeclaration(n, alias);
+    }
+
+    if (n.props != null) {
+      for (Name p : n.props) {
+        // Recurse first so that saved node ancestries are intact when needed.
+        collapseDeclarationOfNameAndDescendants(
+            p, appendPropForAlias(alias, p.name));
+
+        if (!p.inExterns && canCollapseChildNames && p.declaration != null &&
+            p.declaration.node != null &&
+            p.declaration.node.getParent() != null &&
+            p.declaration.node.getParent().getType() == Token.ASSIGN) {
+          updateSimpleDeclaration(
+              appendPropForAlias(alias, p.name), p, p.declaration);
+        }
+      }
+    }
+  }"
+updateObjLitOrFunctionDeclarationAtVarNode,func_51672823956b69c1830dffe6e38c73521a0c093061fd1d004e2d0acb82592939,"  private void updateObjLitOrFunctionDeclarationAtVarNode(Name n) {
+
+    Ref ref = n.declaration;
+    String name = ref.node.getString();
+    Node rvalue = ref.node.getFirstChild();
+    Node varNode = ref.node.getParent();
+    Node gramps = varNode.getParent();
+
+    boolean isObjLit = rvalue.getType() == Token.OBJECTLIT;
+    int numChanges = 0;
+
+    if (isObjLit) {
+      numChanges += declareVarsForObjLitValues(
+          n, name, rvalue, varNode, gramps.getChildBefore(varNode),
+          gramps);
+    }
+
+    numChanges += addStubsForUndeclaredProperties(n, name, gramps, varNode);
+
+    if (isObjLit && n.canEliminate()) {
+      varNode.removeChild(ref.node);
+      if (!varNode.hasChildren()) {
+        gramps.removeChild(varNode);
+      }
+      numChanges++;
+
+      // Clear out the object reference, since we've eliminated it from the
+      // parse tree.
+      ref.node = null;
+    }
+
+    if (numChanges > 0) {
+      compiler.reportCodeChange();
+    }
+  }"
+updateFunctionDeclarationAtFunctionNode,func_b0ac33dfa06bac26856ea8817b87c89cd1173d32a4fb1f2b61e1281a59a2c0c3,"  private void updateFunctionDeclarationAtFunctionNode(Name n) {
+
+    Ref ref = n.declaration;
+    String fnName = ref.node.getString();
+    addStubsForUndeclaredProperties(
+        n, fnName, ref.node.getAncestor(2), ref.node.getParent());
+  }"

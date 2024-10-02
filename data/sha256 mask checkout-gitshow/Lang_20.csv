@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-join,func_58393216032be6257784ac0c6a73efb2a084e27b4cfff1e6acee7b7e6ab93b10
+Old Method Name,New Method Name,Method Implementation
+join,func_58393216032be6257784ac0c6a73efb2a084e27b4cfff1e6acee7b7e6ab93b10,"    public static <T> String join(T... elements) {
+        return join(elements, null);
+    }"

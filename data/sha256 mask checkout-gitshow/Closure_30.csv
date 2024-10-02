@@ -1,5 +1,10 @@
-Old Method Name,New Method Name
-process,func_19ed40bf62c399b8492efda5b9a9184b68cf4d9d4a165b38557b9d14201d0c03
-Definition,func_9813fafb098c218090536790280a91ee70062a8490eb3615395ee731cdd40023
-visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
-checkLeftOf,func_392f7f2a857c5bc54c97b5d3b0f20124d8d4ee6a9a8621e588e63197a9ceffc1
+Old Method Name,New Method Name,Method Implementation
+process,func_19ed40bf62c399b8492efda5b9a9184b68cf4d9d4a165b38557b9d14201d0c03,"  public void process(Node externs, Node root) {
+    (new NodeTraversal(compiler, this)).traverse(root);
+  }"
+visit,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364,"      public void visit(NodeTraversal t, Node n, Node parent) {
+        if (n.isName() && jsScope.isDeclared(n.getString(), true)) {
+          Var dep = jsScope.getVar(n.getString());
+            def.depends.add(dep);
+        }
+      }"

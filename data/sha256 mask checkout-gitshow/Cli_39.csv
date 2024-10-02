@@ -1,3 +1,5 @@
-Old Method Name,New Method Name
-openFile,func_749aaa40c8025bbf31b2229d7d536f44f99615a5d9e6381c830bbf1dcd43d927
-createValue,func_56137b0df47dc6f4807356678dd05734d1bc6f19eb3c91597b36a155d19e7977
+Old Method Name,New Method Name,Method Implementation
+createValue,func_56137b0df47dc6f4807356678dd05734d1bc6f19eb3c91597b36a155d19e7977,"    public static Object createValue(final String str, final Object obj) throws ParseException
+    {
+        return createValue(str, (Class<?>) obj);
+    }"

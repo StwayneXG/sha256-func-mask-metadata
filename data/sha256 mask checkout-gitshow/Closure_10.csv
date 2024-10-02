@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-mayBeString,func_65eec607a575c23bdd9e8570b45b38e0fdb72b39b2ae7af17dbea92f01f6c869
+Old Method Name,New Method Name,Method Implementation
+mayBeString,func_65eec607a575c23bdd9e8570b45b38e0fdb72b39b2ae7af17dbea92f01f6c869,"  static boolean mayBeString(Node n) {
+    return mayBeString(n, true);
+  }"

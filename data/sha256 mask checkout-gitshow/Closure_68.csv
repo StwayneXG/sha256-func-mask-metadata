@@ -1,4 +1,6 @@
-Old Method Name,New Method Name
-addParserWarning,func_fa5693f1fdbdbab8b971ca0eb7759e6140701b89fc22c457414e1613fdb83098
-parseBasicTypeExpression,func_445f30450fb08cc40570b8177db8836121b682864de1de57b2659e48c3131d54
-parseFunctionType,func_c105eae5d5e537dda97f2d80da326d88fd53a3747635f5b331cf8354495fcc09
+Old Method Name,New Method Name,Method Implementation
+addParserWarning,func_fa5693f1fdbdbab8b971ca0eb7759e6140701b89fc22c457414e1613fdb83098,"    void addParserWarning(String messageId, String messageArg, int lineno,
+        int charno) {
+      errorReporter.warning(ScriptRuntime.getMessage1(messageId, messageArg),
+          sourceName, lineno, null, charno);
+    }"

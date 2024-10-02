@@ -1,2 +1,10 @@
-Old Method Name,New Method Name
-addChildren,func_1e6b92e9ff1a834ece80c620c314c9de57edfa7c0069106915ce9fa0d6fa2add
+Old Method Name,New Method Name,Method Implementation
+addChildren,func_1e6b92e9ff1a834ece80c620c314c9de57edfa7c0069106915ce9fa0d6fa2add,"    protected void addChildren(Node... children) {
+        //most used. short circuit addChildren(int), which hits reindex children and array copy
+        for (Node child: children) {
+            reparentChild(child);
+            ensureChildNodes();
+            childNodes.add(child);
+            child.setSiblingIndex(childNodes.size()-1);
+        }
+    }"

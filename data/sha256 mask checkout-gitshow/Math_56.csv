@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-getCounts,func_129be2794cd7bd747569c7892d1eeb7417284846233ea96d5ac6423b6da030d6
+Old Method Name,New Method Name,Method Implementation
+getCounts,func_129be2794cd7bd747569c7892d1eeb7417284846233ea96d5ac6423b6da030d6,"        public int[] getCounts() {
+            return MathUtils.copyOf(counter);
+        }"

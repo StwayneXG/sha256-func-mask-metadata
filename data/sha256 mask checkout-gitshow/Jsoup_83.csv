@@ -1,4 +1,38 @@
-Old Method Name,New Method Name
-consumeToAny,func_eb67f88af03be6722b49656e7e58392ffce26294eb6bf63895b57901bbbdce53
-read,func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925
-rangeEquals,func_855c5d416c71ee7be4ff5abb0250d9cd4a3141400544f91137b09dde5b61d2bf
+Old Method Name,New Method Name,Method Implementation
+consumeToAny,func_eb67f88af03be6722b49656e7e58392ffce26294eb6bf63895b57901bbbdce53,"    public String consumeToAny(final char... chars) {
+        bufferUp();
+        final int start = bufPos;
+        final int remaining = bufLength;
+        final char[] val = charBuf;
+
+        OUTER: while (bufPos < remaining) {
+            for (char c : chars) {
+                if (val[bufPos] == c)
+                    break OUTER;
+            }
+            bufPos++;
+        }
+
+        return bufPos > start ? cacheString(charBuf, stringCache, start, bufPos -start) : """";
+    }"
+read,func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925,"        void read(Tokeniser t, CharacterReader r) {
+            switch (r.current()) {
+                case '&':
+                    t.advanceTransition(CharacterReferenceInData);
+                    break;
+                case '<':
+                    t.advanceTransition(TagOpen);
+                    break;
+                case nullChar:
+                    t.error(this); // NOT replacement character (oddly?)
+                    t.emit(r.consume());
+                    break;
+                case eof:
+                    t.emit(new Token.EOF());
+                    break;
+                default:
+                    String data = r.consumeData();
+                    t.emit(data);
+                    break;
+            }
+        }"

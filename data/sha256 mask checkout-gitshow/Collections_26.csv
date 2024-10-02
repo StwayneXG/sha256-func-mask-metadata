@@ -1,2 +1,5 @@
-Old Method Name,New Method Name
-readResolve,func_9fc45408a130e34f0a8393cb42cd0b365d7b1b675c7ae5bb86e41b622203388b
+Old Method Name,New Method Name,Method Implementation
+readResolve,func_9fc45408a130e34f0a8393cb42cd0b365d7b1b675c7ae5bb86e41b622203388b,"    private Object readResolve() {
+        calculateHashCode(keys);
+        return this;
+    }"

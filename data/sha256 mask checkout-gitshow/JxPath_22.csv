@@ -1,2 +1,4 @@
-Old Method Name,New Method Name
-getNamespaceURI,func_340b8bc07a66251d715368d3d4028395e22098ef396175678557298f5fb063ad
+Old Method Name,New Method Name,Method Implementation
+getNamespaceURI,func_340b8bc07a66251d715368d3d4028395e22098ef396175678557298f5fb063ad,"    public String getNamespaceURI() {
+        return getNamespaceURI(node);
+    }"

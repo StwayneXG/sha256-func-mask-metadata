@@ -1,2 +1,19 @@
-Old Method Name,New Method Name
-appendFixedWidthPadRight,func_ae500915346fd82ea28959bef3970ef64d22be92c2e9d770c9854041cd0260ef
+Old Method Name,New Method Name,Method Implementation
+appendFixedWidthPadRight,func_ae500915346fd82ea28959bef3970ef64d22be92c2e9d770c9854041cd0260ef,"    public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {
+        if (width > 0) {
+            ensureCapacity(size + width);
+            String str = (obj == null ? getNullText() : obj.toString());
+            int strLen = str.length();
+            if (strLen >= width) {
+                str.getChars(0, strLen, buffer, size);
+            } else {
+                int padLen = width - strLen;
+                str.getChars(0, strLen, buffer, size);
+                for (int i = 0; i < padLen; i++) {
+                    buffer[size + strLen + i] = padChar;
+                }
+            }
+            size += width;
+        }
+        return this;
+    }"

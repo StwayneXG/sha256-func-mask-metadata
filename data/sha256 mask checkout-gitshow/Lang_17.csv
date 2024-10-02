@@ -1,2 +1,21 @@
-Old Method Name,New Method Name
-translate,func_7fd690e20d081646429b8b6a37835c428a6406013aa2499209837334ae3f1456
+Old Method Name,New Method Name,Method Implementation
+translate,func_7fd690e20d081646429b8b6a37835c428a6406013aa2499209837334ae3f1456,"    public abstract int translate(CharSequence input, int index, Writer out) throws IOException;
+
+    /**
+     * Helper for non-Writer usage. 
+     * @param input CharSequence to be translated
+     * @return String output of translation
+     */
+    public final String translate(CharSequence input) {
+        if (input == null) {
+            return null;
+        }
+        try {
+            StringWriter writer = new StringWriter(input.length() * 2);
+            translate(input, writer);
+            return writer.toString();
+        } catch (IOException ioe) {
+            // this should never ever happen while writing to a StringWriter
+            throw new RuntimeException(ioe);
+        }
+    }"

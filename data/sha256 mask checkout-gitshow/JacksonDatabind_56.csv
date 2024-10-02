@@ -1,3 +1,8 @@
-Old Method Name,New Method Name
-_deserialize,func_68e4dda1631b25d0c6f825d0692d5977a19111f439c34e7b7e2564d190d7c3fd
-_firstHyphenOrUnderscore,func_e87aef26bb0f20574e2434f0817614e1c725f7cd25e87f36b87b9b3f29d99a76
+Old Method Name,New Method Name,Method Implementation
+_deserialize,func_68e4dda1631b25d0c6f825d0692d5977a19111f439c34e7b7e2564d190d7c3fd,"    protected abstract T _deserialize(String value, DeserializationContext ctxt) throws IOException;
+
+    protected T _deserializeEmbedded(Object ob, DeserializationContext ctxt) throws IOException {
+        // default impl: error out
+        throw ctxt.mappingException(""Don't know how to convert embedded Object of type %s into %s"",
+                ob.getClass().getName(), _valueClass.getName());
+    }"

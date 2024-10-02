@@ -1,3 +1,39 @@
-Old Method Name,New Method Name
-CSVFormat,func_502b22b8ce4851472ff831a4329bca2f26aa829d49db4adf8cd4345bff120162
-validate,func_133c8eb86cf813474ade739d5d133087e2026f56aaf366284dd1a25d98d44690
+Old Method Name,New Method Name,Method Implementation
+validate,func_133c8eb86cf813474ade739d5d133087e2026f56aaf366284dd1a25d98d44690,"    void validate() throws IllegalStateException {
+        if (quoteChar != null && delimiter == quoteChar.charValue()) {
+            throw new IllegalStateException(
+                    ""The quoteChar character and the delimiter cannot be the same ('"" + quoteChar + ""')"");
+        }
+
+        if (escape != null && delimiter == escape.charValue()) {
+            throw new IllegalStateException(
+                    ""The escape character and the delimiter cannot be the same ('"" + escape + ""')"");
+        }
+
+        if (commentStart != null && delimiter == commentStart.charValue()) {
+            throw new IllegalStateException(
+                    ""The comment start character and the delimiter cannot be the same ('"" + commentStart + ""')"");
+        }
+
+        if (quoteChar != null && quoteChar.equals(commentStart)) {
+            throw new IllegalStateException(
+                    ""The comment start character and the quoteChar cannot be the same ('"" + commentStart + ""')"");
+        }
+
+        if (escape != null && escape.equals(commentStart)) {
+            throw new IllegalStateException(
+                    ""The comment start and the escape character cannot be the same ('"" + commentStart + ""')"");
+        }
+
+        if (escape == null && quotePolicy == Quote.NONE) {
+            throw new IllegalStateException(""No quotes mode set but no escape character is set"");
+        }
+
+        if (header != null) {
+            final Set<String> set = new HashSet<String>(header.length);
+            set.addAll(Arrays.asList(header));
+            if (set.size() != header.length) {
+                throw new IllegalStateException(""The header contains duplicate names: "" + Arrays.toString(header));
+            }
+        }
+    }"

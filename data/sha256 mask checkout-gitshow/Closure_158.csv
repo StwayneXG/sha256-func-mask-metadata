@@ -1,21 +1,146 @@
-Old Method Name,New Method Name
-WarningGuardOffOptionHandler,func_b45e4b595202cda7a65f5353b955d9dabcd2c64ceb6cefa57ce777db4c2774c2
-isMultiValued,func_9f1368b0a70f1b729aa34e0f14be10b6bb1c087490c61b94d795998ade01e5bb
-clear,func_913a4cb91be20332f3559f8070255d7ac3e6228bb423f4441551d3f783e7d4f4
-newArrayList,func_d8cf64520b0508dc79ebf75fcc4e6df4294e992b04664cff0d03a57a4a2eb960
-WarningGuardWarningOptionHandler,func_7c57272c70fe62c4fb0473d7471e142d71911362aa62b2c8301822c230ba979d
-addValue,func_dfef6e8f491525ee2ae43a86916c0cced50aa791876d7dfcf101fc7f3707f619
-setWarningLevels,func_34656e822f6fb39719cef576beb597064513fafc82aa55da23428cc69dce3894
-setRunOptions,func_375e534001efcac69d75d47853681918a8fdff519f85ff5eabae0098a0748ada
-getType,func_394d4c59ae71e0f753d363a31394cb93b63edc659ec5e3346f7b32085d69f706
-WarningGuardSetter,func_06ae3185d72e422191ee06bc24b756fd744ebdc25bf8936e0f4294d9ca8af311
-getDefaultMetaVariable,func_23f0f1e2d8202903d355fbc4ca68f4d3c5b3ae7a708310d39d4aa045363182c9
-setWarningLevel,func_f35be9fc1e9070b64aac4096a0fc1f4a8683e4d389d0a75ff19a38797b2e7d66
-add,func_7e9e5ac30f2216fd0fd6f5faed316f2d5983361a4203c3330cfa46ef65bb4767
-WarningGuardSpec,func_0f8f917f5eb57c197d6cf2d5e2bc56d23d9069b3ff2942e282c7441a3bdaa05a
-WarningGuardErrorOptionHandler,func_bc663df680086bfc8801806d2a2b5d2d546ee7428f61f854419ceaca27647c82
-main,func_0d6e4079e36703ebd37c00722f5891d28b0e2811dc114b129215123adcce3605
-processFlagFile,func_d54cc4f0bf725a81730f345fcea4c8ec43cb5580337f6a0d798656c3dacff042
-Entry,func_2649e082d9a2ba377ac918877028c3f1885e2e9ab926b216943aaf06064b92a1
-Flags,func_f38d9950af4f9fa900a7d326505740a942352e173f1f9dc85cbf17b5aca95c55
-initConfigFromFlags,func_b753298f496aa21a8ff839a99e41ccfe183f4dd94d9c65bce9ff760a92a1eec2
+Old Method Name,New Method Name,Method Implementation
+newArrayList,func_d8cf64520b0508dc79ebf75fcc4e6df4294e992b04664cff0d03a57a4a2eb960,
+Entry,func_2649e082d9a2ba377ac918877028c3f1885e2e9ab926b216943aaf06064b92a1,
+setRunOptions,func_375e534001efcac69d75d47853681918a8fdff519f85ff5eabae0098a0748ada,"  final protected void setRunOptions(CompilerOptions options)
+      throws FlagUsageException, IOException {
+    DiagnosticGroups diagnosticGroups = getDiagnosticGroups();
+
+    diagnosticGroups.setWarningLevels(
+        options, config.jscompError, CheckLevel.ERROR);
+    diagnosticGroups.setWarningLevels(
+        options, config.jscompWarning, CheckLevel.WARNING);
+    diagnosticGroups.setWarningLevels(
+        options, config.jscompOff, CheckLevel.OFF);
+
+    createDefineOrTweakReplacements(config.define, options, false);
+
+    options.setTweakProcessing(config.tweakProcessing);
+    createDefineOrTweakReplacements(config.tweak, options, true);
+
+    options.manageClosureDependencies = config.manageClosureDependencies;
+    if (config.closureEntryPoints.size() > 0) {
+      options.setManageClosureDependencies(config.closureEntryPoints);
+    }
+    options.devMode = config.jscompDevMode;
+    options.setCodingConvention(config.codingConvention);
+    options.setSummaryDetailLevel(config.summaryDetailLevel);
+
+    outputCharset = options.outputCharset = getOutputCharset();
+    inputCharset = getInputCharset();
+
+    if (config.jsOutputFile.length() > 0) {
+      options.jsOutputFile = config.jsOutputFile;
+    }
+
+    if (config.createSourceMap.length() > 0) {
+      options.sourceMapOutputPath = config.createSourceMap;
+    }
+    options.sourceMapDetailLevel = config.sourceMapDetailLevel;
+    options.sourceMapFormat = config.sourceMapFormat;
+
+    if (!config.variableMapInputFile.equals("""")) {
+      options.inputVariableMapSerialized =
+          VariableMap.load(config.variableMapInputFile).toBytes();
+    }
+
+    if (!config.propertyMapInputFile.equals("""")) {
+      options.inputPropertyMapSerialized =
+          VariableMap.load(config.propertyMapInputFile).toBytes();
+    }
+
+    if (config.languageIn.length() > 0) {
+      if (config.languageIn.equals(""ECMASCRIPT5_STRICT"") ||
+          config.languageIn.equals(""ES5_STRICT"")) {
+        options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5);
+      } else if (config.languageIn.equals(""ECMASCRIPT5"") ||
+          config.languageIn.equals(""ES5"")) {
+        options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5);
+      } else if (config.languageIn.equals(""ECMASCRIPT3"") ||
+                 config.languageIn.equals(""ES3"")) {
+        options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT3);
+      } else {
+        throw new FlagUsageException(""Unknown language `"" + config.languageIn +
+                                     ""' specified."");
+      }
+    }
+
+    options.acceptConstKeyword = config.acceptConstKeyword;
+  }"
+initConfigFromFlags,func_b753298f496aa21a8ff839a99e41ccfe183f4dd94d9c65bce9ff760a92a1eec2,"  private void initConfigFromFlags(String[] args, PrintStream err) {
+
+    List<String> processedArgs = processArgs(args);
+
+    CmdLineParser parser = new CmdLineParser(flags);
+    isConfigValid = true;
+    try {
+      parser.parseArgument(processedArgs.toArray(new String[] {}));
+      // For contains --flagfile flag
+      if (!flags.flag_file.equals("""")) {
+        processFlagFile(err);
+      }
+    } catch (CmdLineException e) {
+      err.println(e.getMessage());
+      isConfigValid = false;
+    } catch (IOException ioErr) {
+      err.println(""ERROR - "" + flags.flag_file + "" read error."");
+      isConfigValid = false;
+    }
+
+    if (flags.version) {
+      ResourceBundle config = ResourceBundle.getBundle(configResource);
+      err.println(
+          ""Closure Compiler (http://code.google.com/closure/compiler)\n"" +
+          ""Version: "" + config.getString(""compiler.version"") + ""\n"" +
+          ""Built on: "" + config.getString(""compiler.date""));
+      err.flush();
+    }
+
+    if (!isConfigValid || flags.display_help) {
+      isConfigValid = false;
+      parser.printUsage(err);
+    } else {
+      getCommandLineConfig()
+          .setPrintTree(flags.print_tree)
+          .setComputePhaseOrdering(flags.compute_phase_ordering)
+          .setPrintAst(flags.print_ast)
+          .setPrintPassGraph(flags.print_pass_graph)
+          .setJscompDevMode(flags.jscomp_dev_mode)
+          .setLoggingLevel(flags.logging_level)
+          .setExterns(flags.externs)
+          .setJs(flags.js)
+          .setJsOutputFile(flags.js_output_file)
+          .setModule(flags.module)
+          .setVariableMapInputFile(flags.variable_map_input_file)
+          .setPropertyMapInputFile(flags.property_map_input_file)
+          .setVariableMapOutputFile(flags.variable_map_output_file)
+          .setCreateNameMapFiles(flags.create_name_map_files)
+          .setPropertyMapOutputFile(flags.property_map_output_file)
+          .setCodingConvention(flags.third_party ?
+               new DefaultCodingConvention() :
+               new ClosureCodingConvention())
+          .setSummaryDetailLevel(flags.summary_detail_level)
+          .setOutputWrapper(flags.output_wrapper)
+          .setModuleWrapper(flags.module_wrapper)
+          .setModuleOutputPathPrefix(flags.module_output_path_prefix)
+          .setCreateSourceMap(flags.create_source_map)
+          .setJscompError(flags.jscomp_error)
+          .setJscompWarning(flags.jscomp_warning)
+          .setJscompOff(flags.jscomp_off)
+          .setDefine(flags.define)
+          .setCharset(flags.charset)
+          .setManageClosureDependencies(flags.manage_closure_dependencies)
+          .setClosureEntryPoints(flags.closure_entry_point)
+          .setOutputManifest(flags.output_manifest)
+          .setAcceptConstKeyword(flags.accept_const_keyword)
+          .setLanguageIn(flags.language_in);
+    }
+  }"
+setWarningLevels,func_34656e822f6fb39719cef576beb597064513fafc82aa55da23428cc69dce3894,"  void setWarningLevels(CompilerOptions options,
+      List<String> diagnosticGroups, CheckLevel level) {
+    for (String name : diagnosticGroups) {
+    DiagnosticGroup group = forName(name);
+    Preconditions.checkNotNull(group, ""No warning class for name: "" + name);
+    options.setWarningLevel(group, level);
+    }
+  }"
+main,func_0d6e4079e36703ebd37c00722f5891d28b0e2811dc114b129215123adcce3605,
