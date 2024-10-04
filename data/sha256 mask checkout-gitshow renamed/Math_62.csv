@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+optimize,"    public UnivariateRealPointValuePair optimize(final FUNC f,
+                                                 final GoalType goal,
+                                                 final double min, final double max)
+        throws FunctionEvaluationException {
+        return optimize(f, goal, min, max, 0);
+    }",func_e46f92236739147cf70e66ce916967fdaad76faf563a9db97c08370a24a1e574

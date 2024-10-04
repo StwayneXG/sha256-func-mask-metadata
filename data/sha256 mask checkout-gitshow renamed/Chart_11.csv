@@ -1,0 +1,22 @@
+Original Function Name,Function Code,Hash Mask Name
+equal,"    public static boolean equal(Shape s1, Shape s2) {
+        if (s1 instanceof Line2D && s2 instanceof Line2D) {
+            return equal((Line2D) s1, (Line2D) s2);
+        }
+        else if (s1 instanceof Ellipse2D && s2 instanceof Ellipse2D) {
+            return equal((Ellipse2D) s1, (Ellipse2D) s2);
+        }
+        else if (s1 instanceof Arc2D && s2 instanceof Arc2D) {
+            return equal((Arc2D) s1, (Arc2D) s2);
+        }
+        else if (s1 instanceof Polygon && s2 instanceof Polygon) {
+            return equal((Polygon) s1, (Polygon) s2);
+        }
+        else if (s1 instanceof GeneralPath && s2 instanceof GeneralPath) {
+            return equal((GeneralPath) s1, (GeneralPath) s2);
+        }
+        else {
+            // this will handle Rectangle2D...
+            return ObjectUtilities.equal(s1, s2);
+        }
+    }",func_f9d6cd1ed5cf1ead7b54873537748e0daa8f1390cd61555b68089fca063444f3

@@ -1,0 +1,18 @@
+Original Function Name,Function Code,Hash Mask Name
+setInitialBuffer,"    void setInitialBuffer(byte[] out, int outPos, int outAvail) {
+        if (out != null && out.length == outAvail) {
+            buffer = out;
+            pos = outPos;
+            readPos = outPos;
+        }
+    }",func_5d14966f6d53723658d33d3a6f4b9a792fc205c6971e04a1c1ebdf823f811392
+read,"    public int read() throws IOException {
+        int r = read(singleByte, 0, 1);
+        while (r == 0) {
+            r = read(singleByte, 0, 1);
+        }
+        if (r > 0) {
+            return singleByte[0] < 0 ? 256 + singleByte[0] : singleByte[0];
+        }
+        return -1;
+    }",func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925

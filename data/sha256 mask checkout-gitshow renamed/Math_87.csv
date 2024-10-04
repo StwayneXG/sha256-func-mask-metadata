@@ -1,0 +1,14 @@
+Original Function Name,Function Code,Hash Mask Name
+getBasicRow,"    private Integer getBasicRow(final int col) {
+        Integer row = null;
+        for (int i = getNumObjectiveFunctions(); i < getHeight(); i++) {
+            if (!MathUtils.equals(getEntry(i, col), 0.0, epsilon)) {
+                if (row == null) {
+                row = i;
+                } else {
+                return null;
+                }
+            }
+        }
+        return row;
+    }",func_f2943a6db7f7479ac4d4a86b13b1d36138a96888ac1edcbad5152c85ada511a8

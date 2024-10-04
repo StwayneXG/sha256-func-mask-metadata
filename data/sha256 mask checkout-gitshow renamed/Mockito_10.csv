@@ -1,0 +1,32 @@
+Original Function Name,Function Code,Hash Mask Name
+newDeepStubMock,"    private Object newDeepStubMock(GenericMetadataSupport returnTypeGenericMetadata) {
+        return mockitoCore().mock(
+                returnTypeGenericMetadata.rawType(),
+                withSettingsUsing(returnTypeGenericMetadata)
+        );
+    }",func_1d531558677a280bd120dced67691230bfda7e611f27eecb373912ff62693800
+deepStub,"    private Object deepStub(InvocationOnMock invocation, GenericMetadataSupport returnTypeGenericMetadata) throws Throwable {
+        InternalMockHandler<Object> handler = new MockUtil().getMockHandler(invocation.getMock());
+        InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
+
+        // matches invocation for verification
+        for (StubbedInvocationMatcher stubbedInvocationMatcher : container.getStubbedInvocations()) {
+            if (container.getInvocationForStubbing().matches(stubbedInvocationMatcher.getInvocation())) {
+                return stubbedInvocationMatcher.answer(invocation);
+            }
+        }
+
+        // record deep stub answer
+        return recordDeepStubAnswer(
+                newDeepStubMock(returnTypeGenericMetadata),
+                container
+        );
+    }",func_ffc91d804594d5788096fc6fe1c57c34b0c6b70c1f3a550e3b1792a24e6dd086
+withSettingsUsing,"    private MockSettings withSettingsUsing(GenericMetadataSupport returnTypeGenericMetadata) {
+        MockSettings mockSettings = returnTypeGenericMetadata.hasRawExtraInterfaces() ?
+                withSettings().extraInterfaces(returnTypeGenericMetadata.rawExtraInterfaces())
+                : withSettings();
+
+        return mockSettings.serializable()
+                .defaultAnswer(returnsDeepStubsAnswerUsing(returnTypeGenericMetadata));
+    }",func_2edfcce1388e3f974221466b986047b89f58f12bec9b2e5c38f1c906b706f056

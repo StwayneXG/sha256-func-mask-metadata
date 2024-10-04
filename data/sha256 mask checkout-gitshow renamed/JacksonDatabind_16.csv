@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+_add,"    protected final boolean _add(Annotation ann) {
+        if (_annotations == null) {
+            _annotations = new HashMap<Class<? extends Annotation>,Annotation>();
+        }
+        Annotation previous = _annotations.put(ann.annotationType(), ann);
+        return (previous != null) && previous.equals(ann);
+    }",func_1710b31208f90e96ed538f4133172f63f90ad388f6eb981a6b1a9c4b74d50a23

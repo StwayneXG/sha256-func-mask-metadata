@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+add,"  void add(String str) {
+    cc.add(str);
+  }",func_7e9e5ac30f2216fd0fd6f5faed316f2d5983361a4203c3330cfa46ef65bb4767

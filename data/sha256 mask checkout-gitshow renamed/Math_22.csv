@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+isSupportLowerBoundInclusive,"    public boolean isSupportLowerBoundInclusive() {
+        return true;
+    }",func_3e26b3e46b0dd2965e50fcf9d4f563329a6a78f13e1f27e0461b530c50c13afa
+isSupportUpperBoundInclusive,"    public boolean isSupportUpperBoundInclusive() {
+        return false;
+    }",func_3c33efdc796e2aa44f4b5f4ea61cf942b9594801840555019853aa0cf1d518ac

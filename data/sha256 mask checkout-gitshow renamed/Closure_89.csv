@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+addRefInternal,"    void addRefInternal(Ref ref) {
+      if (refs == null) {
+        refs = new LinkedList<Ref>();
+      }
+      refs.add(ref);
+    }",func_73535aa268af8c08e805018a745bb671642fd72ca8a4621612602bec310f5786

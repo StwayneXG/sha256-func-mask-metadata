@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+encodeBase64,"    public static byte[] encodeBase64(byte[] binaryData) {
+        return encodeBase64(binaryData, false);
+    }",func_5942c1e341cbca9d32122ecb23644b82f0309709a012b6939d7b438f253ad6a7

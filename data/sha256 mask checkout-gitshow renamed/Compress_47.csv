@@ -1,0 +1,9 @@
+Original Function Name,Function Code,Hash Mask Name
+canReadEntryData,"    public boolean canReadEntryData(final ArchiveEntry ae) {
+        if (ae instanceof ZipArchiveEntry) {
+            final ZipArchiveEntry ze = (ZipArchiveEntry) ae;
+            return ZipUtil.canHandleEntryData(ze)
+                && supportsDataDescriptorFor(ze);
+        }
+        return false;
+    }",func_2ae037d249d409f4d4cbc3ff283c73a53f88f656fe62a00b8dd01a9244195673

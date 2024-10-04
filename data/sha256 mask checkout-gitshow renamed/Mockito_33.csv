@@ -1,0 +1,10 @@
+Original Function Name,Function Code,Hash Mask Name
+hasSameMethod,"    public boolean hasSameMethod(Invocation candidate) {        
+        //not using method.equals() for 1 good reason:
+        //sometimes java generates forwarding methods when generics are in play see JavaGenericsForwardingMethodsTest
+        Method m1 = invocation.getMethod();
+        Method m2 = candidate.getMethod();
+        
+        	/* Avoid unnecessary cloning */
+        return m1.equals(m2);
+    }",func_543610ff609c978c42d1b78d8c90f195c469c8325046f8715ffb8f80a85c218d

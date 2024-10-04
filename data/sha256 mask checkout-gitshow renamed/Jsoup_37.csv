@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+html,"    public String html() {
+        StringBuilder accum = new StringBuilder();
+        html(accum);
+        return accum.toString().trim();
+    }",func_e5e239560bc125a20ff2ac1fea50915bc198dd4f5b5256ec447a8a71e00132b3

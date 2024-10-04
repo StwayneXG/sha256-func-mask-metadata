@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+getNamespaceURI,"    public String getNamespaceURI() {
+        return getNamespaceURI(node);
+    }",func_340b8bc07a66251d715368d3d4028395e22098ef396175678557298f5fb063ad

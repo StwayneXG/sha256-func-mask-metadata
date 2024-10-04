@@ -1,0 +1,38 @@
+Original Function Name,Function Code,Hash Mask Name
+getMock,"    private Object getMock(InvocationOnMock invocation) throws Throwable {
+    	InternalMockHandler<Object> handler = new MockUtil().getMockHandler(invocation.getMock());
+    	InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
+
+        // matches invocation for verification
+        for (StubbedInvocationMatcher stubbedInvocationMatcher : container.getStubbedInvocations()) {
+    		if(container.getInvocationForStubbing().matches(stubbedInvocationMatcher.getInvocation())) {
+    			return stubbedInvocationMatcher.answer(invocation);
+    		}
+		}
+
+        // deep stub
+        return recordDeepStubMock(invocation, container);
+    }",func_4d9716bb7af6c0e2b470ab34ed788351a10b400691f4db8ceccb93186b49a6a5
+recordDeepStubMock,"    private Object recordDeepStubMock(InvocationOnMock invocation, InvocationContainerImpl container) {
+        Class<?> clz = invocation.getMethod().getReturnType();
+        final Object mock = org.mockito.Mockito.mock(clz, this);
+
+        container.addAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return mock;
+            }
+        }, false);
+
+        return mock;
+    }",func_d2ed30a2968abc2fef43935cf1e8c8019df964aecc4adc1b99d51181882c462a
+answer,"    public Object answer(InvocationOnMock invocation) throws Throwable {
+        GenericMetadataSupport returnTypeGenericMetadata =
+                actualParameterizedType(invocation.getMock()).resolveGenericReturnType(invocation.getMethod());
+
+        Class<?> rawType = returnTypeGenericMetadata.rawType();
+        if (!new MockCreationValidator().isTypeMockable(rawType)) {
+            return delegate.returnValueFor(rawType);
+        }
+
+        return getMock(invocation);
+    }",func_0db52f4076c082518412afd3dd3576e2cb0c63703fd7fed5e23ade60efef31d9

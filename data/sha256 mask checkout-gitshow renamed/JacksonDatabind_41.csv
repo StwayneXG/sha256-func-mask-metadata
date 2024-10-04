@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+constructType,"    public JavaType constructType(Type type) {
+        return _fromAny(null, type, EMPTY_BINDINGS);
+    }",func_02a8dd0e41871677ecb51e676751bcac4e8a2bd714d424e6abb77c3414ea976a

@@ -1,0 +1,11 @@
+Original Function Name,Function Code,Hash Mask Name
+nextToken,"    public JsonToken nextToken() throws IOException, JsonParseException
+    {
+        JsonToken t = delegate.nextToken();
+        if (t != null) return t;
+        while (switchToNext()) {
+            t = delegate.nextToken();
+            if (t != null) return t;
+        }
+        return null;
+    }",func_4c6b2fde954725a43a9fa25b2d036ebbdeaabd9dee354b65ab06270b71e87d6d

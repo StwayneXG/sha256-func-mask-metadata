@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+getLength,"    public int getLength() {
+        return ValueUtils.getLength(getBaseValue());
+    }",func_33106425b6e32a6cca1cb1053801ebc378e874bcacd4150187e33508c25d47b2

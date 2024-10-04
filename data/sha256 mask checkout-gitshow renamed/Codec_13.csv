@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+isDoubleMetaphoneEqual,"    public boolean isDoubleMetaphoneEqual(final String value1, final String value2) {
+        return isDoubleMetaphoneEqual(value1, value2, false);
+    }",func_293d4e3c09823aaa234fe2c686946fa3d7f5d962d9727e3514896a0e5dbf8905

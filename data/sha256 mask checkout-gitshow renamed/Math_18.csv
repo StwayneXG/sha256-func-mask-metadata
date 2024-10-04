@@ -1,0 +1,39 @@
+Original Function Name,Function Code,Hash Mask Name
+decode,"        public double[] decode(final double[] x) {
+            if (boundaries == null) {
+                return x;
+            }
+            double[] res = new double[x.length];
+            for (int i = 0; i < x.length; i++) {
+                double diff = boundaries[1][i] - boundaries[0][i];
+                res[i] = diff * x[i] + boundaries[0][i];
+            }
+            return res;
+        }",func_713a1417c769dc7584c090ac7ff485481f486a11bb803fbf9ec54289769f2854
+encode,"        public double[] encode(final double[] x) {
+            if (boundaries == null) {
+                return x;
+            }
+            double[] res = new double[x.length];
+            for (int i = 0; i < x.length; i++) {
+                double diff = boundaries[1][i] - boundaries[0][i];
+                res[i] = (x[i] - boundaries[0][i]) / diff;
+            }
+            return res;
+        }",func_b7d18e8f99d59abadbed0da4960b56f8fcc8513f5b27924ef80ca763f7fbc5c1
+isFeasible,"        public boolean isFeasible(final double[] x) {
+            if (boundaries == null) {
+                return true;
+            }
+
+
+            for (int i = 0; i < x.length; i++) {
+                if (x[i] < 0) {
+                    return false;
+                }
+                if (x[i] > 1.0) {
+                    return false;
+                }
+            }
+            return true;
+        }",func_a3fd1275582a1a7da91affff1f0d52f6f678e836a3a8019efc249cfb92c75ce7

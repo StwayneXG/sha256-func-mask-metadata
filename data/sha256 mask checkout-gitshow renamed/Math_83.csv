@@ -1,0 +1,24 @@
+Original Function Name,Function Code,Hash Mask Name
+getBasicRow,"    private Integer getBasicRow(final int col) {
+        return getBasicRow(col, true);
+    }",func_f2943a6db7f7479ac4d4a86b13b1d36138a96888ac1edcbad5152c85ada511a8
+getSolution,"    protected RealPointValuePair getSolution() {
+      double[] coefficients = new double[getOriginalNumDecisionVariables()];
+      Integer negativeVarBasicRow = getBasicRow(getNegativeDecisionVariableOffset());
+      double mostNegative = negativeVarBasicRow == null ? 0 : getEntry(negativeVarBasicRow, getRhsOffset());
+      Set<Integer> basicRows = new HashSet<Integer>();
+      for (int i = 0; i < coefficients.length; i++) {
+          Integer basicRow = getBasicRow(getNumObjectiveFunctions() + i);
+          if (basicRows.contains(basicRow)) {
+              // if multiple variables can take a given value 
+              // then we choose the first and set the rest equal to 0
+              coefficients[i] = 0;
+          } else {
+              basicRows.add(basicRow);
+              coefficients[i] =
+                  (basicRow == null ? 0 : getEntry(basicRow, getRhsOffset())) -
+                  (restrictToNonNegative ? 0 : mostNegative);
+          }
+      }
+        return new RealPointValuePair(coefficients, f.getValue(coefficients));
+    }",func_e22b0afddcbe64e625519688c8f09f64a329154343cc1a7a608572e64ffda5d2

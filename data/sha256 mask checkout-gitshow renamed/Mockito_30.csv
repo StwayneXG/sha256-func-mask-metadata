@@ -1,0 +1,18 @@
+Original Function Name,Function Code,Hash Mask Name
+smartNullPointerException,"    public void smartNullPointerException(Location location) {
+        throw new SmartNullPointerException(join(
+                ""You have a NullPointerException here:"",
+                new Location(),
+                ""Because this method was *not* stubbed correctly:"",
+                location,
+                """"
+                ));
+    }",func_7feb9093f60dff1310d250ebfb1bbc11bdcf4a2698186b6ae6704ec74dfbeb3d
+intercept,"        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+            if (new ObjectMethodsGuru().isToString(method)) {
+                return ""SmartNull returned by unstubbed "" + formatMethodCall()  + "" method on mock"";
+            }
+
+            new Reporter().smartNullPointerException(location);
+            return null;
+        }",func_2ba9ed81ae9fd8129bcc39be5451b576abd11ae6f82abe702b322689baca9b6b

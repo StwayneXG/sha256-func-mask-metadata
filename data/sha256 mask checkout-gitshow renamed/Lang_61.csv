@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+indexOf,"    public int indexOf(char ch) {
+        return indexOf(ch, 0);
+    }",func_0fde3e84315468e3ad02f9c5b7ab5d22ec474d03c54362b1da6014e3ac26726d

@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+_deserialize,"    protected abstract T _deserialize(String value, DeserializationContext ctxt) throws IOException;
+
+    protected T _deserializeEmbedded(Object ob, DeserializationContext ctxt) throws IOException {
+        // default impl: error out
+        throw ctxt.mappingException(""Don't know how to convert embedded Object of type %s into %s"",
+                ob.getClass().getName(), _valueClass.getName());
+    }",func_68e4dda1631b25d0c6f825d0692d5977a19111f439c34e7b7e2564d190d7c3fd

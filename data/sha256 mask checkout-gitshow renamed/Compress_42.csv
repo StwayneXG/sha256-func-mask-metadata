@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+isUnixSymlink,"    public boolean isUnixSymlink() {
+        return (getUnixMode() & UnixStat.LINK_FLAG) == UnixStat.LINK_FLAG;
+    }",func_2cc55f62ec1aa44f0fd8c2d41b342bf2cc671f2adc924380d90b143adbb853e4

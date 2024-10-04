@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+containsIgnoreCase,"    public static boolean containsIgnoreCase(String str, String searchStr) {
+        if (str == null || searchStr == null) {
+            return false;
+        }
+        return contains(str.toUpperCase(), searchStr.toUpperCase());
+    }",func_0e072ada71869290e2b354676f748b178c798f9ce25173c0530dbce070e962fc

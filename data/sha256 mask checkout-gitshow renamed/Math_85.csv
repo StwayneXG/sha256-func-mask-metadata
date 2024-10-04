@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+bracket,"    public static double[] bracket(UnivariateRealFunction function, 
+            double initial, double lowerBound, double upperBound) 
+    throws ConvergenceException, FunctionEvaluationException {
+        return bracket( function, initial, lowerBound, upperBound,
+            Integer.MAX_VALUE ) ;
+    }",func_11c1eee0e02516b19e263d060a3c9f80535bee655ae7e1a3afe8ddd045135ed1

@@ -1,0 +1,5 @@
+Original Function Name,Function Code,Hash Mask Name
+computeValue,"    public final Object computeValue(EvalContext context) {
+        return compute(args[0].computeValue(context), args[1].computeValue(context)) 
+                ? Boolean.TRUE : Boolean.FALSE;
+    }",func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f

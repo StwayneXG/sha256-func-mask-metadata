@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+max,"    public static int max(final int a, final int b) {
+        return (a <= b) ? b : a;
+    }",func_9baf3a40312f39849f46dad1040f2f039f1cffa1238c41e9db675315cfad39b6

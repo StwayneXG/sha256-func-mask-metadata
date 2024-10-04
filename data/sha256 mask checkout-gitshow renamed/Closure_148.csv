@@ -1,0 +1,147 @@
+Original Function Name,Function Code,Hash Mask Name
+escapeString,"  private static String escapeString(String value) {
+    return CodeGenerator.escapeToDoubleQuotedJsString(value);
+  }",func_e8b819aa890d61b04559258a9ec59bfadddc875fe62e15bd26d5353b1428a1fc
+Mapping,,func_1ff9a5f8b4bd530e726c82924b08bf653263a5cf1a9084f782836e3700e73b22
+addMapping,"  void addMapping(Node node, Position startPosition, Position endPosition) {
+    String sourceFile = (String)node.getProp(Node.SOURCEFILE_PROP);
+
+    // If the node does not have an associated source file or
+    // its line number is -1, then the node does not have sufficient
+    // information for a mapping to be useful.
+    if (sourceFile == null || node.getLineno() < 0) {
+      return;
+    }
+
+    String escapedSourceFile;
+    if (lastSourceFile != sourceFile) {  // yes, ""s1 != s2"" not ""!s1.equals(s2)""
+      lastSourceFile = sourceFile;
+      lastSourceFileEscaped = escapeString(sourceFile);
+    }
+    escapedSourceFile = lastSourceFileEscaped;
+    // Create the new mapping.
+    Mapping mapping = new Mapping();
+    mapping.id = mappings.size();
+    mapping.sourceFile = escapedSourceFile;
+    mapping.originalPosition = new Position(node.getLineno(), node.getCharno());
+
+    String originalName = (String)node.getProp(Node.ORIGINALNAME_PROP);
+    if (originalName != null) {
+      mapping.originalName = escapeString(originalName);
+    }
+
+      // If the mapping is found on the first line, we need to offset
+      // its character position by the number of characters found on
+      // the *last* line of the source file to which the code is
+      // being generated.
+      int offsetLine = offsetPosition.getLineNumber();
+      int startOffsetPosition = offsetPosition.getCharacterIndex();
+      int endOffsetPosition = offsetPosition.getCharacterIndex();
+
+      if (startPosition.getLineNumber() > 0) {
+        startOffsetPosition = 0;
+      }
+
+      if (endPosition.getLineNumber() > 0) {
+        endOffsetPosition = 0;
+      }
+
+      mapping.startPosition =
+          new Position(startPosition.getLineNumber() + offsetLine,
+                       startPosition.getCharacterIndex() + startOffsetPosition);
+
+      mapping.endPosition =
+          new Position(endPosition.getLineNumber() + offsetLine,
+                       endPosition.getCharacterIndex() + endOffsetPosition);
+
+    mappings.add(mapping);
+  }",func_4e1d3ce767d74f2a02bee50dfaf9b4696057d39ea0179f7e45f2f9748af0f81b
+addCharEntry,"    private void addCharEntry(String id) throws IOException {
+      if (firstChar) {
+        firstChar = false;
+      } else {
+        out.append("","");
+      }
+      out.append(id);
+    }",func_ac8b1037e4d4ad1a5bd5e2e6acf4bcda304a85d039f7caa237b8c852d4ad7d20
+traverse,,func_13a170f00a5f4e0079db99488850f1328015b8933ce1ec8ad2332fcd66fd73f6
+openLine,"    private void openLine() throws IOException {
+      out.append(""["");
+      this.firstChar = true;
+    }",func_0be38f90fd56c70fc498b4cddc695b5fd02fca5656759447db6a3117f3970b23
+findLastLine,"  private int findLastLine() {
+    int maxLine = 0;
+    for (Mapping mapping : mappings) {
+      int endPositionLine = mapping.endPosition.getLineNumber();
+      maxLine = Math.max(maxLine, endPositionLine);
+    }
+    return maxLine + prefixPosition.getLineNumber();
+  }",func_3db290d0296245dede6eb7de21a6e557935dee7edf3f09c7f1d0cca1ee160c92
+writeCharsUpTo,"    private void writeCharsUpTo(
+        int nextLine, int nextCol, int id)
+        throws IOException {
+      Preconditions.checkState(line <= nextLine, """");
+      Preconditions.checkState(line < nextLine || col <= nextCol);
+
+      if (line == nextLine && col == nextCol) {
+        // Nothing to do.
+        return;
+      }
+
+      String idString = (id == UNMAPPED) ? UNMAPPED_STRING : String.valueOf(id);
+      for (int i = line; i <= nextLine; i++) {
+        if (i == nextLine) {
+          for (int j = col; j < nextCol; j++) {
+            addCharEntry(idString);
+          }
+          break;
+        }
+        closeLine();
+        openLine();
+      }
+
+      line = nextLine;
+      col = nextCol;
+    }",func_b331c3eaaa336a76226da75f9e3458427ba0d3cb1bbf065ec17e6240a1180226
+writeCharsBetween,"    private void writeCharsBetween(Mapping prev, Mapping next)
+        throws IOException {
+      int nextLine = getAdjustedLine(next.startPosition);
+      int nextCol = getAdjustedCol(next.startPosition);
+      // If the previous value is null, no mapping exists.
+      int id = (prev != null) ? prev.id : UNMAPPED;
+      writeCharsUpTo(nextLine, nextCol, id);
+    }",func_fa8721402e1d365e4ccaa6b76c62a3cc8ae653a67642035d7079bba56a712cb9
+LineMapper,,func_9b9c4834072d1641f2a5a73f27503d293676999fd854e33a6f38ca3d564bb0df
+writeClosedMapping,"    private void writeClosedMapping(Mapping m) throws IOException {
+      int nextLine = getAdjustedLine(m.endPosition);
+      int nextCol = getAdjustedCol(m.endPosition);
+      // If this anything remaining in this mapping beyond the
+      // current line and column position, write it out now.
+      if (line < nextLine || (line == nextLine && col < nextCol)) {
+        writeCharsUpTo(nextLine, nextCol, m.id);
+      }
+    }",func_58096b5a82b36fa1592ee431df909e3065d31b497fe4bd7f01a743fbcfef93b2
+closeLine,"    private void closeLine() throws IOException {
+      out.append(""]\n"");
+    }",func_a7781ca32beb33317e81a4cb2b50a68c182f5146b3d58d80ac8f6249fdee66fb
+appendTo,"    void appendTo(Appendable out) throws IOException {
+      out.append(""["");
+
+      out.append(sourceFile);
+      // The source file rarely changes, so cache the escaped string.
+
+      out.append("","");
+
+
+      out.append(String.valueOf(originalPosition.getLineNumber()));
+
+      out.append("","");
+      out.append(String.valueOf(originalPosition.getCharacterIndex()));
+
+      if (originalName != null) {
+        out.append("","");
+        out.append(originalName);
+      }
+
+      out.append(""]"");
+    }",func_3eab074b08e27040286e214b1d3f8922e924248f9cf28b152a29e4ae583edaec

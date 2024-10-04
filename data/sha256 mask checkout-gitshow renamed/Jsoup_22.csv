@@ -1,0 +1,9 @@
+Original Function Name,Function Code,Hash Mask Name
+siblingElements,"    public Elements siblingElements() {
+
+        return parent().children();
+    }",func_1c8854e4d5d6de41dcc75e67190ebc2d4c8cb4b67ecf76566de6d0d593c0cf6b
+siblingNodes,"    public List<Node> siblingNodes() {
+
+        return parent().childNodes();
+    }",func_bd6dcb95b68360e1374bd62fe3855e3f54432cc2990706e12f383380403e24ff

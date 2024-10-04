@@ -1,0 +1,10 @@
+Original Function Name,Function Code,Hash Mask Name
+process,"  public void process(Node externs, Node root) {
+    (new NodeTraversal(compiler, this)).traverse(root);
+  }",func_19ed40bf62c399b8492efda5b9a9184b68cf4d9d4a165b38557b9d14201d0c03
+visit,"      public void visit(NodeTraversal t, Node n, Node parent) {
+        if (n.isName() && jsScope.isDeclared(n.getString(), true)) {
+          Var dep = jsScope.getVar(n.getString());
+            def.depends.add(dep);
+        }
+      }",func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364

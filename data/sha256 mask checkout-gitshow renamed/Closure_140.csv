@@ -1,0 +1,11 @@
+Original Function Name,Function Code,Hash Mask Name
+getSourceRegion,"  public Region getSourceRegion(String sourceName, int lineNumber) {
+    if (lineNumber < 1) {
+      return null;
+    }
+    SourceFile input = getSourceFileByName(sourceName);
+    if (input != null) {
+      return input.getRegion(lineNumber);
+    }
+    return null;
+  }",func_6794a7d896aa85cb9f47b9b260bed99d1384caec9d470542f91e8fb420fd2f5f

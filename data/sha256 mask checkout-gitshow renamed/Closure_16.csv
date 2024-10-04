@@ -1,0 +1,34 @@
+Original Function Name,Function Code,Hash Mask Name
+fixTypeNode,"    private void fixTypeNode(Node typeNode) {
+      if (typeNode.isString()) {
+        String name = typeNode.getString();
+        int endIndex = name.indexOf('.');
+        if (endIndex == -1) {
+          endIndex = name.length();
+        }
+        String baseName = name.substring(0, endIndex);
+        Var aliasVar = aliases.get(baseName);
+        if (aliasVar != null) {
+          Node aliasedNode = aliasVar.getInitialValue();
+          aliasUsages.add(new AliasedTypeNode(typeNode, aliasedNode.getQualifiedName() + name.substring(endIndex)));
+        }
+      }
+
+      for (Node child = typeNode.getFirstChild(); child != null;
+           child = child.getNext()) {
+        fixTypeNode(child);
+      }
+    }",func_77ccba7f392b868cf6bef07aa48dc60f00d2257c6016fbad3744b7b4bd3b6313
+AliasedTypeNode,,func_97800c83a73643345cc0872279e56e8215ad75aef0ed9f7b91ea7f39e8a0c380
+applyAlias,"    public void applyAlias();
+  }
+
+  private class AliasedNode implements AliasUsage {
+    private final Node aliasReference;
+
+    private final Node aliasDefinition;
+
+    AliasedNode(Node aliasReference, Node aliasDefinition) {
+      this.aliasReference = aliasReference;
+      this.aliasDefinition = aliasDefinition;
+    }",func_40cc61854e29f692261787cb4ea201229a4ec0dbb2b3d46a64ec6cce74a77c6a

@@ -1,0 +1,26 @@
+Original Function Name,Function Code,Hash Mask Name
+toSource,"  public String toSource() {
+    return runInCompilerThread(new Callable<String>() {
+      public String call() throws Exception {
+        Tracer tracer = newTracer(""toSource"");
+        try {
+          CodeBuilder cb = new CodeBuilder();
+          if (jsRoot != null) {
+            int i = 0;
+            for (Node scriptNode = jsRoot.getFirstChild();
+                 scriptNode != null;
+                 scriptNode = scriptNode.getNext()) {
+              toSource(cb, i++, scriptNode);
+            }
+          }
+          return cb.toString();
+        } finally {
+          stopTracer(tracer, ""toSource"");
+        }
+      }
+    });
+  }",func_ffe7b5cea58b7ea896371b66e67ed231c8f82afc42787f066a8f88ce1ad32c74
+call,"      public Result call() throws Exception {
+        compileInternal();
+        return getResult();
+      }",func_7edb360f06acaef2cc80dba16cf563f199d347db4443da04da0c8173e3f9e4ed

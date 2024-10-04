@@ -1,0 +1,176 @@
+Original Function Name,Function Code,Hash Mask Name
+deserializeFromObjectUsingNonDefault,"    protected Object deserializeFromObjectUsingNonDefault(JsonParser p,
+            DeserializationContext ctxt) throws IOException
+    {
+        if (_delegateDeserializer != null) {
+            return _valueInstantiator.createUsingDelegate(ctxt,
+                    _delegateDeserializer.deserialize(p, ctxt));
+        }
+        if (_propertyBasedCreator != null) {
+            return _deserializeUsingPropertyBased(p, ctxt);
+        }
+        // should only occur for abstract types...
+        if (_beanType.isAbstract()) {
+            return ctxt.handleMissingInstantiator(handledType(), p,
+                    ""abstract type (need to add/enable type information?)"");
+        }
+        return ctxt.handleMissingInstantiator(_beanType.getRawClass(), p,
+                ""no suitable constructor found, can not deserialize from Object value (missing default constructor or creator, or perhaps need to add/enable type information?)"");
+    }",func_ba2f9c26bbd24f2f4aaaac447a250ef84aacc66c9b36da9842a70f988358b760
+deserializeFromBoolean,"    public Object deserializeFromBoolean(JsonParser p, DeserializationContext ctxt) throws IOException
+    {
+        if (_delegateDeserializer != null) {
+            if (!_valueInstantiator.canCreateFromBoolean()) {
+                Object bean = _valueInstantiator.createUsingDelegate(ctxt,
+                        _delegateDeserializer.deserialize(p, ctxt));
+                if (_injectables != null) {
+                    injectValues(ctxt, bean);
+                }
+                return bean;
+            }
+        }
+        boolean value = (p.getCurrentToken() == JsonToken.VALUE_TRUE);
+        return _valueInstantiator.createFromBoolean(ctxt, value);
+    }",func_66a1b4060d8da90f17722392f3a32f7caa77af1c96e2eb734082ae9afb6dc78c
+deserializeFromNumber,"    public Object deserializeFromNumber(JsonParser p, DeserializationContext ctxt)
+        throws IOException
+    {
+        // First things first: id Object Id is used, most likely that's it
+        if (_objectIdReader != null) {
+            return deserializeFromObjectId(p, ctxt);
+        }
+        switch (p.getNumberType()) {
+        case INT:
+            if (_delegateDeserializer != null) {
+                if (!_valueInstantiator.canCreateFromInt()) {
+                    Object bean = _valueInstantiator.createUsingDelegate(ctxt,
+                            _delegateDeserializer.deserialize(p, ctxt));
+                    if (_injectables != null) {
+                        injectValues(ctxt, bean);
+                    }
+                    return bean;
+                }
+            }
+            return _valueInstantiator.createFromInt(ctxt, p.getIntValue());
+        case LONG:
+            if (_delegateDeserializer != null) {
+                if (!_valueInstantiator.canCreateFromInt()) {
+                    Object bean = _valueInstantiator.createUsingDelegate(ctxt,
+                            _delegateDeserializer.deserialize(p, ctxt));
+                    if (_injectables != null) {
+                        injectValues(ctxt, bean);
+                    }
+                    return bean;
+                }
+            }
+            return _valueInstantiator.createFromLong(ctxt, p.getLongValue());
+        }
+        // actually, could also be BigInteger, so:
+        if (_delegateDeserializer != null) {
+            Object bean = _valueInstantiator.createUsingDelegate(ctxt,
+                    _delegateDeserializer.deserialize(p, ctxt));
+            if (_injectables != null) {
+                injectValues(ctxt, bean);
+            }
+            return bean;
+        }
+        return ctxt.handleMissingInstantiator(handledType(), p,
+                ""no suitable creator method found to deserialize from Number value (%s)"",
+                p.getNumberValue());
+    }",func_8ff381d5be09cbfb851cc1870f6d8cc7444b5b2f4349b1ab690226c62909e0c6
+deserializeFromString,"    public Object deserializeFromString(JsonParser p, DeserializationContext ctxt) throws IOException
+    {
+        // First things first: id Object Id is used, most likely that's it
+        if (_objectIdReader != null) {
+            return deserializeFromObjectId(p, ctxt);
+        }
+        /* Bit complicated if we have delegating creator; may need to use it,
+         * or might not...
+         */
+        if (_delegateDeserializer != null) {
+            if (!_valueInstantiator.canCreateFromString()) {
+                Object bean = _valueInstantiator.createUsingDelegate(ctxt,
+                        _delegateDeserializer.deserialize(p, ctxt));
+                if (_injectables != null) {
+                    injectValues(ctxt, bean);
+                }
+                return bean;
+            }
+        }
+        return _valueInstantiator.createFromString(ctxt, p.getText());
+    }",func_f18f84e2cddcc732097a15268d84ad839fb1f246a816fd3bf0c1d2619579b34f
+deserializeFromDouble,"    public Object deserializeFromDouble(JsonParser p, DeserializationContext ctxt) throws IOException
+    {
+        NumberType t = p.getNumberType();
+        // no separate methods for taking float...
+        if ((t == NumberType.DOUBLE) || (t == NumberType.FLOAT)) {
+            if (_delegateDeserializer != null) {
+                if (!_valueInstantiator.canCreateFromDouble()) {
+                    Object bean = _valueInstantiator.createUsingDelegate(ctxt,
+                            _delegateDeserializer.deserialize(p, ctxt));
+                    if (_injectables != null) {
+                        injectValues(ctxt, bean);
+                    }
+                    return bean;
+                }
+            }
+            return _valueInstantiator.createFromDouble(ctxt, p.getDoubleValue());
+        }
+        // actually, could also be BigDecimal, so:
+        if (_delegateDeserializer != null) {
+            return _valueInstantiator.createUsingDelegate(ctxt,
+                    _delegateDeserializer.deserialize(p, ctxt));
+        }
+        return ctxt.handleMissingInstantiator(handledType(), p,
+                ""no suitable creator method found to deserialize from Number value (%s)"",
+                p.getNumberValue());
+    }",func_a48e25752d5b7bcb5b5702dfe54e401bf3d30b822dab19b73382f3f107769134
+deserializeFromArray,"    public Object deserializeFromArray(JsonParser p, DeserializationContext ctxt) throws IOException
+    {
+        // note: can not call `_delegateDeserializer()` since order reversed here:
+        if (_arrayDelegateDeserializer != null) {
+            try {
+                Object bean = _valueInstantiator.createUsingArrayDelegate(ctxt, _arrayDelegateDeserializer.deserialize(p, ctxt));
+                if (_injectables != null) {
+                    injectValues(ctxt, bean);
+                }
+                return bean;
+            } catch (Exception e) {
+                return wrapInstantiationProblem(e, ctxt);
+            }
+        }
+        // fallback to non-array delegate
+        if (_delegateDeserializer != null) {
+            try {
+            Object bean = _valueInstantiator.createUsingArrayDelegate(ctxt,
+                    _delegateDeserializer.deserialize(p, ctxt));
+            if (_injectables != null) {
+                injectValues(ctxt, bean);
+            }
+            return bean;
+            } catch (Exception e) {
+                wrapInstantiationProblem(e, ctxt);
+                return null;
+            }
+        }
+        if (ctxt.isEnabled(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)) {
+            JsonToken t = p.nextToken();
+            if (t == JsonToken.END_ARRAY && ctxt.isEnabled(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT)) {
+                return null;
+            }
+            final Object value = deserialize(p, ctxt);
+            if (p.nextToken() != JsonToken.END_ARRAY) {
+                handleMissingEndArrayForSingle(p, ctxt);
+            }
+            return value;
+        }
+        if (ctxt.isEnabled(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT)) {
+            JsonToken t = p.nextToken();
+            if (t == JsonToken.END_ARRAY) {
+                return null;
+            }
+            return ctxt.handleUnexpectedToken(handledType(),
+                    JsonToken.START_ARRAY, p, null);
+        }
+        return ctxt.handleUnexpectedToken(handledType(), p);
+    }",func_c5278976829f37475107d6d0f4f76d365931dd287c186d3231bc42c0a5eaafe3

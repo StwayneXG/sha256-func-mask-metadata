@@ -1,0 +1,28 @@
+Original Function Name,Function Code,Hash Mask Name
+visitLabel,"    private void visitLabel(Node node, Node parent) {
+      Node nameNode = node.getFirstChild();
+      Preconditions.checkState(nameNode != null);
+      String name = nameNode.getString();
+      LabelInfo li = getLabelInfo(name);
+      // This is a label...
+      if (li.referenced) {
+        String newName = getNameForId(li.id);
+        if (!name.equals(newName)) {
+          // ... and it is used, give it the short name.
+          nameNode.setString(newName);
+          compiler.reportCodeChange();
+        }
+      } else {
+        // ... and it is not referenced, just remove it.
+        Node newChild = node.getLastChild();
+        node.removeChild(newChild);
+        parent.replaceChild(node, newChild);
+        if (newChild.getType() == Token.BLOCK) {
+          NodeUtil.tryMergeBlock(newChild);
+        }
+        compiler.reportCodeChange();
+      }
+
+      // Remove the label from the current stack of labels.
+      namespaceStack.peek().renameMap.remove(name);
+    }",func_4cb3e9b687325d4b331562d7407e61a916fdcc25dcb5bb45aedb4ce73c7504f5

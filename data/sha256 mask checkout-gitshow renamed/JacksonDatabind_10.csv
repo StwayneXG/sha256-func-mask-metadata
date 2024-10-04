@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+resolve,"    public void resolve(SerializerProvider provider) throws JsonMappingException
+    {
+        // 05-Sep-2013, tatu: I _think_ this can be considered a primary property...
+        _mapSerializer = (MapSerializer) provider.handlePrimaryContextualization(_mapSerializer, _property);
+    }",func_fdf09cdfc26cccf610edccd7f9b558e1ce0a793a4ee57f8306df9058f1aa929b
+AnyGetterWriter,,func_283d65253dfd310dd6c219c83cd7c65aa62fc8c1fb6f34a8a7f4cd0540e44f33
+construct,,func_b252d4eb5acf5aeaef1ec528741970ad0ba0a3e92c9333fa17668ddd892d9805

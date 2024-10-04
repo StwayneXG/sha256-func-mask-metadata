@@ -1,0 +1,10 @@
+Original Function Name,Function Code,Hash Mask Name
+captureArgumentsFrom,"    public void captureArgumentsFrom(Invocation i) {
+        int k = 0;
+        for (Matcher m : matchers) {
+            if (m instanceof CapturesArguments) {
+                ((CapturesArguments) m).captureFrom(i.getArguments()[k]);
+            }
+            k++;
+        }
+    }",func_d5c79d0e9c51039261e54a1cc98701b156d7b4df5562dd2451952b218a5afc60

@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+serializable,"    public MockSettings serializable() {
+        return this.extraInterfaces(java.io.Serializable.class);
+    }",func_b0a877cd7e656da5a9f86e70076e1d3dfbae18bb21bd7ffe1f607ed5fdef006e
+isSerializable,"    public boolean isSerializable() {
+        return extraInterfaces != null && java.util.Arrays.asList(extraInterfaces).contains(java.io.Serializable.class);
+    }",func_66fdbecebab9e00d8408816d1e4971e230d0de148e9ca85056a190ab845953e6

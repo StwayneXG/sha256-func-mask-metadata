@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+iterator,"    public Iterator<Chromosome> iterator() {
+        return chromosomes.iterator();
+    }",func_ef9baedff2f457ddd3f1382fd265db536122a0bba2996c196d28ba18e25205b0

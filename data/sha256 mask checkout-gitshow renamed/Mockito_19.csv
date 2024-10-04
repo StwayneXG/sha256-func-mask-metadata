@@ -1,0 +1,45 @@
+Original Function Name,Function Code,Hash Mask Name
+injectMockCandidatesOnFields,"    private boolean injectMockCandidatesOnFields(Set<Object> mocks, Object instance, boolean injectionOccurred, List<Field> orderedInstanceFields) {
+        for (Iterator<Field> it = orderedInstanceFields.iterator(); it.hasNext(); ) {
+            Field field = it.next();
+            Object injected = mockCandidateFilter.filterCandidate(mocks, field, instance).thenInject();
+            if (injected != null) {
+                injectionOccurred |= true;
+                mocks.remove(injected);
+                it.remove();
+            }
+        }
+        return injectionOccurred;
+    }",func_246baf0ce72ef021af28ae332abe75aa0e361d428980d7601912e9fe0b530c4a
+filterCandidate,"    public OngoingInjecter filterCandidate(Collection<Object> mocks, Field field, Object fieldInstance) {
+        List<Object> mockTypeMatches = new ArrayList<Object>();
+        for (Object mock : mocks) {
+            if (field.getType().isAssignableFrom(mock.getClass())) {
+                mockTypeMatches.add(mock);
+            }
+        }
+
+        return next.filterCandidate(mockTypeMatches, field, fieldInstance);
+    }",func_a6398817b5ac543058e83623b51866817d40b2fa75e1486e1b21138799ac2c2f
+thenInject,,func_137e9fefee68ce7c826e53ffa15a59eb1022d5ea491125f4507cc0b6b9c5acf1
+filterCandidate,"    public OngoingInjecter filterCandidate(Collection<Object> mocks, Field field, Object fieldInstance) {
+        List<Object> mockTypeMatches = new ArrayList<Object>();
+        for (Object mock : mocks) {
+            if (field.getType().isAssignableFrom(mock.getClass())) {
+                mockTypeMatches.add(mock);
+            }
+        }
+
+        return next.filterCandidate(mockTypeMatches, field, fieldInstance);
+    }",func_a6398817b5ac543058e83623b51866817d40b2fa75e1486e1b21138799ac2c2f
+thenInject,,func_137e9fefee68ce7c826e53ffa15a59eb1022d5ea491125f4507cc0b6b9c5acf1
+filterCandidate,"    public OngoingInjecter filterCandidate(Collection<Object> mocks, Field field, Object fieldInstance) {
+        List<Object> mockTypeMatches = new ArrayList<Object>();
+        for (Object mock : mocks) {
+            if (field.getType().isAssignableFrom(mock.getClass())) {
+                mockTypeMatches.add(mock);
+            }
+        }
+
+        return next.filterCandidate(mockTypeMatches, field, fieldInstance);
+    }",func_a6398817b5ac543058e83623b51866817d40b2fa75e1486e1b21138799ac2c2f

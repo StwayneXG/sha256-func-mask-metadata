@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+getFunctionValue,"    public double getFunctionValue() {
+        return optimizer.getFunctionValue();
+    }",func_e782074a26bf7651b9f00459c238ed7af35653f4f97c09171e48d8ef5a423adb
+getResult,"    public double getResult() {
+        return optimizer.getResult();
+    }",func_08ee68146638e332f70b995df585efad842cd335af321534ab0bfb9c6b2b89ce

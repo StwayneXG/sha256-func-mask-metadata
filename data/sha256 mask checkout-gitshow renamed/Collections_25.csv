@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+collatedIterator,"    public static <E> Iterator<E> collatedIterator(final Comparator<? super E> comparator,
+                                                   final Iterator<? extends E> iterator1,
+                                                   final Iterator<? extends E> iterator2) {
+        return new CollatingIterator<E>(comparator, iterator1, iterator2);
+    }",func_b09ced9d92049f8ad0998066ad79be83251eccd3b27bd8657d9879f5fcea8fe8

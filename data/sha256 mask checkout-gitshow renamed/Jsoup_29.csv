@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+title,"    public String title() {
+        // title is a preserve whitespace tag (for document output), but normalised here
+        Element titleEl = getElementsByTag(""title"").first();
+        return titleEl != null ? titleEl.text().trim() : """";
+    }",func_aaf2320646108059a87ab5017a86aee454f5378ed95003dbb2e12f4ca5266e0e

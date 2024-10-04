@@ -1,0 +1,19 @@
+Original Function Name,Function Code,Hash Mask Name
+removeColumn,"    public void removeColumn(int columnIndex) {
+        Comparable columnKey = getColumnKey(columnIndex);
+        removeColumn(columnKey);
+    }",func_8f679beac9ff8cf6c6bdb9240358e5c0277e5e8bfcb0e58b947789e4913cb5da
+getObject,"    public Object getObject(int row, int column) {
+        Object result = null;
+        KeyedObjects rowData = (KeyedObjects) this.rows.get(row);
+        if (rowData != null) {
+            Comparable columnKey = (Comparable) this.columnKeys.get(column);
+            if (columnKey != null) {
+                int index = rowData.getIndex(columnKey);
+                if (index >= 0) {
+                    result = rowData.getObject(columnKey);
+                }
+            }
+        }
+        return result;
+    }",func_5eacd4322caf39261d7a2e762b7f6ed323800f2193679e472a0b5896f0067e07

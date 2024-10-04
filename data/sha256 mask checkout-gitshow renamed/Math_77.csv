@@ -1,0 +1,19 @@
+Original Function Name,Function Code,Hash Mask Name
+getLInfNorm,"    public double getLInfNorm() {
+        double max = 0;
+        Iterator iter = entries.iterator();
+        while (iter.hasNext()) {
+            iter.advance();
+            max += iter.value();
+        }
+        return max;
+    }",func_57445b0928ca57f50f40e810a3a6652e5d0344d64169116b5dc1909022ec5b54
+getLInfNorm,"    public double getLInfNorm() {
+        double max = 0;
+        Iterator iter = entries.iterator();
+        while (iter.hasNext()) {
+            iter.advance();
+            max += iter.value();
+        }
+        return max;
+    }",func_57445b0928ca57f50f40e810a3a6652e5d0344d64169116b5dc1909022ec5b54

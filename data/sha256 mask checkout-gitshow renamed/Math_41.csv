@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+evaluate,"    public double evaluate(final double[] values) {
+        if (values == null) {
+            throw new NullArgumentException(LocalizedFormats.INPUT_ARRAY);
+        }
+        return evaluate(values, 0, values.length);
+    }",func_10aca1d8b724381a8cbeb66e3dba3007ed1e40b0c2d9cca3448a22689311b936

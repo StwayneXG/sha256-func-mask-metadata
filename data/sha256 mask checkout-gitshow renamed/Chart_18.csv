@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+removeValue,"    public void removeValue(int index) {
+        this.keys.remove(index);
+        this.values.remove(index);
+        if (index < this.keys.size()) {
+        rebuildIndex();
+        }
+    }",func_81d705b00d1e0afc66d3b40946547efad73b9fb6ffccbafdf159abf6b8af8cde

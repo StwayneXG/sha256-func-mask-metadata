@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+rewindToMark,"    void rewindToMark() {
+        pos = mark;
+    }",func_1966b9e3fc2dca049dc2b71e0a060be8a73f5b7b7e953de900988f827eb5ef9d

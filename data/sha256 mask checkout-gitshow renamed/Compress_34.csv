@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+getCentralDirectoryLength,"    public ZipShort getCentralDirectoryLength() {
+        return getLocalFileDataLength();
+    }",func_977431f826bed209af18dd0a4cea3be9caba719847818d13b16dcd9cea78958f

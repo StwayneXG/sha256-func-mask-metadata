@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+isRegistered,"    static boolean isRegistered(Object value) {
+        return getRegistry().contains(new IDKey(value));
+    }",func_59e7b6cae795ce61e68c09bfd89f1ae312957661244af57dbb5321439c56f4af
+initialValue,"        protected Set<IDKey> initialValue() {
+            return new HashSet<IDKey>();
+        }",func_71f91c0370a2e34e6f3d7818e59582c6956d32bb52bbfbe815867682e24e0b85

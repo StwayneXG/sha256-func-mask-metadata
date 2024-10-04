@@ -1,0 +1,25 @@
+Original Function Name,Function Code,Hash Mask Name
+getCallableDefinitions,"  private static Collection<Definition> getCallableDefinitions(
+      DefinitionProvider definitionProvider, Node name) {
+      List<Definition> result = Lists.newArrayList();
+
+      if (!NodeUtil.isGetProp(name) && !NodeUtil.isName(name)) {
+        return null;
+      }
+      Collection<Definition> decls =
+          definitionProvider.getDefinitionsReferencedAt(name);
+      if (decls == null) {
+        return null;
+      }
+
+      for (Definition current : decls) {
+        Node rValue = current.getRValue();
+        if ((rValue != null) && NodeUtil.isFunction(rValue)) {
+          result.add(current);
+        } else {
+          return null;
+        }
+      }
+
+      return result;
+  }",func_744fa199a13858351b24fe6050f22c2a6c5889a56b60562779f43ca798900591

@@ -1,0 +1,10 @@
+Original Function Name,Function Code,Hash Mask Name
+outerHtmlHead,"    void outerHtmlHead(StringBuilder accum, int depth, Document.OutputSettings out) {
+        accum.append(""<!DOCTYPE html"");
+        if (!StringUtil.isBlank(attr(""publicId"")))
+            accum.append("" PUBLIC \"""").append(attr(""publicId"")).append(""\"""");
+        if (!StringUtil.isBlank(attr(""systemId"")))
+            accum.append(' ').append(attr(""systemId"")).append(""\"""");
+        accum.append('>');
+    }",func_1738bb3ad04647644fb19d04d2556d08aa220ac233873e60390583ae4f6b3d2a
+append,,func_ae524b54d9b5acbe3bbf0a4f4825bae82bca8b0a474878c2713394ea284ef929

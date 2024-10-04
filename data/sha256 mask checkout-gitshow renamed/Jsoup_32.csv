@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+clone,"    public Element clone() {
+        Element clone = (Element) super.clone();
+        clone.classNames();
+        return clone;
+    }",func_b5d61dc89a35d2c924b28c9760765da94039e94184c50f87dde54532f126b4ac

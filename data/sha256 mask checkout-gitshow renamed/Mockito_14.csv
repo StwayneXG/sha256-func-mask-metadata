@@ -1,0 +1,10 @@
+Original Function Name,Function Code,Hash Mask Name
+verify,"    public <T> T verify(T mock, VerificationMode mode) {
+        if (mock == null) {
+            reporter.nullPassedToVerify();
+        } else if (!mockUtil.isMock(mock)) {
+            reporter.notAMockPassedToVerify();
+        }
+        mockingProgress.verificationStarted(mode);
+        return mock;
+    }",func_a12dd3a7fd3203a452eb34d91a9be20569d5e337a3384347068895c07f3e0c5a

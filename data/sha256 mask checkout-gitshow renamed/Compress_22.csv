@@ -1,0 +1,109 @@
+Original Function Name,Function Code,Hash Mask Name
+BZip2CompressorInputStream,,func_d1c1465fa109b391409b25f9e08ee55a6926b83d957e10b6314a31039b455106
+setupNoRandPartA,"    private int setupNoRandPartA() throws IOException {
+        if (this.su_i2 <= this.last) {
+            this.su_chPrev = this.su_ch2;
+            int su_ch2Shadow = this.data.ll8[this.su_tPos] & 0xff;
+            this.su_ch2 = su_ch2Shadow;
+            this.su_tPos = this.data.tt[this.su_tPos];
+            this.su_i2++;
+            this.currentChar = su_ch2Shadow;
+            this.currentState = NO_RAND_PART_B_STATE;
+            this.crc.updateCRC(su_ch2Shadow);
+            return su_ch2Shadow;
+        } else {
+            this.currentState = NO_RAND_PART_A_STATE;
+            endBlock();
+            initBlock();
+            return setupBlock();
+        }
+    }",func_c9b769fca6d68ca500af91c84d22ece2ae951c50a8e82e1a80179c0374288865
+setupRandPartA,"    private int setupRandPartA() throws IOException {
+        if (this.su_i2 <= this.last) {
+            this.su_chPrev = this.su_ch2;
+            int su_ch2Shadow = this.data.ll8[this.su_tPos] & 0xff;
+            this.su_tPos = this.data.tt[this.su_tPos];
+            if (this.su_rNToGo == 0) {
+                this.su_rNToGo = Rand.rNums(this.su_rTPos) - 1;
+                if (++this.su_rTPos == 512) {
+                    this.su_rTPos = 0;
+                }
+            } else {
+                this.su_rNToGo--;
+            }
+            this.su_ch2 = su_ch2Shadow ^= (this.su_rNToGo == 1) ? 1 : 0;
+            this.su_i2++;
+            this.currentChar = su_ch2Shadow;
+            this.currentState = RAND_PART_B_STATE;
+            this.crc.updateCRC(su_ch2Shadow);
+            return su_ch2Shadow;
+        } else {
+            endBlock();
+            initBlock();
+            return setupBlock();
+        }
+    }",func_1444d8fddd812b5183b12cf8f9560174e06d349ec06cb997c933cd685036f3f4
+CRC,,func_ee4fcdc3401859da4429c49ca305c2c4c4aa8cbc56736bf9a7e0ed76b644f959
+setupRandPartC,"    private int setupRandPartC() throws IOException {
+        if (this.su_j2 < this.su_z) {
+            this.currentChar = this.su_ch2;
+            this.crc.updateCRC(this.su_ch2);
+            this.su_j2++;
+            return this.su_ch2;
+        } else {
+            this.currentState = RAND_PART_A_STATE;
+            this.su_i2++;
+            this.su_count = 0;
+            return setupRandPartA();
+        }
+    }",func_7b80c38464a992298fb7c0a370150b0403988ce363140ba8ed6851c3cb6b5f6a
+read0,"    private int read0() throws IOException {
+        final int retChar = this.currentChar;
+        switch (currentState) {
+        case EOF:
+            return -1;
+
+        case START_BLOCK_STATE:
+            throw new IllegalStateException();
+
+        case RAND_PART_A_STATE:
+            throw new IllegalStateException();
+
+        case RAND_PART_B_STATE:
+            setupRandPartB();
+            break;
+
+        case RAND_PART_C_STATE:
+            setupRandPartC();
+            break;
+
+        case NO_RAND_PART_A_STATE:
+            throw new IllegalStateException();
+
+        case NO_RAND_PART_B_STATE:
+            setupNoRandPartB();
+            break;
+
+        case NO_RAND_PART_C_STATE:
+            setupNoRandPartC();
+            break;
+
+        default:
+            throw new IllegalStateException();
+        }
+        return retChar;
+    }",func_3e5c09c70f2952a7a608f0fd5c2b95ed06286e71b94f8eab090748525bc6c1df
+setupNoRandPartC,"    private int setupNoRandPartC() throws IOException {
+        if (this.su_j2 < this.su_z) {
+            int su_ch2Shadow = this.su_ch2;
+            this.currentChar = su_ch2Shadow;
+            this.crc.updateCRC(su_ch2Shadow);
+            this.su_j2++;
+            this.currentState = NO_RAND_PART_C_STATE;
+            return su_ch2Shadow;
+        } else {
+            this.su_i2++;
+            this.su_count = 0;
+            return setupNoRandPartA();
+        }
+    }",func_1e1eb7e354d6298615913158aa4245c51546115da86ee5a5554c0485e1fcbf4b

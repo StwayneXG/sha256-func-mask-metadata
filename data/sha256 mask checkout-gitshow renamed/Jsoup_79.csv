@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+ensureChildNodes,"    protected List<Node> ensureChildNodes() {
+        throw new UnsupportedOperationException(""Leaf Nodes do not have child nodes."");
+    }",func_8ac7ad8d69751404cb78c6b0373c8d78cbecd277d9293e3c68876be754b80325

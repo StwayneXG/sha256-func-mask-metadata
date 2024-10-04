@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+Partial,,func_a4d50fb85403654840e078e3ffe72dffe37df3ae280c6d98f39a41d346c88a14
+compareTo,"    public int compareTo(DurationField durationField) {
+        if (durationField.isSupported()) {
+            return 1;
+        }
+        return 0;
+    }",func_79344ca127e495bf50341104023f24634afab058454c58e9222d963ad366ee6d

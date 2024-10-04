@@ -1,0 +1,13 @@
+Original Function Name,Function Code,Hash Mask Name
+format,"    public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+        if (obj instanceof Date) {
+            return format((Date) obj, toAppendTo);
+        } else if (obj instanceof Calendar) {
+            return format((Calendar) obj, toAppendTo);
+        } else if (obj instanceof Long) {
+            return format(((Long) obj).longValue(), toAppendTo);
+        } else {
+            throw new IllegalArgumentException(""Unknown class: "" +
+                (obj == null ? ""<null>"" : obj.getClass().getName()));
+        }
+    }",func_e904c9ccfa425ff0b055d2c533462314d35a529b055e8abe41d49bb46d827427

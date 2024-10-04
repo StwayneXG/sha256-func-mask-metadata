@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+write,"      @Override void write(JsonWriter writer, Object value)
+          throws IOException, IllegalAccessException {
+        Object fieldValue = field.get(value);
+        TypeAdapter t =
+          new TypeAdapterRuntimeTypeWrapper(context, typeAdapter, fieldType.getType());
+        t.write(writer, fieldValue);
+      }",func_10fd874b68dad080ed706762c8e163dabb20514bddae38fb159c56f714a3b143

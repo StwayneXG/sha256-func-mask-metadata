@@ -1,0 +1,23 @@
+Original Function Name,Function Code,Hash Mask Name
+checkRequiredOptions,"    protected void checkRequiredOptions()
+        throws MissingOptionException
+    {
+        // if there are required options that have not been
+        // processsed
+        if (getRequiredOptions().size() > 0)
+        {
+            Iterator iter = getRequiredOptions().iterator();
+            StringBuffer buff = new StringBuffer(""Missing required option"");
+            buff.append(getRequiredOptions().size() == 1 ? """" : ""s"");
+            buff.append("": "");
+
+
+            // loop through the required options
+            while (iter.hasNext())
+            {
+                buff.append(iter.next());
+            }
+
+            throw new MissingOptionException(buff.toString());
+        }
+    }",func_0d0304f829dd7c63ea177ba42edb2f9381402a044c1a1d541a959b055d32eead

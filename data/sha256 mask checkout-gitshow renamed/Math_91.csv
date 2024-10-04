@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+compareTo,"    public int compareTo(Fraction object) {
+        double nOd = doubleValue();
+        double dOn = object.doubleValue();
+        return (nOd < dOn) ? -1 : ((nOd > dOn) ? +1 : 0);
+    }",func_79344ca127e495bf50341104023f24634afab058454c58e9222d963ad366ee6d

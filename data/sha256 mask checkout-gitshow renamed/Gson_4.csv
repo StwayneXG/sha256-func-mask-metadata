@@ -1,0 +1,111 @@
+Original Function Name,Function Code,Hash Mask Name
+peek,"  public JsonToken peek() throws IOException {
+    int p = peeked;
+    if (p == PEEKED_NONE) {
+      p = doPeek();
+    }
+
+    switch (p) {
+    case PEEKED_BEGIN_OBJECT:
+      return JsonToken.BEGIN_OBJECT;
+    case PEEKED_END_OBJECT:
+      return JsonToken.END_OBJECT;
+    case PEEKED_BEGIN_ARRAY:
+      return JsonToken.BEGIN_ARRAY;
+    case PEEKED_END_ARRAY:
+      return JsonToken.END_ARRAY;
+    case PEEKED_SINGLE_QUOTED_NAME:
+    case PEEKED_DOUBLE_QUOTED_NAME:
+    case PEEKED_UNQUOTED_NAME:
+      return JsonToken.NAME;
+    case PEEKED_TRUE:
+    case PEEKED_FALSE:
+      return JsonToken.BOOLEAN;
+    case PEEKED_NULL:
+      return JsonToken.NULL;
+    case PEEKED_SINGLE_QUOTED:
+    case PEEKED_DOUBLE_QUOTED:
+    case PEEKED_UNQUOTED:
+    case PEEKED_BUFFERED:
+      return JsonToken.STRING;
+    case PEEKED_LONG:
+    case PEEKED_NUMBER:
+      return JsonToken.NUMBER;
+    case PEEKED_EOF:
+      return JsonToken.END_DOCUMENT;
+    default:
+      throw new AssertionError();
+    }
+  }",func_1ce8980ebe0167061739e034959975a6b21449d16a2e5a586ac1e51ac54f44ba
+beforeValue,"  private void beforeValue(boolean root) throws IOException {
+    switch (peek()) {
+    case NONEMPTY_DOCUMENT:
+      if (!lenient) {
+        throw new IllegalStateException(
+            ""JSON must have only one top-level value."");
+      }
+      // fall-through
+    case EMPTY_DOCUMENT: // first in document
+      if (!lenient && !root) {
+        throw new IllegalStateException(
+            ""JSON must start with an array or an object."");
+      }
+      replaceTop(NONEMPTY_DOCUMENT);
+      break;
+
+    case EMPTY_ARRAY: // first in array
+      replaceTop(NONEMPTY_ARRAY);
+      newline();
+      break;
+
+    case NONEMPTY_ARRAY: // another in array
+      out.append(',');
+      newline();
+      break;
+
+    case DANGLING_NAME: // value for name
+      out.append(separator);
+      replaceTop(NONEMPTY_OBJECT);
+      break;
+
+    default:
+      throw new IllegalStateException(""Nesting problem."");
+    }
+  }",func_2a83a2438a2cb2a18930d6c08efceca181a850d64f1f4956044a8ba30f63770e
+jsonValue,"  public JsonWriter jsonValue(String value) throws IOException {
+    if (value == null) {
+      return nullValue();
+    }
+    writeDeferredName();
+    beforeValue(false);
+    out.append(value);
+    return this;
+  }",func_0d8e33daf10a98e5c9f05911f1f04e3018817857ca2c7c0f8aea8aceebd0440f
+open,"  private JsonWriter open(int empty, String openBracket) throws IOException {
+    beforeValue(true);
+    push(empty);
+    out.write(openBracket);
+    return this;
+  }",func_2348f998744212575d85959674f9607ab26f67708a917157472832386337c904
+value,"  public JsonWriter value(String value) throws IOException {
+    if (value == null) {
+      return nullValue();
+    }
+    writeDeferredName();
+    beforeValue(false);
+    string(value);
+    return this;
+  }",func_cd42404d52ad55ccfa9aca4adc828aa5800ad9d385a0671fbcbf724118320619
+nullValue,"  public JsonWriter nullValue() throws IOException {
+    if (deferredName != null) {
+      if (serializeNulls) {
+        writeDeferredName();
+      } else {
+        deferredName = null;
+        return this; // skip the name and the value
+      }
+    }
+    beforeValue(false);
+    out.write(""null"");
+    return this;
+  }",func_445c9444c99c2b0c08b1684e6b0f7a6cff273a97f38550d102be3d324a996f5d

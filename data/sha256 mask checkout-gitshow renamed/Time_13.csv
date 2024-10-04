@@ -1,0 +1,28 @@
+Original Function Name,Function Code,Hash Mask Name
+calculatePrintedLength,"        int calculatePrintedLength(int value);
+        
+        void printTo(StringBuffer buf, int value);
+        
+        void printTo(Writer out, int value) throws IOException;
+        
+        /**
+         * @return new position after parsing affix, or ~position of failure
+         */
+        int parse(String periodStr, int position);
+
+        /**
+         * @return position where affix starts, or original ~position if not found
+         */
+        int scan(String periodStr, int position);
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Implements an affix where the text does not vary by the amount.
+     */
+    static class SimpleAffix implements PeriodFieldAffix {
+        private final String iText;
+
+        SimpleAffix(String text) {
+            iText = text;
+        }",func_fd867ba171af4686c09db178129fc5ec55b6daeff932fc35cf2fc36c061ac6fa

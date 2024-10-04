@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+isEmptyType,"  public final boolean isEmptyType() {
+    return isNoType() || isNoObjectType() || isNoResolvedType();
+  }",func_60192b9382ac7237d2844db25ad2c4f2f5e5f3944fc1584bb3b59c829d3c8110

@@ -1,0 +1,11 @@
+Original Function Name,Function Code,Hash Mask Name
+getCharsetFromContentType,"    static String getCharsetFromContentType(String contentType) {
+        if (contentType == null) return null;
+        Matcher m = charsetPattern.matcher(contentType);
+        if (m.find()) {
+            String charset = m.group(1).trim();
+            charset = charset.toUpperCase(Locale.ENGLISH);
+            return charset;
+        }
+        return null;
+    }",func_dc1e7f3d0726d13d216a1fe6d4d01223f4eefb155a5c0540aecbcd42ef63c4bd

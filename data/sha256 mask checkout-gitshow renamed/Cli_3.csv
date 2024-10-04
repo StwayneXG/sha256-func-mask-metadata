@@ -1,0 +1,14 @@
+Original Function Name,Function Code,Hash Mask Name
+createNumber,"    public static Number createNumber(String str)
+    {
+        try
+        {
+            return NumberUtils.createNumber(str);
+        }
+        catch (NumberFormatException nfe)
+        {
+            System.err.println(nfe.getMessage());
+        }
+
+        return null;
+    }",func_f3f29d16399d9974b144d94d2bc6f4f5dd15f3cea1484e8469bc226ebb94bb52

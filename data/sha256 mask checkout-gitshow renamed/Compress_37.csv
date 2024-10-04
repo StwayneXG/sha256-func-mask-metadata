@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+paxHeaders,"    private void paxHeaders() throws IOException{
+        final Map<String, String> headers = parsePaxHeaders(this);
+        getNextEntry(); // Get the actual file entry
+        applyPaxHeadersToCurrentEntry(headers);
+    }",func_9ad4e45855a9ef42dcb86b1bc5c248736a5f86dd0da7e5411c55a2e51d88402d

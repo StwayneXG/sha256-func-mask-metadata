@@ -1,0 +1,20 @@
+Original Function Name,Function Code,Hash Mask Name
+NodeList,,func_9df5f23090834e0b224446f19981277511c7453c8bb04c416cb55a0198be180b
+ensureChildNodes,"    protected List<Node> ensureChildNodes() {
+        if (childNodes == EMPTY_NODES) {
+            childNodes = new NodeList(4);
+        }
+        return childNodes;
+    }",func_8ac7ad8d69751404cb78c6b0373c8d78cbecd277d9293e3c68876be754b80325
+onContentsChanged,"        public void onContentsChanged() {
+            nodelistChanged();
+        }",func_c17ddedcc2e50724265b7596a6520794bc00ed61a44591d13fa7b1c20178a32d
+doClone,"    protected Element doClone(Node parent) {
+        Element clone = (Element) super.doClone(parent);
+        clone.attributes = attributes != null ? attributes.clone() : null;
+        clone.baseUri = baseUri;
+        clone.childNodes = new NodeList(childNodes.size());
+        clone.childNodes.addAll(childNodes);
+
+        return clone;
+    }",func_15424071b0b4ee60eaa6bf6f97c381f8b8621da03a582306a453088433aec088

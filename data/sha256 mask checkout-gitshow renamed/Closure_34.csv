@@ -1,0 +1,32 @@
+Original Function Name,Function Code,Hash Mask Name
+add,"  void add(String str) {
+    cc.add(str);
+  }",func_7e9e5ac30f2216fd0fd6f5faed316f2d5983361a4203c3330cfa46ef65bb4767
+unrollBinaryOperator,"  private void unrollBinaryOperator(
+      Node n, int op, String opStr, Context context,
+      Context rhsContext, int leftPrecedence, int rightPrecedence) {
+    Node firstNonOperator = n.getFirstChild();
+    while (firstNonOperator.getType() == op) {
+      firstNonOperator = firstNonOperator.getFirstChild();
+    }
+
+    addExpr(firstNonOperator, leftPrecedence, context);
+
+    Node current = firstNonOperator;
+    do {
+      current = current.getParent();
+      cc.listSeparator();
+      addExpr(current.getFirstChild().getNext(), rightPrecedence, rhsContext);
+    } while (current != n);
+  }",func_bf8f7183cb0b532ff4d7668d3e8be6f00fc09dae0c600ccd1abae6363e6c5b1f
+appendOp,"    void appendOp(String op, boolean binOp) {
+      if (binOp) {
+        if (getLastChar() != ' ') {
+          append("" "");
+        }
+        append(op);
+        append("" "");
+      } else {
+        append(op);
+      }
+    }",func_ae1333cd5d9a24febe70f0711ffb170fe4e92924e9b6d88378aedfb7a6b67635

@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+mayBeString,"  static boolean mayBeString(Node n) {
+    return mayBeString(n, true);
+  }",func_65eec607a575c23bdd9e8570b45b38e0fdb72b39b2ae7af17dbea92f01f6c869

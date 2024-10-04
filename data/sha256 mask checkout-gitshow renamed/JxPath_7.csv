@@ -1,0 +1,30 @@
+Original Function Name,Function Code,Hash Mask Name
+computeValue,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }",func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f
+getSymbol,"    public String getSymbol() {
+        return ""<="";
+    }",func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157
+computeValue,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }",func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f
+getSymbol,"    public String getSymbol() {
+        return ""<="";
+    }",func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157
+computeValue,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }",func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f
+getSymbol,"    public String getSymbol() {
+        return ""<="";
+    }",func_26cf750f121371cc5b66ac636317e5c754724eaf09250e9d073063e672478157
+computeValue,"    public Object computeValue(EvalContext context) {
+        double l = InfoSetUtil.doubleValue(args[0].computeValue(context));
+        double r = InfoSetUtil.doubleValue(args[1].computeValue(context));
+        return l <= r ? Boolean.TRUE : Boolean.FALSE;
+    }",func_452c1e016b0a10db1598276a0c483e116d49a94540e0d1abf26bc041e9acc47f

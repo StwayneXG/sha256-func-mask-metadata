@@ -1,0 +1,17 @@
+Original Function Name,Function Code,Hash Mask Name
+getMappingCode,"    private char getMappingCode(final String str, final int index) {
+        // map() throws IllegalArgumentException
+        final char mappedChar = this.map(str.charAt(index));
+        // HW rule check
+        if (index > 1 && mappedChar != '0') {
+            final char hwChar = str.charAt(index - 1);
+            if ('H' == hwChar || 'W' == hwChar) {
+                final char preHWChar = str.charAt(index - 2);
+                final char firstCode = this.map(preHWChar);
+                if (firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar) {
+                    return 0;
+                }
+            }
+        }
+        return mappedChar;
+    }",func_a21400103d7b45cb0d081e3dae21a5a61d953387f6eba079fd143c56bf7d3d6a

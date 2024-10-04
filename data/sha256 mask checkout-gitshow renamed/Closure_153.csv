@@ -1,0 +1,197 @@
+Original Function Name,Function Code,Hash Mask Name
+onRedeclaration,"    void onRedeclaration(
+        Scope s, String name,
+        Node n, Node parent, Node gramps, Node nodeWithLineNumber);
+  }
+
+  /**
+   * The default handler for duplicate declarations.
+   */
+  private class DefaultRedeclarationHandler implements RedeclarationHandler {
+    public void onRedeclaration(
+        Scope s, String name,
+        Node n, Node parent, Node gramps, Node nodeWithLineNumber) {
+
+      // Don't allow multiple variables to be declared at the top level scope
+      if (scope.isGlobal()) {
+        Scope.Var origVar = scope.getVar(name);
+        Node origParent = origVar.getParentNode();
+        if (origParent.getType() == Token.CATCH &&
+            parent.getType() == Token.CATCH) {
+          // Okay, both are 'catch(x)' variables.
+          return;
+        }
+
+        boolean allowDupe = false;
+        JSDocInfo info = n.getJSDocInfo();
+        if (info == null) {
+          info = parent.getJSDocInfo();
+        }
+        allowDupe =
+            info != null && info.getSuppressions().contains(""duplicate"");
+
+        if (!allowDupe) {
+          compiler.report(
+              JSError.make(sourceName, n,
+                           VAR_MULTIPLY_DECLARED_ERROR,
+                           name,
+                           (origVar.input != null
+                            ? origVar.input.getName()
+                            : ""??"")));
+        }
+      } else if (name.equals(ARGUMENTS) && !NodeUtil.isVarDeclaration(n)) {
+        // Disallow shadowing ""arguments"" as we can't handle with our current
+        // scope modeling.
+        compiler.report(
+            JSError.make(sourceName, n,
+                VAR_ARGUMENTS_SHADOWED_ERROR));
+      }
+    }",func_14b66bccae3960acdee00dd556686264527db4573a3ac1e4feddfb71974940f8
+scanRoot,"  private void scanRoot(Node n, Scope parent) {
+    if (n.getType() == Token.FUNCTION) {
+      sourceName = (String) n.getProp(Node.SOURCENAME_PROP);
+
+      final Node fnNameNode = n.getFirstChild();
+      final Node args = fnNameNode.getNext();
+      final Node body = args.getNext();
+
+      // Bleed the function name into the scope, if it hasn't
+      // been declared in the outer scope.
+      String fnName = fnNameNode.getString();
+      if (!fnName.isEmpty() && NodeUtil.isFunctionExpression(n)) {
+        declareVar(fnName, fnNameNode, n, null, null, n);
+      }
+
+      // Args: Declare function variables
+      Preconditions.checkState(args.getType() == Token.LP);
+      for (Node a = args.getFirstChild(); a != null;
+           a = a.getNext()) {
+        Preconditions.checkState(a.getType() == Token.NAME);
+        declareVar(a.getString(), a, args, n, null, n);
+      }
+
+      // Body
+      scanVars(body, n);
+    } else {
+      // It's the global block
+      Preconditions.checkState(scope.getParent() == null);
+      scanVars(n, null);
+    }
+  }",func_a4c73fef1175b0a0970309f10b9b94b47cad844efc1dd53c397d47d914961ddb
+scanVars,"  private void scanVars(Node n, Node parent) {
+    switch (n.getType()) {
+      case Token.VAR:
+        // Declare all variables. e.g. var x = 1, y, z;
+        for (Node child = n.getFirstChild();
+             child != null;) {
+          Node next = child.getNext();
+          Preconditions.checkState(child.getType() == Token.NAME);
+          String name = child.getString();
+          declareVar(name, child, n, parent, null, n);
+          child = next;
+        }
+        return;
+
+      case Token.FUNCTION:
+        if (NodeUtil.isFunctionExpression(n)) {
+          return;
+        }
+
+        String fnName = n.getFirstChild().getString();
+        if (fnName.isEmpty()) {
+          // This is invalid, but allow it so the checks can catch it.
+          return;
+        }
+        declareVar(fnName, n.getFirstChild(), n, parent, null, n);
+        return;   // should not examine function's children
+
+      case Token.CATCH:
+        Preconditions.checkState(n.getChildCount() == 2);
+        Preconditions.checkState(n.getFirstChild().getType() == Token.NAME);
+        // the first child is the catch var and the third child
+        // is the code block
+
+        final Node var = n.getFirstChild();
+        final Node block = var.getNext();
+
+        declareVar(var.getString(), var, n, parent, null, n);
+        scanVars(block, n);
+        return;  // only one child to scan
+
+      case Token.SCRIPT:
+        sourceName = (String) n.getProp(Node.SOURCENAME_PROP);
+        break;
+    }
+
+    // Variables can only occur in statement-level nodes, so
+    // we only need to traverse children in a couple special cases.
+    if (NodeUtil.isControlStructure(n) || NodeUtil.isStatementBlock(n)) {
+      for (Node child = n.getFirstChild();
+           child != null;) {
+        Node next = child.getNext();
+        scanVars(child, n);
+        child = next;
+      }
+    }
+  }",func_b900febc36c5c03e8684dcb4bb872dea01b1e5481c72c5ee4bd719decfbe8f7c
+onRedeclaration,"    void onRedeclaration(
+        Scope s, String name,
+        Node n, Node parent, Node gramps, Node nodeWithLineNumber);
+  }
+
+  /**
+   * The default handler for duplicate declarations.
+   */
+  private class DefaultRedeclarationHandler implements RedeclarationHandler {
+    public void onRedeclaration(
+        Scope s, String name,
+        Node n, Node parent, Node gramps, Node nodeWithLineNumber) {
+
+      // Don't allow multiple variables to be declared at the top level scope
+      if (scope.isGlobal()) {
+        Scope.Var origVar = scope.getVar(name);
+        Node origParent = origVar.getParentNode();
+        if (origParent.getType() == Token.CATCH &&
+            parent.getType() == Token.CATCH) {
+          // Okay, both are 'catch(x)' variables.
+          return;
+        }
+
+        boolean allowDupe = false;
+        JSDocInfo info = n.getJSDocInfo();
+        if (info == null) {
+          info = parent.getJSDocInfo();
+        }
+        allowDupe =
+            info != null && info.getSuppressions().contains(""duplicate"");
+
+        if (!allowDupe) {
+          compiler.report(
+              JSError.make(sourceName, n,
+                           VAR_MULTIPLY_DECLARED_ERROR,
+                           name,
+                           (origVar.input != null
+                            ? origVar.input.getName()
+                            : ""??"")));
+        }
+      } else if (name.equals(ARGUMENTS) && !NodeUtil.isVarDeclaration(n)) {
+        // Disallow shadowing ""arguments"" as we can't handle with our current
+        // scope modeling.
+        compiler.report(
+            JSError.make(sourceName, n,
+                VAR_ARGUMENTS_SHADOWED_ERROR));
+      }
+    }",func_14b66bccae3960acdee00dd556686264527db4573a3ac1e4feddfb71974940f8
+visit,,func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
+declareVar,"  private void declareVar(String name, Node n, Node parent,
+                          Node gramps, JSType declaredType,
+                          Node nodeWithLineNumber) {
+
+    if (scope.isDeclared(name, false)
+        || (scope.isLocal() && name.equals(ARGUMENTS))) {
+      redeclarationHandler.onRedeclaration(
+          scope, name, n, parent, gramps, nodeWithLineNumber);
+    } else {
+      scope.declare(name, n, declaredType, compiler.getInput(sourceName));
+    }
+  }",func_08b9d5b9aa7aed5e83634de1f81ac802167263f463423e173b131de177ec81ed

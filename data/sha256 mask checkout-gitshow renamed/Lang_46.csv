@@ -1,0 +1,21 @@
+Original Function Name,Function Code,Hash Mask Name
+escapeJava,"    public static String escapeJava(String str) {
+        return escapeJavaStyleString(str, false);
+    }",func_63f553a34f48eafd2599bedbdc1c43dc1b374ea000759425ef7aae3fec25fbc3
+escapeJavaScript,"    public static String escapeJavaScript(String str) {
+        return escapeJavaStyleString(str, true);
+    }",func_f1e38d2113170b25f1271e74107dd2017364f163768686ebdce586cdd22fbe3a
+escapeJavaStyleString,"    private static String escapeJavaStyleString(String str, boolean escapeSingleQuotes) {
+        if (str == null) {
+            return null;
+        }
+        try {
+            StringWriter writer = new StringWriter(str.length() * 2);
+            escapeJavaStyleString(writer, str, escapeSingleQuotes);
+            return writer.toString();
+        } catch (IOException ioe) {
+            // this should never ever happen while writing to a StringWriter
+            ioe.printStackTrace();
+            return null;
+        }
+    }",func_31f77abfc1910b55787da9b4cfb24307b7824e2e8a89d453852164f2b8ed4cfb

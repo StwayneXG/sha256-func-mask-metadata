@@ -1,0 +1,5 @@
+Original Function Name,Function Code,Hash Mask Name
+inSpecificScope,"    private boolean inSpecificScope(String targetName, String[] baseTypes, String[] extraTypes) {
+        specificScopeTarget[0] = targetName;
+        return inSpecificScope(specificScopeTarget, baseTypes, extraTypes);
+    }",func_119a8aeb7a9d4484ef328c622fc097f5ef6c619cfbeb117d0cf39aa7366ff98a

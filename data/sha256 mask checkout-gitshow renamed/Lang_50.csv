@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+getDateTimeInstance,"    public static FastDateFormat getDateTimeInstance(
+            int dateStyle, int timeStyle) {
+        return getDateTimeInstance(dateStyle, timeStyle, null, null);
+    }",func_724c5037e616bd9e0d7bbf2e00a91eb3b3247181398d5c201c045c6911305e71
+getDateInstance,"    public static FastDateFormat getDateInstance(int style) {
+        return getDateInstance(style, null, null);
+    }",func_0029d24c6d12c10c07412d6ecc4d4c0140702da97264fc73fa9c3d03d506384d

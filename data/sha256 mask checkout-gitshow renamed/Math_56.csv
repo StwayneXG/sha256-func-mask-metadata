@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+getCounts,"        public int[] getCounts() {
+            return MathUtils.copyOf(counter);
+        }",func_129be2794cd7bd747569c7892d1eeb7417284846233ea96d5ac6423b6da030d6

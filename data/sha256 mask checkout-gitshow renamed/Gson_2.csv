@@ -1,0 +1,9 @@
+Original Function Name,Function Code,Hash Mask Name
+write,"    public void write(JsonWriter out, Class value) throws IOException {
+      if (value == null) {
+        out.nullValue();
+      } else {
+        throw new UnsupportedOperationException(""Attempted to serialize java.lang.Class: ""
+            + value.getName() + "". Forgot to register a type adapter?"");
+      }
+    }",func_10fd874b68dad080ed706762c8e163dabb20514bddae38fb159c56f714a3b143

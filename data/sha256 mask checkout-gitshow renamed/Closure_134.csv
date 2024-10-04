@@ -1,0 +1,93 @@
+Original Function Name,Function Code,Hash Mask Name
+isIndependentOf,"    public boolean isIndependentOf(Property prop) {
+      if (typesRelatedToSet.intersects(prop.typesSet)) {
+        return false;
+      }
+      return !getRelated(prop.type).intersects(typesInSet);
+    }",func_8e84bb925a68a2ddf622dc8726d9676d3548264de2f3f394c128181e354851e4
+addNonUnionType,"    private void addNonUnionType(JSType newType) {
+      if (skipAmbiguating || isInvalidatingType(newType)) {
+        skipAmbiguating = true;
+        return;
+      }
+
+      if (type == null) {
+        type = newType;
+      } else {
+        type = type.getLeastSupertype(newType);
+      }
+      typesSet.set(getIntForType(newType));
+    }",func_385d309e7b4aeb53a8516e5586cff0be9b2f6418965b086ead9c166e08139484
+Property,,func_40040cb181f7f0ee5add2b52e8467c6652477f7ce12af39fe380b5084b64f4fe
+process,"  public void process(Node externs, Node root) {
+    NodeTraversal.traverse(compiler, externs, new ProcessExterns());
+    NodeTraversal.traverse(compiler, root, new ProcessProperties());
+
+    Set<String> reservedNames =
+        new HashSet<String>(externedNames.size() + quotedNames.size());
+    reservedNames.addAll(externedNames);
+    reservedNames.addAll(quotedNames);
+
+    int numRenamedPropertyNames = 0;
+    int numSkippedPropertyNames = 0;
+    Set<Property> propsByFreq = new TreeSet<Property>(FREQUENCY_COMPARATOR);
+    for (Property p : propertyMap.values()) {
+      if (!p.skipAmbiguating) {
+        ++numRenamedPropertyNames;
+        computeRelatedTypes(p.type);
+        propsByFreq.add(p);
+      } else {
+        ++numSkippedPropertyNames;
+        reservedNames.add(p.oldName);
+      }
+    }
+
+    PropertyGraph graph = new PropertyGraph(Lists.newLinkedList(propsByFreq));
+    GraphColoring<Property, Void> coloring =
+        new GreedyGraphColoring<Property, Void>(graph, FREQUENCY_COMPARATOR);
+    int numNewPropertyNames = coloring.color();
+
+    NameGenerator nameGen = new NameGenerator(
+        reservedNames, """", reservedCharacters);
+    for (int i = 0; i < numNewPropertyNames; ++i) {
+      colorMap.put(i, nameGen.generateNextName());
+    }
+    for (GraphNode<Property, Void> node : graph.getNodes()) {
+      node.getValue().newName = colorMap.get(node.getAnnotation().hashCode());
+      renamingMap.put(node.getValue().oldName, node.getValue().newName);
+    }
+
+    // Update the string nodes.
+    for (Node n : stringNodesToRename) {
+      String oldName = n.getString();
+      Property p = propertyMap.get(oldName);
+      if (p != null && p.newName != null) {
+        Preconditions.checkState(oldName.equals(p.oldName));
+        if (!p.newName.equals(oldName)) {
+          n.setString(p.newName);
+          compiler.reportCodeChange();
+        }
+      }
+    }
+
+    logger.info(""Collapsed "" + numRenamedPropertyNames + "" properties into ""
+                + numNewPropertyNames + "" and skipped renaming ""
+                + numSkippedPropertyNames + "" properties."");
+  }",func_19ed40bf62c399b8492efda5b9a9184b68cf4d9d4a165b38557b9d14201d0c03
+addNode,"    public void addNode(Property prop) {
+      typesInSet.or(prop.typesSet);
+      typesRelatedToSet.or(getRelated(prop.type));
+    }",func_e0719a850e7415ef966b637ca832880a8f0edb30281d9937971ec5fb2b510caa
+findOverriddenFunction,"    private FunctionType findOverriddenFunction(
+        ObjectType ownerType, String propName) {
+      // First, check to see if the property is implemented
+      // on a superclass.
+      JSType propType = ownerType.getPropertyType(propName);
+      if (propType instanceof FunctionType) {
+        return (FunctionType) propType;
+      }
+        // If it's not, then check to see if it's implemented
+        // on an implemented interface.
+
+      return null;
+    }",func_ea87afc2498ffaa6359ac40e7e66a7830626c755eecb2e6e694684e3aa60d2b8

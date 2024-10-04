@@ -1,0 +1,12 @@
+Original Function Name,Function Code,Hash Mask Name
+process,"  public void process(Node externs, Node root) {
+    NodeTraversal.traverse(compiler, root, this);
+    if (MAKE_LOCAL_NAMES_UNIQUE) {
+      MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique();
+      NodeTraversal t = new NodeTraversal(compiler, renamer);
+      t.traverseRoots(externs, root);
+    }
+    removeDuplicateDeclarations(root);
+    new PropogateConstantAnnotations(compiler, assertOnChange)
+        .process(externs, root);
+  }",func_19ed40bf62c399b8492efda5b9a9184b68cf4d9d4a165b38557b9d14201d0c03

@@ -1,0 +1,12 @@
+Original Function Name,Function Code,Hash Mask Name
+preserveWhitespace,"    static boolean preserveWhitespace(Node node) {
+        // looks only at this element and five levels up, to prevent recursion & needless stack searches
+        if (node != null && node instanceof Element) {
+            Element el = (Element) node;
+                if (el.tag.preserveWhitespace())
+                    return true;
+                else
+                    return el.parent() != null && el.parent().tag.preserveWhitespace();
+        }
+        return false;
+    }",func_681c37bce522866df58c3fa65447c1e9f0affed9331f37ab85654fb9f7763bfa

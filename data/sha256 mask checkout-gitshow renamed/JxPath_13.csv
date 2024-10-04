@@ -1,0 +1,38 @@
+Original Function Name,Function Code,Hash Mask Name
+getExternallyRegisteredPrefix,,func_5c31dcd37c0695d14d6bcdea04fce25eb49c47446e9639eb1f0fdb4d5bc8d6b5
+clone,"    public Object clone() {
+        try {
+            NamespaceResolver result = (NamespaceResolver) super.clone();
+            result.sealed = false;
+            return result;
+        }
+        catch (CloneNotSupportedException e) {
+            // Of course, it's supported.
+            e.printStackTrace();
+            return null;
+        }
+    }",func_b5d61dc89a35d2c924b28c9760765da94039e94184c50f87dde54532f126b4ac
+getExternallyRegisteredNamespaceURI,,func_9f69f7f163fbdbb1ed336fa1b0c728150aa66c19f84c23a33b1bd8df2cab2624
+createAttribute,"    public NodePointer createAttribute(JXPathContext context, QName name) {
+        if (!(node instanceof Element)) {
+            return super.createAttribute(context, name);
+        }
+        Element element = (Element) node;
+        String prefix = name.getPrefix();
+        if (prefix != null) {
+            String ns = getNamespaceURI(prefix);
+            if (ns == null) {
+                throw new JXPathException(
+                    ""Unknown namespace prefix: "" + prefix);
+            }
+            element.setAttributeNS(ns, name.toString(), """");
+        }
+        else {
+            if (!element.hasAttribute(name.getName())) {
+                element.setAttribute(name.getName(), """");
+            }
+        }
+        NodeIterator it = attributeIterator(name);
+        it.setPosition(1);
+        return it.getNodePointer();
+    }",func_e9f34d33e1592c8c11a150a55615c436a837e2e874cfda8c4d0ef19be60ffb2a

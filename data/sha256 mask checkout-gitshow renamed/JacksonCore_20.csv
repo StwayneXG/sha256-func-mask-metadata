@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+writeEmbeddedObject,"    public void writeEmbeddedObject(Object object) throws IOException {
+        // 01-Sep-2016, tatu: As per [core#318], handle small number of cases
+        throw new JsonGenerationException(""No native support for writing embedded objects"",
+                this);
+    }",func_8d610665e9c10c379cf660e04012d9cfeab25a137873914f4b6399bd0852cea1

@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+canInstantiate,"    public boolean canInstantiate() {
+        return canCreateUsingDefault()
+                || canCreateUsingDelegate() 
+                || canCreateFromObjectWith() || canCreateFromString()
+                || canCreateFromInt() || canCreateFromLong()
+                || canCreateFromDouble() || canCreateFromBoolean();
+    }",func_985dadab4ab710cbaa89097c32fde03afa44c2d96d510319ed32e403ce7353c2

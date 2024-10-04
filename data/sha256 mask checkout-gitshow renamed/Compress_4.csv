@@ -1,0 +1,28 @@
+Original Function Name,Function Code,Hash Mask Name
+close,"    public void close() throws IOException {
+        finish();
+        if (raf != null) {
+            raf.close();
+        }
+        if (out != null) {
+            out.close();
+        }
+    }",func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36
+close,"    public void close() throws IOException {
+        finish();
+        if (raf != null) {
+            raf.close();
+        }
+        if (out != null) {
+            out.close();
+        }
+    }",func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36
+close,"    public void close() throws IOException {
+        finish();
+        if (raf != null) {
+            raf.close();
+        }
+        if (out != null) {
+            out.close();
+        }
+    }",func_310ff200149b44a32f124023d7caba19a1a890763a980606813d3a3d4a085d36

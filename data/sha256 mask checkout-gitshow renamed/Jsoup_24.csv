@@ -1,0 +1,22 @@
+Original Function Name,Function Code,Hash Mask Name
+read,"        void read(Tokeniser t, CharacterReader r) {
+            switch (r.current()) {
+                case '&':
+                    t.advanceTransition(CharacterReferenceInData);
+                    break;
+                case '<':
+                    t.advanceTransition(TagOpen);
+                    break;
+                case nullChar:
+                    t.error(this); // NOT replacement character (oddly?)
+                    t.emit(r.consume());
+                    break;
+                case eof:
+                    t.emit(new Token.EOF());
+                    break;
+                default:
+                    String data = r.consumeToAny('&', '<', nullChar);
+                    t.emit(data);
+                    break;
+            }
+        }",func_3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925

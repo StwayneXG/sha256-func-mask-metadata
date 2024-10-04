@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+spy,"    public static <T> T spy(T object) {
+        return MOCKITO_CORE.mock((Class<T>) object.getClass(), withSettings()
+                .spiedInstance(object)
+                .defaultAnswer(CALLS_REAL_METHODS)); 
+    }",func_57d4aa377250296d19d9f55f132db4bc2725c657672b0c3e54467839e6c05356

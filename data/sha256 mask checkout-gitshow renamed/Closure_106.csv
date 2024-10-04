@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+recordBlockDescription,"  public boolean recordBlockDescription(String description) {
+    if (parseDocumentation) {
+    populated = true;
+    }
+    return currentInfo.documentBlock(description);
+  }",func_e9a879e413f854c53fc047768a26834288efaa33ead748e4976688370c58e49e

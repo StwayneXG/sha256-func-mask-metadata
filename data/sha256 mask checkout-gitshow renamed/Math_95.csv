@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+getInitialDomain,"    protected double getInitialDomain(double p) {
+        double ret;
+        double d = getDenominatorDegreesOfFreedom();
+            // use mean
+            ret = d / (d - 2.0);
+        return ret;
+    }",func_37cf38dc05fe45b7f60d6ac6f0b31023863b0b841272316a2f71cd279ff9aeb9

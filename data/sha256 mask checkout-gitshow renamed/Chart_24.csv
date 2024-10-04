@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+getPaint,"    public Paint getPaint(double value) {
+        double v = Math.max(value, this.lowerBound);
+        v = Math.min(v, this.upperBound);
+        int g = (int) ((value - this.lowerBound) / (this.upperBound 
+                - this.lowerBound) * 255.0);
+        return new Color(g, g, g);
+    }",func_2217d2f4d657638da80cdd1c2d9062fdd02a2de5bb838b33bba79b7082d70323

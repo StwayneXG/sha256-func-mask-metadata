@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+resetMock,"    public <T> void resetMock(T mock) {
+        MockHandlerInterface<T> oldMockHandler = getMockHandler(mock);
+        MockHandler<T> newMockHandler = new MockHandler<T>(oldMockHandler);
+        MethodInterceptorFilter newFilter = new MethodInterceptorFilter(newMockHandler, (MockSettingsImpl) org.mockito.Mockito.withSettings().defaultAnswer(org.mockito.Mockito.RETURNS_DEFAULTS));
+        ((Factory) mock).setCallback(0, newFilter);
+    }",func_4ecddfc6130d2089047848beb7f7fbbc4ad3b3ab457e188aec5f4cda14067b2d

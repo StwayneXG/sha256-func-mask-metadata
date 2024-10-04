@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+outerHtml,"    public String outerHtml() {
+        StringBuilder accum = new StringBuilder(32*1024);
+        outerHtml(accum);
+        return accum.toString();
+    }",func_73daa08c9aa7b3d12713be3ac40ef6c61747666a931cb3be2cccf334b8be8201

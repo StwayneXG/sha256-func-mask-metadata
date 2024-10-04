@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+isRegistered,"    static boolean isRegistered(Object value) {
+        Map<Object, Object> m = getRegistry();
+        return m.containsKey(value);
+    }",func_59e7b6cae795ce61e68c09bfd89f1ae312957661244af57dbb5321439c56f4af
+getRegistry,"    static Map<Object, Object> getRegistry() {
+        return REGISTRY.get() != null ? REGISTRY.get() : Collections.<Object, Object>emptyMap();
+    }",func_e9d96d0ec49313f9ec9c2b346f539495312edc9c0bd9aed232af8f5aa62e12c6

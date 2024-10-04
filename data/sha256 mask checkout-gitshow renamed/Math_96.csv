@@ -1,0 +1,24 @@
+Original Function Name,Function Code,Hash Mask Name
+equals,"    public boolean equals(Object other) {
+        boolean ret;
+        
+        if (this == other) { 
+            ret = true;
+        } else if (other == null) {
+            ret = false;
+        } else  {
+            try {
+                Complex rhs = (Complex)other;
+                if (rhs.isNaN()) {
+                    ret = this.isNaN();
+                } else {
+                    ret = (Double.doubleToRawLongBits(real) == Double.doubleToRawLongBits(rhs.getReal())) && (Double.doubleToRawLongBits(imaginary) == Double.doubleToRawLongBits(rhs.getImaginary())); 
+                }
+            } catch (ClassCastException ex) {
+                // ignore exception
+                ret = false;
+            }
+        }
+      
+        return ret;
+    }",func_e93cb41d4a7d2395d9bdfe4d8616f9b52762523bb44e75bf7701cd9d2e0d1cb7

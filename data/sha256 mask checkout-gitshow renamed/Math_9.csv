@@ -1,0 +1,5 @@
+Original Function Name,Function Code,Hash Mask Name
+revert,"    public Line revert() {
+        final Line reverted = new Line(zero, zero.subtract(direction));
+        return reverted;
+    }",func_07913239c9e8d42fcd39da156d79fea4dcc8b373ef5cd2696b49275bc7887669

@@ -1,0 +1,12 @@
+Original Function Name,Function Code,Hash Mask Name
+escape,"    public String escape(String str) {
+        StringWriter stringWriter = createStringWriter(str);
+        try {
+            this.escape(stringWriter, str);
+        } catch (IOException e) {
+            // This should never happen because ALL the StringWriter methods called by #escape(Writer, String) do not
+            // throw IOExceptions.
+            throw new UnhandledException(e);
+        }
+        return stringWriter.toString();
+    }",func_b3140286ac71ad2acf69681f4f2a907b0b83d8edfbffdd4e0a38c05a23180495

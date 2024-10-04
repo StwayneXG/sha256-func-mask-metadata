@@ -1,0 +1,26 @@
+Original Function Name,Function Code,Hash Mask Name
+error,"    void error(HtmlTreeBuilderState state) {
+        if (errors.canAddError())
+            errors.add(new ParseError(reader.pos(), ""Unexpected token [%s] when in state [%s]"", currentToken.tokenType(), state));
+    }",func_ca00fccfb408989eddc401062c4d1219a6aceb6b9b55412357f1790862e8f178
+acknowledgeSelfClosingFlag,"    void acknowledgeSelfClosingFlag() {
+        selfClosingFlagAcknowledged = true;
+    }",func_6e26517e5179bb1f49118438262e163b61f3e3ef6f9cea01762eca69db0b75a7
+StringBuilder,,func_30fb30c833300a9f9f7a1218b7519e1945085999eab52bd1b3cb3ef8620dc731
+emit,"    void emit(Token token) {
+        Validate.isFalse(isEmitPending, ""There is an unread token pending!"");
+
+        emitPending = token;
+        isEmitPending = true;
+
+        if (token.type == Token.TokenType.StartTag) {
+            Token.StartTag startTag = (Token.StartTag) token;
+            lastStartTag = startTag.tagName;
+            if (startTag.selfClosing)
+                selfClosingFlagAcknowledged = false;
+        } else if (token.type == Token.TokenType.EndTag) {
+            Token.EndTag endTag = (Token.EndTag) token;
+            if (endTag.attributes != null)
+                error(""Attributes incorrectly present on end tag"");
+        }
+    }",func_967dd4a091e2d8c87a87ab800ebe981a30157c447bf234a95263d6befdad7973

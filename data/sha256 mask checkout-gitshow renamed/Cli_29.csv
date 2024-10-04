@@ -1,0 +1,15 @@
+Original Function Name,Function Code,Hash Mask Name
+stripLeadingAndTrailingQuotes,"    static String stripLeadingAndTrailingQuotes(String str)
+    {
+        if (str.startsWith(""\""""))
+        {
+            str = str.substring(1, str.length());
+        }
+        int length = str.length();
+        if (str.endsWith(""\""""))
+        {
+            str = str.substring(0, length - 1);
+        }
+        
+        return str;
+    }",func_c191ebd2e18a4cfc050de51c066f62f51c9b1fd4c3560389c86487610d2f7d4c

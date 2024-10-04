@@ -1,0 +1,20 @@
+Original Function Name,Function Code,Hash Mask Name
+setCategoryKeys,"    public void setCategoryKeys(Comparable[] categoryKeys) {
+        if (categoryKeys == null) {
+            throw new IllegalArgumentException(""Null 'categoryKeys' argument."");
+        }
+        if (categoryKeys.length != this.startData[0].length) {
+            throw new IllegalArgumentException(
+                    ""The number of categories does not match the data."");
+        }
+        for (int i = 0; i < categoryKeys.length; i++) {
+            if (categoryKeys[i] == null) {
+                throw new IllegalArgumentException(
+                    ""DefaultIntervalCategoryDataset.setCategoryKeys(): ""
+                    + ""null category not permitted."");
+            }
+        }
+        this.categoryKeys = categoryKeys;
+        fireDatasetChanged();
+    }",func_976e4642b2ddabeec9d5d4c7fa8873db8466974718e9815fb4d2b5a0263b9925
+DefaultIntervalCategoryDataset,,func_1eb02a3058589dd879a60cf1e1f3af422bcd2a885acba2f3c79e471855a703ba

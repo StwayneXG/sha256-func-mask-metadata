@@ -1,0 +1,16 @@
+Original Function Name,Function Code,Hash Mask Name
+isDirectory,"    public boolean isDirectory() {
+        if (file != null) {
+            return file.isDirectory();
+        }
+
+        if (linkFlag == LF_DIR) {
+            return true;
+        }
+
+        if (getName().endsWith(""/"")) {
+            return true;
+        }
+
+        return false;
+    }",func_94102306742aba89f1271a7605004f77ec7efe7cde00024e991700e50c747c66

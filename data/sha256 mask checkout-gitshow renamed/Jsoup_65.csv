@@ -1,0 +1,12 @@
+Original Function Name,Function Code,Hash Mask Name
+clearStackToTableBodyContext,"    void clearStackToTableBodyContext() {
+        clearStackToContext(""tbody"", ""tfoot"", ""thead"");
+    }",func_7ff24522f293ab639a2e364edb7f79be51df3f257044ae55e11a6d08a76b8f80
+clearStackToTableRowContext,"    void clearStackToTableRowContext() {
+        clearStackToContext(""tr"");
+    }",func_427364efbb4be815e075ea19931417e301ca15ab65306ed95b7aa5c8fa56b644
+anythingElse,"        private boolean anythingElse(Token t, HtmlTreeBuilder tb) {
+            tb.insertStartTag(""html"");
+            tb.transition(BeforeHead);
+            return tb.process(t);
+        }",func_5fe684275a87e2d5d8cc308aa00e6e4ff75fa742d9e1df78fe8af3e1a7af2394

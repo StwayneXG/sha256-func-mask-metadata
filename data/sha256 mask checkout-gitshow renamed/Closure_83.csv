@@ -1,0 +1,20 @@
+Original Function Name,Function Code,Hash Mask Name
+parseArguments,"      public int parseArguments(Parameters params) throws CmdLineException {
+        String param = params.getParameter(0);
+
+        if (param == null) {
+          setter.addValue(true);
+          return 0;
+        } else {
+          String lowerParam = param.toLowerCase();
+          if (TRUES.contains(lowerParam)) {
+            setter.addValue(true);
+          } else if (FALSES.contains(lowerParam)) {
+            setter.addValue(false);
+          } else {
+            setter.addValue(true);
+            return 0;
+          }
+          return 1;
+        }
+      }",func_848146e94b64fdb2419387cdd079df25e0b6bd9f4cd1c301f2944a3a0e17d35d

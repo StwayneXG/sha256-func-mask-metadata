@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+readValues,"    public <T> Iterator<T> readValues(JsonParser p, Class<T> valueType) throws IOException {
+        return forType(valueType).readValues(p);
+    }",func_585b84003536ef745dc044dffc9ed0e0af308393152b9219bcc9b85f376f291a

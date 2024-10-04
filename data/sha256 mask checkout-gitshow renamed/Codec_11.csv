@@ -1,0 +1,31 @@
+Original Function Name,Function Code,Hash Mask Name
+encodeQuotedPrintable,"    private static final void encodeQuotedPrintable(int b, ByteArrayOutputStream buffer) {
+        buffer.write(ESCAPE_CHAR);
+        char hex1 = Character.toUpperCase(Character.forDigit((b >> 4) & 0xF, 16));
+        char hex2 = Character.toUpperCase(Character.forDigit(b & 0xF, 16));
+        buffer.write(hex1);
+        buffer.write(hex2);
+    }",func_8e798a665035ebf68fea69cf1536b29d020cac95abbe24cc0942ce2db79bed89
+decodeQuotedPrintable,"    public static final byte[] decodeQuotedPrintable(byte[] bytes) throws DecoderException {
+        if (bytes == null) {
+            return null;
+        }
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        for (int i = 0; i < bytes.length; i++) {
+            final int b = bytes[i];
+            if (b == ESCAPE_CHAR) {
+                try {
+                    // if the next octet is a CR we have found a soft line break
+                    int u = Utils.digit16(bytes[++i]);
+                    int l = Utils.digit16(bytes[++i]);
+                    buffer.write((char) ((u << 4) + l));
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw new DecoderException(""Invalid quoted-printable encoding"", e);
+                }
+            } else {
+                // every other octet is appended except for CR & LF
+                buffer.write(b);
+            }
+        }
+        return buffer.toByteArray();
+    }",func_b67262c3ea281c6b72e498ba689f59d3698e4913ca8903576bc04ebcda966df0

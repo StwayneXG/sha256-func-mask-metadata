@@ -1,0 +1,11 @@
+Original Function Name,Function Code,Hash Mask Name
+RecordType,,func_22a91d228f0ba98bdc4b65ef155558c5eb4935122dfb507e1604aede157b551d
+build,"  public JSType build() {
+     // If we have an empty record, simply return the object type.
+    if (isEmpty) {
+       return registry.getNativeObjectType(JSTypeNative.OBJECT_TYPE);
+    }
+
+    return new RecordType(
+        registry, Collections.unmodifiableMap(properties));
+  }",func_44575cf5b28512d75644bf54a517dcef304ff809fd511747621b4d64f19aac66

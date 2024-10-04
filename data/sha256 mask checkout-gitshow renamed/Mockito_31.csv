@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+formatMethodCall,"		private String formatMethodCall() {
+			return invocation.getMethod().getName() + ""()"";
+		}",func_e34658a27f774e358430160e661fe25b93c70217e031c10f204b1b9e9c0a69fc

@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+addParserWarning,"    void addParserWarning(String messageId, String messageArg, int lineno,
+        int charno) {
+      errorReporter.warning(ScriptRuntime.getMessage1(messageId, messageArg),
+          sourceName, lineno, null, charno);
+    }",func_fa5693f1fdbdbab8b971ca0eb7759e6140701b89fc22c457414e1613fdb83098

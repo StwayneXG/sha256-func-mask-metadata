@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+withIgnoreEmptyLines,"    public CSVFormat withIgnoreEmptyLines(final boolean ignoreEmptyLines) {
+        return new CSVFormat(delimiter, quoteCharacter, quoteMode, commentMarker, escapeCharacter,
+                ignoreSurroundingSpaces, ignoreEmptyLines, recordSeparator, nullString, header, skipHeaderRecord,
+                allowMissingColumnNames);
+    }",func_950ac4cf53b00d2f9d27506d081c7de7d9e439f3a926f71833c444ae34a17c1e

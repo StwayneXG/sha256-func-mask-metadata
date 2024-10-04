@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+caseTopType,"        protected JSType caseTopType(JSType topType) {
+          return topType;
+        }",func_dc052ca7835b6ab99b4efa55c07663ac5f5480eeb446ac7825e6143e3abaf040

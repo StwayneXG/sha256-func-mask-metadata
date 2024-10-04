@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+extractMultilineTextualBlock,"  private ExtractionInfo extractMultilineTextualBlock(JsDocToken token) {
+    return extractMultilineTextualBlock(token, WhitespaceOption.SINGLE_LINE);
+  }",func_d59f3ded5f5d4c2b26e0325f8481fa862d60fd5e393fb81f8754da1c93cff873

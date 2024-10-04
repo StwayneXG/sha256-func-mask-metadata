@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+getTypeArguments,"    public static Map<TypeVariable<?>, Type> getTypeArguments(ParameterizedType type) {
+        return getTypeArguments(type, getRawType(type), null);
+    }",func_d98d90e0d98613162a390be7a5cfa75c098d93139e4318d07027785a08aaca10
+isAssignable,"    public static boolean isAssignable(Type type, Type toType) {
+        return isAssignable(type, toType, null);
+    }",func_cd43968b7d2e860351b1b75482fd15129feb99229c3239c4355e58d34048c575

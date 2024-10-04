@@ -1,0 +1,18 @@
+Original Function Name,Function Code,Hash Mask Name
+extractClassNameIfGoog,"  private static String extractClassNameIfGoog(Node node, Node parent,
+      String functionName){
+    String className = null;
+    if (NodeUtil.isExprCall(parent)) {
+      Node callee = node.getFirstChild();
+      if (callee != null && callee.getType() == Token.GETPROP) {
+        String qualifiedName = callee.getQualifiedName();
+        if (functionName.equals(qualifiedName)) {
+          Node target = callee.getNext();
+          if (target != null) {
+            className = target.getString();
+          }
+        }
+      }
+    }
+    return className;
+  }",func_855a381c9b37e98add5ed9f4d8e9d0c120330a52bda1c3132f8d49b0147ec9c8

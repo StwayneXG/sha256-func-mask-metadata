@@ -1,0 +1,10 @@
+Original Function Name,Function Code,Hash Mask Name
+parse,"    public Complex parse(String source) throws ParseException {
+        ParsePosition parsePosition = new ParsePosition(0);
+        Complex result = parse(source, parsePosition);
+        if (parsePosition.getIndex() == 0) {
+            throw new ParseException(""Unparseable complex number: \"""" + source +
+                ""\"""", parsePosition.getErrorIndex());
+        }
+        return result;
+    }",func_30c471f6aafbca7085640653eeef555e85eb0df1602c98a662814c27767d1188

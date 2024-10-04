@@ -1,0 +1,58 @@
+Original Function Name,Function Code,Hash Mask Name
+anyCollectionOf,"    public static <T> Collection<T> anyCollectionOf(Class<T> clazz) {
+        return (Collection) reportMatcher(Any.ANY).returnList();
+    }",func_3cb8d5e006c89f008afa83858a489c04d41867ce57ea7d2f9a9b6321801099e3
+anyString,"    public static String anyString() {
+        return reportMatcher(Any.ANY).returnString();
+    }",func_5471a0aa880de4771fc0988aa93038ac6816cb17de7bb9a17d3cca01be68490d
+anyFloat,"    public static float anyFloat() {
+        return reportMatcher(Any.ANY).returnZero();
+    }",func_3cb4b69fd852d0e7ac5fb202cbdf4e4a3aec72870ca1c6af464c862338739da4
+anyList,"    public static List anyList() {
+        return reportMatcher(Any.ANY).returnList();
+    }",func_706e4e29c5c8b9a38cb527c3fadbd5812add90d43d2b119064c13311e7b1f8c5
+anyMap,"    public static Map anyMap() {
+        return reportMatcher(Any.ANY).returnMap();
+    }",func_7ef54fe5598d1e4ee7b7bf76a6a9078aa4fea0274c577e4b10130125a1830336
+anyShort,"    public static short anyShort() {
+        return reportMatcher(Any.ANY).returnZero();
+    }",func_38813d24f1c268302fd5144b542609396098e14c17b4cc0330f4f42c6dd35432
+anyListOf,"    public static <T> List<T> anyListOf(Class<T> clazz) {
+        return (List) reportMatcher(Any.ANY).returnList();
+    }",func_49a8a828a412d59cb502fd648c57873555dfd7219e3a246a4d1467f727bae93c
+anyLong,"    public static long anyLong() {
+        return reportMatcher(Any.ANY).returnZero();
+    }",func_4c86a5493557d830275e2f241e72059b76c2a3fa1930b97107d3724c3b96c579
+any,"    public static <T> T any(Class<T> clazz) {
+        return (T) reportMatcher(Any.ANY).returnFor(clazz);
+    }",func_d6a7cd2a7371b1a15d543196979ff74fdb027023ebf187d5d329be11055c77fd
+anySetOf,"    public static <T> Set<T> anySetOf(Class<T> clazz) {
+        return (Set) reportMatcher(Any.ANY).returnSet();
+    }",func_6f57f3edb66efd7764c7cc93b39ccb6cf9feb45bc72f910e886c6b5c51e7e5ac
+anyDouble,"    public static double anyDouble() {
+        return reportMatcher(Any.ANY).returnZero();
+    }",func_14c930ba7b559475b70e1b3fd47f6139d2ea001909231a3a5480669051f2c602
+anyBoolean,"    public static boolean anyBoolean() {
+        return reportMatcher(Any.ANY).returnFalse();
+    }",func_da2aaa6ba8f1edd605fd201c4d72baeb36539c2c332636945eec40fc696a08d2
+anyMapOf,"    public static <K, V>  Map<K, V> anyMapOf(Class<K> keyClazz, Class<V> valueClazz) {
+        return reportMatcher(Any.ANY).returnMap();
+    }",func_e85ab6fa64e23f744be7f5257bac5add48182b3be3eb7baea493d423221010c3
+anyCollection,"    public static Collection anyCollection() {
+        return reportMatcher(Any.ANY).returnList();
+    }",func_ccd19f4c25026d8f713f820daf18581d3ca72a0d95572e115e33dc3994dfc0e1
+anyObject,"    public static <T> T anyObject() {
+        return (T) reportMatcher(Any.ANY).returnNull();
+    }",func_f4062ac643c1045e2a2c64905b1da347bf11216f45a4d47e9ebf1d7f5d1174bf
+anyByte,"    public static byte anyByte() {
+        return reportMatcher(Any.ANY).returnZero();
+    }",func_d19165efdb48ce479ae6163ceeface17b469d64d224f415a352985c81879d0d4
+anyInt,"    public static int anyInt() {
+        return reportMatcher(Any.ANY).returnZero();
+    }",func_bf6459d7fd9ac9cf126584c63909bc0463cf07fd165dead164617db3549c1074
+anySet,"    public static Set anySet() {
+        return reportMatcher(Any.ANY).returnSet();
+    }",func_629915a66fcba1833f3aa967cb29c48ffd0d46438f16e9b43b2d8dc2ddcb9443
+anyChar,"    public static char anyChar() {
+        return reportMatcher(Any.ANY).returnChar();
+    }",func_09586571b79131a91ff6ae50a8ad1266b352611994ca47eaa349280272691ac1

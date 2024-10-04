@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+unescape,"    static String unescape(String string) {
+        return unescape(string, false);
+    }",func_740fb4602207ffb5b66a2b1b7c4c2a1aa5052429b606278daf145f37d5daabf1
+acknowledgeSelfClosingFlag,"    void acknowledgeSelfClosingFlag() {
+        selfClosingFlagAcknowledged = true;
+    }",func_6e26517e5179bb1f49118438262e163b61f3e3ef6f9cea01762eca69db0b75a7

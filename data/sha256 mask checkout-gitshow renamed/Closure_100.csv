@@ -1,0 +1,10 @@
+Original Function Name,Function Code,Hash Mask Name
+shouldReportThis,"  private boolean shouldReportThis(Node n, Node parent) {
+    if (assignLhsChild != null) {
+      // Always report a THIS on the left side of an assign.
+      return true;
+    }
+
+    // Also report a THIS with a property access.
+    return false;
+  }",func_2514bbfd2ad002499a1aa872627df949c00598c13303ea7549c18b59449f3195

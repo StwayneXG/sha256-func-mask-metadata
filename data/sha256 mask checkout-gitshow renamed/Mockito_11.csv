@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+hashCode,"    public int hashCode() {
+        return 1;
+    }",func_2c96c87e86e2612010258b35137766f73a4b95c46bb44d9e87160937bfd70fda

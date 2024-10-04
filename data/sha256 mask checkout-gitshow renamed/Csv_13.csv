@@ -1,0 +1,20 @@
+Original Function Name,Function Code,Hash Mask Name
+withDelimiter,"    public CSVFormat withDelimiter(final char delimiter) {
+        if (isLineBreak(delimiter)) {
+            throw new IllegalArgumentException(""The delimiter cannot be a line break"");
+        }
+        return new CSVFormat(delimiter, quoteCharacter, quoteMode, commentMarker, escapeCharacter,
+                ignoreSurroundingSpaces, ignoreEmptyLines, recordSeparator, nullString, headerComments, header,
+                skipHeaderRecord, allowMissingColumnNames, ignoreHeaderCase);
+    }",func_a84e586107bbe8500d04ca1d16f71304c68fe630fa04e4ab1fb8fdcc6e5d20e9
+print,"    public void print(final Object value) throws IOException {
+        // null values are considered empty
+        String strValue;
+        if (value == null) {
+            final String nullString = format.getNullString();
+            strValue = nullString == null ? Constants.EMPTY : nullString;
+        } else {
+            strValue = value.toString();
+        }
+        this.print(value, strValue, 0, strValue.length());
+    }",func_ce953a0eb08246617b7f849486c4b26a7af37e9d2e8f0e13b3ae1bf0da8a70a2

@@ -1,0 +1,45 @@
+Original Function Name,Function Code,Hash Mask Name
+containsAny,"    public static boolean containsAny(CharSequence cs, char[] searchChars) {
+        if (isEmpty(cs) || ArrayUtils.isEmpty(searchChars)) {
+            return false;
+        }
+        int csLength = cs.length();
+        int searchLength = searchChars.length;
+        int csLast = csLength - 1;
+        int searchLast = searchLength - 1;
+        for (int i = 0; i < csLength; i++) {
+            char ch = cs.charAt(i);
+            for (int j = 0; j < searchLength; j++) {
+                if (searchChars[j] == ch) {
+                    if (i < csLast && j < searchLast && ch >= Character.MIN_HIGH_SURROGATE && ch <= Character.MAX_HIGH_SURROGATE) {
+                            // missing low surrogate, fine, like String.indexOf(String)
+                        if (searchChars[j + 1] == cs.charAt(i + 1)) {
+                            return true;
+                        }
+                    } else {
+                        // ch is in the Basic Multilingual Plane
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }",func_a34554e05d4fc0fc3c7c2b99ad3f47bc1c661d0b3d6cc1a639710d44d777d637
+indexOfAnyBut,"    public static int indexOfAnyBut(CharSequence cs, char[] searchChars) {
+        if (isEmpty(cs) || ArrayUtils.isEmpty(searchChars)) {
+            return INDEX_NOT_FOUND;
+        }
+        int csLen = cs.length();
+        int searchLen = searchChars.length;
+        outer:
+        for (int i = 0; i < csLen; i++) {
+            char ch = cs.charAt(i);
+            for (int j = 0; j < searchLen; j++) {
+                if (searchChars[j] == ch) {
+                        continue outer;
+                }
+            }
+            return i;
+        }
+        return INDEX_NOT_FOUND;
+    }",func_d213ff501fe94193fd5a82ff5c10cee9c8fc830da27bc1a0be0dfca0130b9533

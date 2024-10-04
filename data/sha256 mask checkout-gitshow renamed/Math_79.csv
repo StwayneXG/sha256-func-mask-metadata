@@ -1,0 +1,9 @@
+Original Function Name,Function Code,Hash Mask Name
+distance,"    public static double distance(double[] p1, double[] p2) {
+        double sum = 0;
+        for (int i = 0; i < p1.length; i++) {
+            final double dp = p1[i] - p2[i];
+            sum += dp * dp;
+        }
+        return Math.sqrt(sum);
+    }",func_63e6ce93e1bcb5122b1419a229bb3f90726664ad1a6cc74433bb2bbf2b018135

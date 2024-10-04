@@ -1,0 +1,8 @@
+Original Function Name,Function Code,Hash Mask Name
+describeTo,"    public void describeTo(Description description) {
+        description.appendText(""same("");
+        appendQuoting(description);
+        description.appendText(wanted.toString());
+        appendQuoting(description);
+        description.appendText("")"");
+    }",func_c97f9fe2ec8e4edb3dfdffd5abebcdd8513d9159ddf9167f7a1247e764b3e9bc

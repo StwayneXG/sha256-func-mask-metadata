@@ -1,0 +1,11 @@
+Original Function Name,Function Code,Hash Mask Name
+removeIgnoreCase,"    public void removeIgnoreCase(String key) {
+        Validate.notEmpty(key);
+        if (attributes == null)
+            return;
+        for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext(); ) {
+            String attrKey = it.next();
+            if (attrKey.equalsIgnoreCase(key))
+                attributes.remove(attrKey);
+        }
+    }",func_fac87de4f92a941249b66b50c9e24c015f307fba644b01356b444611a27b2451

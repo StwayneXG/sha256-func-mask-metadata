@@ -1,0 +1,5 @@
+Original Function Name,Function Code,Hash Mask Name
+parse,"    public static Evaluator parse(String query) {
+        QueryParser p = new QueryParser(query);
+        return p.parse();
+    }",func_30c471f6aafbca7085640653eeef555e85eb0df1602c98a662814c27767d1188

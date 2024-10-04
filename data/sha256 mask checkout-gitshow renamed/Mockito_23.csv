@@ -1,0 +1,13 @@
+Original Function Name,Function Code,Hash Mask Name
+recordDeepStubMock,"    private Object recordDeepStubMock(final Object mock, InvocationContainerImpl container) throws Throwable {
+
+        container.addAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return mock;
+            }
+        }, false);
+
+        return mock;
+    }",func_d2ed30a2968abc2fef43935cf1e8c8019df964aecc4adc1b99d51181882c462a
+MockitoCore,,func_c49bed82d6c34d905644522066d720da4165ace10f4370e3f7a3a701fefcae65
+ReturnsEmptyValues,,func_a9cf732bebfccdfa7cf565a08cb3c963b5a0e972bc02d4d51f0a91330749ae6e

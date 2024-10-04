@@ -1,0 +1,17 @@
+Original Function Name,Function Code,Hash Mask Name
+sample,"    public T sample() {
+        final double randomValue = random.nextDouble();
+        double sum = 0;
+
+        for (int i = 0; i < probabilities.length; i++) {
+            sum += probabilities[i];
+            if (randomValue < sum) {
+                return singletons.get(i);
+            }
+        }
+
+        /* This should never happen, but it ensures we will return a correct
+         * object in case the loop above has some floating point inequality
+         * problem on the final iteration. */
+        return singletons.get(singletons.size() - 1);
+    }",func_af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf

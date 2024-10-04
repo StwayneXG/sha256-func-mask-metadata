@@ -1,0 +1,15 @@
+Original Function Name,Function Code,Hash Mask Name
+isShortOption,"    private boolean isShortOption(String token)
+    {
+        // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)
+        if (!token.startsWith(""-"") || token.length() == 1)
+        {
+            return false;
+        }
+
+        // remove leading ""-"" and ""=value""
+        int pos = token.indexOf(""="");
+        String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);
+        return options.hasShortOption(optName);
+        // check for several concatenated short options
+    }",func_6fd50232a8beea2e04da398e9ac27a301d8e700842e54705cd699fc8d59e1b80

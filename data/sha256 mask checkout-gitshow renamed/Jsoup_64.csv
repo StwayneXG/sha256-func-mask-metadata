@@ -1,0 +1,7 @@
+Original Function Name,Function Code,Hash Mask Name
+handleRawtext,"    private static void handleRawtext(Token.StartTag startTag, HtmlTreeBuilder tb) {
+        tb.insert(startTag);
+        tb.tokeniser.transition(TokeniserState.Rawtext);
+        tb.markInsertionMode();
+        tb.transition(Text);
+    }",func_5a28e997b25799a51978c677a70205177cb9aad6ac2970e8fc002664f0abcf2a

@@ -1,0 +1,5 @@
+Original Function Name,Function Code,Hash Mask Name
+solve,"    public double solve(double min, double max)
+        throws MaxIterationsExceededException, FunctionEvaluationException {
+        return solve(f, min, max);
+    }",func_c14cdb19563cb1644772f5c3e7709845fb82e5be43348cd6d529d50c6050763e

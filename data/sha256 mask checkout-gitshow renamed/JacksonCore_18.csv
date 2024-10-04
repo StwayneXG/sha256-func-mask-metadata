@@ -1,0 +1,27 @@
+Original Function Name,Function Code,Hash Mask Name
+writeNumber,"    public void writeNumber(short s) throws IOException
+    {
+        _verifyValueWrite(WRITE_NUMBER);
+        if (_cfgNumbersAsStrings) {
+            _writeQuotedShort(s);
+            return;
+        }
+        // up to 5 digits and possible minus sign
+        if ((_outputTail + 6) >= _outputEnd) {
+            _flushBuffer();
+        }
+        _outputTail = NumberOutput.outputInt(s, _outputBuffer, _outputTail);
+    }",func_f7c7e742e582217c784ff00a4266344b9817b8e71ed07c574d400cdc653f6c93
+writeNumber,"    public void writeNumber(short s) throws IOException
+    {
+        _verifyValueWrite(WRITE_NUMBER);
+        if (_cfgNumbersAsStrings) {
+            _writeQuotedShort(s);
+            return;
+        }
+        // up to 5 digits and possible minus sign
+        if ((_outputTail + 6) >= _outputEnd) {
+            _flushBuffer();
+        }
+        _outputTail = NumberOutput.outputInt(s, _outputBuffer, _outputTail);
+    }",func_f7c7e742e582217c784ff00a4266344b9817b8e71ed07c574d400cdc653f6c93

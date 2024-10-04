@@ -1,0 +1,13 @@
+Original Function Name,Function Code,Hash Mask Name
+toString,"    public String toString()
+    {
+        StringBuilder buf = new StringBuilder();
+
+        buf.append(""[ Options: [ short "");
+        buf.append(shortOpts.toString());
+        buf.append("" ] [ long "");
+        buf.append(longOpts);
+        buf.append("" ]"");
+
+        return buf.toString();
+    }",func_bbb522f7e532f10d2d79413a98bdec613444b049a3c98639fb17831d712a2ca2

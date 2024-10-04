@@ -1,0 +1,9 @@
+Original Function Name,Function Code,Hash Mask Name
+factorial,"    public static long factorial(final int n) {
+        long result = Math.round(factorialDouble(n));
+        if (result == Long.MAX_VALUE) {
+            throw new ArithmeticException(
+                    ""factorial value is too large to fit in a long"");
+        }
+        return factorials[n];
+    }",func_049b3253f4a8e2eb6441b5ae55046d3b22b3902f2b347e6e98b7205e9ff581d0

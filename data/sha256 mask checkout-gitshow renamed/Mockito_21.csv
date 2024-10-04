@@ -1,0 +1,17 @@
+Original Function Name,Function Code,Hash Mask Name
+newInstance,"    public <T> T newInstance(Class<T> cls) {
+        if (outerClassInstance == null) {
+            return noArgConstructor(cls);
+        }
+        return withOuterClass(cls);
+    }",func_030f4d1fd745b53f1dde5a010f942bf306cbb709a28d885915bfc24bcd6eb746
+withOuterClass,"    private <T> T withOuterClass(Class<T> cls) {
+        try {
+            //this is kind of overengineered because we don't need to support more params
+            //however, I know we will be needing it :)
+            Constructor<T> c = cls.getDeclaredConstructor(outerClassInstance.getClass());
+            return c.newInstance(outerClassInstance);
+        } catch (Exception e) {
+            throw paramsException(cls, e);
+        }
+    }",func_429750cf9f94879321ec950b9bb86d4e32da10bd6984f663a56bdc3130805e4a

@@ -1,0 +1,204 @@
+Original Function Name,Function Code,Hash Mask Name
+getPrototypePropertyNameFromRValue,,func_3c91517e4e903f738f091028cfb837850f5ce03bc049c71fef24e0f41625cdb5
+GlobalFunction,,func_b3d15032441b8052ee681fb61ec34f3361b0fcf5b2bf06dc0a153fc42a7fa569
+AssignmentProperty,,func_0c0d69ebe2d43f74f666674b4bd872b161776381e18944a7b1a0ada381cddd70
+isPrototypePropertyAssign,"    private boolean isPrototypePropertyAssign(Node assign) {
+      Node n = assign.getFirstChild();
+      if (n != null && NodeUtil.isVarOrSimpleAssignLhs(n, assign)
+          && n.isGetProp()
+          && assign.getParent().isExprResult()) {
+        boolean isChainedProperty =
+            n.getFirstChild().isGetProp();
+
+    /**
+     * Returns the name of a prototype property being assigned to this r-value.
+     *
+     * Returns null if this is not the R-value of a prototype property, or if
+     * the R-value is used in multiple expressions (i.e., if there's
+     * a prototype property assignment in a more complex expression).
+     */
+        if (isChainedProperty) {
+          Node child = n.getFirstChild().getFirstChild().getNext();
+
+          if (child.isString() &&
+              child.getString().equals(""prototype"")) {
+            return true;
+          }
+        }
+      }
+
+
+      return false;
+    }",func_fb85c98d806cff952107c4a5e503c15b0d419e908a89e2caf09a8c8aa58f7f44
+enterScope,"    public void enterScope(NodeTraversal t) {
+      symbolStack.peek().scope = t.getScope();
+          // NOTE(nicksantos): We use the same anonymous node for all
+          // functions that do not have reasonable names. I can't remember
+          // at the moment why we do this. I think it's because anonymous
+          // nodes can never have in-edges. They're just there as a placeholder
+          // for scope information, and do not matter in the edge propagation.
+    }",func_b4ba8c56706b8a80a3c51268a6596661e82c86db5497c10e3ec4d340a0b368cf
+shouldTraverse,"    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+      // Process prototype assignments to non-functions.
+      if (isPrototypePropertyAssign(n)) {
+        symbolStack.push(new NameContext(getNameInfoForName(
+                n.getFirstChild().getLastChild().getString(), PROPERTY)));
+      } else if (isGlobalFunctionDeclaration(t, n)) {
+        String name = parent.isName() ?
+            parent.getString() /* VAR */ :
+            n.getFirstChild().getString() /* named function */;
+        symbolStack.push(new NameContext(getNameInfoForName(name, VAR)));
+      } else if (n.isFunction()) {
+        symbolStack.push(new NameContext(anonymousNode));
+      }
+      return true;
+    }",func_39f3fcb265b6ed66d67e51b2215a3de41fe1bdf1e42d8db721462b340524c4c3
+ProcessProperties,,func_27c8eabba92bf681d20a8d9cdb3cfef113cc8a599971a0a4ab93419e7aca89d5
+NameContext,,func_a6f03982012c2b494672f6c10570112b3b2c0ae98bb5d7a2b2b66438956403b7
+exitScope,"    public void exitScope(NodeTraversal t) {
+
+    }",func_159f774e61a4fc03a6ba8bcdaa964ea7f80f986e143aed41fa578a239faef8d3
+processGlobalFunctionDeclaration,"    private boolean processGlobalFunctionDeclaration(NodeTraversal t,
+        Node nameNode, Node parent, Node gramps) {
+      Node firstChild = nameNode.getFirstChild();
+
+      if (// Check for a named FUNCTION.
+          isGlobalFunctionDeclaration(t, parent) ||
+          // Check for a VAR declaration.
+          firstChild != null &&
+          isGlobalFunctionDeclaration(t, firstChild)) {
+        String name = nameNode.getString();
+        getNameInfoForName(name, VAR).getDeclarations().add(
+            new GlobalFunction(nameNode, parent, gramps, t.getModule()));
+
+        // If the function name is exported, we should create an edge here
+        // so that it's never removed.
+        if (compiler.getCodingConvention().isExported(name) ||
+            anchorUnusedVars) {
+          addGlobalUseOfSymbol(name, t.getModule(), VAR);
+        }
+
+        return true;
+      }
+      return false;
+    }",func_c21603a3d827f3c3cd34a122d2d254d8a636a6c5b9d5d7c58075b20cf24ac4c1
+processPrototypeParent,"    private void processPrototypeParent(NodeTraversal t, Node n) {
+
+      switch (n.getType()) {
+        // Foo.prototype.getBar = function() { ... }
+        case Token.GETPROP:
+          Node dest = n.getFirstChild().getNext();
+          Node parent = n.getParent();
+          Node grandParent = parent.getParent();
+
+          if (dest.isString() &&
+              NodeUtil.isExprAssign(grandParent) &&
+              NodeUtil.isVarOrSimpleAssignLhs(n, parent)) {
+            String name = dest.getString();
+            Property prop = new AssignmentProperty(
+                grandParent,
+                t.getModule());
+            getNameInfoForName(name, PROPERTY).getDeclarations().add(prop);
+          }
+          break;
+
+        // Foo.prototype = { ""getBar"" : function() { ... } }
+        case Token.ASSIGN:
+          Node map = n.getFirstChild().getNext();
+          if (map.isObjectLit()) {
+            for (Node key = map.getFirstChild();
+                 key != null; key = key.getNext()) {
+              // May be STRING, GET, or SET,
+              String name = key.getString();
+              Property prop = new LiteralProperty(
+                  key, key.getFirstChild(), map, n,
+                  t.getModule());
+              getNameInfoForName(name, PROPERTY).getDeclarations().add(prop);
+            }
+          }
+          break;
+      }
+    }",func_c04a63b6b8e8a1f74d106bf2ca0c5dc6064c455977dce1a098ae36f8740a5216
+visit,"    public void visit(NodeTraversal t, Node n, Node parent) {
+      if (n.isGetProp()) {
+        String propName = n.getFirstChild().getNext().getString();
+
+          if (propName.equals(""prototype"")) {
+          processPrototypeParent(t, parent);
+          } else if (compiler.getCodingConvention().isExported(propName)) {
+            addGlobalUseOfSymbol(propName, t.getModule(), PROPERTY);
+          } else {
+            // Do not mark prototype prop assigns as a 'use' in the global scope.
+          addSymbolUse(propName, t.getModule(), PROPERTY);
+        }
+
+      } else if (n.isObjectLit() &&
+        // Make sure that we're not handling object literals being
+        // assigned to a prototype, as in:
+        // Foo.prototype = {bar: 3, baz: 5};
+          !(parent.isAssign() &&
+            parent.getFirstChild().isGetProp() &&
+            parent.getFirstChild().getLastChild().getString().equals(
+                ""prototype""))) {
+
+        // var x = {a: 1, b: 2}
+        // should count as a use of property a and b.
+        for (Node propNameNode = n.getFirstChild(); propNameNode != null;
+             propNameNode = propNameNode.getNext()) {
+          // May be STRING, GET, or SET, but NUMBER isn't interesting.
+          if (!propNameNode.isQuotedString()) {
+            addSymbolUse(propNameNode.getString(), t.getModule(), PROPERTY);
+          }
+        }
+      } else if (n.isName()) {
+        String name = n.getString();
+
+        Var var = t.getScope().getVar(name);
+        if (var != null) {
+          // Only process global functions.
+          if (var.isGlobal()) {
+            if (var.getInitialValue() != null &&
+                var.getInitialValue().isFunction()) {
+              if (t.inGlobalScope()) {
+                if (!processGlobalFunctionDeclaration(t, n, parent,
+                        parent.getParent())) {
+                  addGlobalUseOfSymbol(name, t.getModule(), VAR);
+                }
+              } else {
+                addSymbolUse(name, t.getModule(), VAR);
+              }
+            }
+
+          // If it is not a global, it might be accessing a local of the outer
+          // scope. If that's the case the functions between the variable's
+          // declaring scope and the variable reference scope cannot be moved.
+          } else if (var.getScope() != t.getScope()){
+            for (int i = symbolStack.size() - 1; i >= 0; i--) {
+              NameContext context = symbolStack.get(i);
+              if (context.scope == var.getScope()) {
+                break;
+              }
+
+              context.name.readClosureVariables = true;
+            }
+          }
+        }
+      }
+
+      // Process prototype assignments to non-functions.
+      if (isPrototypePropertyAssign(n) ||
+          isGlobalFunctionDeclaration(t, n) ||
+          n.isFunction()) {
+        symbolStack.pop();
+      }
+    }",func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364
+LiteralProperty,,func_81a676eed44dccd44f5f491972d9a7b474b3999bfbad8c2edcb2dd1313e8f21c
+isGlobalFunctionDeclaration,"    private boolean isGlobalFunctionDeclaration(NodeTraversal t, Node n) {
+      // Make sure we're either in the global scope, or the function
+      // we're looking at is the root of the current local scope.
+
+      return t.inGlobalScope() &&
+          (NodeUtil.isFunctionDeclaration(n) ||
+           n.isFunction() &&
+           n.getParent().isName());
+    }",func_0fb1900e366aa5f3b155563798848fe265bc72312255ef882aee490906bdffbb

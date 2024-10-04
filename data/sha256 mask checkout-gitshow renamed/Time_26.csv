@@ -1,0 +1,55 @@
+Original Function Name,Function Code,Hash Mask Name
+set,"    public long set(long instant, int value) {
+        // lenient needs to handle time zone chronologies
+        // so we do the calculation using local milliseconds
+        long localInstant = iBase.getZone().convertUTCToLocal(instant);
+        long difference = FieldUtils.safeSubtract(value, get(instant));
+        localInstant = getType().getField(iBase.withUTC()).add(localInstant, difference);
+        return iBase.getZone().convertLocalToUTC(localInstant, false);
+    }",func_6ee0eb490ff832101cf82a3d387c35f29e4230be786978f7acf9e811febf6723
+roundCeiling,"        public long roundCeiling(long instant) {
+            if (iTimeField) {
+                int offset = getOffsetToAdd(instant);
+                instant = iField.roundCeiling(instant + offset);
+                return instant - offset;
+            } else {
+                long localInstant = iZone.convertUTCToLocal(instant);
+                localInstant = iField.roundCeiling(localInstant);
+                return iZone.convertLocalToUTC(localInstant, false);
+            }
+        }",func_e43f85d05cf51107b89bf61be2d6d1a28ff5086ffd81afb0a9095aa11e4dc91d
+add,"        public long add(long instant, int value) {
+            int offset = getOffsetToAdd(instant);
+            instant = iField.add(instant + offset, value);
+            return instant - (iTimeField ? offset : getOffsetFromLocalToSubtract(instant));
+        }",func_7e9e5ac30f2216fd0fd6f5faed316f2d5983361a4203c3330cfa46ef65bb4767
+roundFloor,"        public long roundFloor(long instant) {
+            if (iTimeField) {
+                int offset = getOffsetToAdd(instant);
+                instant = iField.roundFloor(instant + offset);
+                return instant - offset;
+            } else {
+                long localInstant = iZone.convertUTCToLocal(instant);
+                localInstant = iField.roundFloor(localInstant);
+                return iZone.convertLocalToUTC(localInstant, false);
+            }
+        }",func_0951aa3f4b92e22e4a32d747bbd6f1f3207bab36c3194c29f17b693faaee711a
+addWrapField,"        public long addWrapField(long instant, int value) {
+            if (iTimeField) {
+                int offset = getOffsetToAdd(instant);
+                long localInstant = iField.addWrapField(instant + offset, value);
+                return localInstant - offset;
+            } else {
+                long localInstant = iZone.convertUTCToLocal(instant);
+                localInstant = iField.addWrapField(localInstant, value);
+                return iZone.convertLocalToUTC(localInstant, false);
+            }
+        }",func_bbb1593a569910b519735dd5e6bd7fd00fcd23623296fe566deb9a164fb66069
+set,"    public long set(long instant, int value) {
+        // lenient needs to handle time zone chronologies
+        // so we do the calculation using local milliseconds
+        long localInstant = iBase.getZone().convertUTCToLocal(instant);
+        long difference = FieldUtils.safeSubtract(value, get(instant));
+        localInstant = getType().getField(iBase.withUTC()).add(localInstant, difference);
+        return iBase.getZone().convertLocalToUTC(localInstant, false);
+    }",func_6ee0eb490ff832101cf82a3d387c35f29e4230be786978f7acf9e811febf6723

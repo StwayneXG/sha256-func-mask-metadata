@@ -1,0 +1,64 @@
+Original Function Name,Function Code,Hash Mask Name
+iterator,"    public Iterator iterator()
+    {
+        return hashcodeMap.values().iterator();
+    }",func_ef9baedff2f457ddd3f1382fd265db536122a0bba2996c196d28ba18e25205b0
+getOptionValues,"    public String[] getOptionValues(String opt)
+    {
+        opt = Util.stripLeadingHyphens(opt);
+
+        String key = opt;
+        if (names.containsKey(opt))
+
+        {
+            key = (String) names.get(opt);
+        }
+
+        if (options.containsKey(key))
+        {
+            return ((Option) options.get(key)).getValues();
+        }
+        return null;
+        }",func_5bd15de7bbd6db4a87b329687b84a122424f14330eadfc483432124ea96a7e9a
+getOptionObject,"    public Object getOptionObject(String opt)
+    {
+        String res = getOptionValue(opt);
+
+        if (!options.containsKey(opt))
+        {
+            return null;
+        }
+
+        Object type = ((Option) options.get(opt)).getType();
+
+        return (res == null)        ? null : TypeHandler.createValue(res, type);
+    }",func_72dc9134bc022c7623592a40e0bc1cb5150c1ca69af61374f34563214eff23ff
+hasOption,"    public boolean hasOption(String opt)
+    {
+        return options.containsKey(opt);
+    }",func_7620aaec4d5f3dd10d11e856cd1ad0795125fcab80a86e6302eec4958087ad3a
+HashMap,,func_774aac06880874d828a176c533db72d287c5fba72db9028bbc29194c969a5166
+getOptions,"    public Option[] getOptions()
+    {
+        Collection processed = options.values();
+
+        // reinitialise array
+        Option[] optionsArray = new Option[processed.size()];
+
+        // return the array
+        return (Option[]) processed.toArray(optionsArray);
+    }",func_a63b9253a6c8732041ce7902fc4eafd1bd34fdfb69bbca8990193ba351a226a8
+addOption,"    void addOption(Option opt)
+    {
+        hashcodeMap.put(new Integer(opt.hashCode()), opt);
+        String key = opt.getKey();
+        if (key == null)
+        {
+            key = opt.getLongOpt();
+        }
+        else
+        {
+            names.put(opt.getLongOpt(), key);
+        }
+        options.put(key, opt);
+    }",func_1a9cc5a89dcfede120cb9446ef226c197e3c460f7ca9badc47e7c32dff847960

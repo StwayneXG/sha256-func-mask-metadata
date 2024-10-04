@@ -1,0 +1,14 @@
+Original Function Name,Function Code,Hash Mask Name
+visit,"    public void visit(NodeTraversal t, Node n, Node parent) {
+      NameInformation ns = null;
+      if (NodeUtil.isVarDeclaration(n)) {
+        ns = createNameInformation(t, n, parent);
+      } else if (NodeUtil.isFunctionDeclaration(n)) {
+        ns = createNameInformation(t, n.getFirstChild(), n);
+      }
+      if (ns != null) {
+        JsName jsName = getName(ns.name, true);
+        jsName.externallyDefined = true;
+        externalNames.add(ns.name);
+      }
+    }",func_f0e68ac26df2184062ae2a945cd0b5e58466d75d6858359b7127776e9710a364

@@ -1,0 +1,105 @@
+Original Function Name,Function Code,Hash Mask Name
+processNonOptionToken,"    private void processNonOptionToken(String value)
+    {
+            eatTheRest = true;
+            tokens.add(""--"");
+
+        tokens.add(value);
+    }",func_2a67bbe7b7d98d4ef3b16cedb6e4c8e87f7865fa214c701a6876d6c5892c6693
+burstToken,"    protected void burstToken(String token, boolean stopAtNonOption)
+    {
+        Option currentOption;
+        for (int i = 1; i < token.length(); i++)
+        {
+            String ch = String.valueOf(token.charAt(i));
+
+            if (options.hasOption(ch))
+            {
+                tokens.add(""-"" + ch);
+                currentOption = options.getOption(ch);
+
+                if (currentOption.hasArg() && (token.length() != (i + 1)))
+                {
+                    tokens.add(token.substring(i + 1));
+
+                    break;
+                }
+            }
+            else if (stopAtNonOption)
+            {
+                processNonOptionToken(token.substring(i));
+                break;
+            }
+            else
+            {
+                tokens.add(token);
+                break;
+            }
+        }
+    }",func_1df273d7fc98dc3d14689f9686d58b761284e2a6a6c4a0d3a9e70420c8e4c687
+flatten,"    protected String[] flatten(Options options, String[] arguments, boolean stopAtNonOption)
+    {
+        init();
+        this.options = options;
+
+        // an iterator for the command line tokens
+        Iterator iter = Arrays.asList(arguments).iterator();
+
+        // process each command line token
+        while (iter.hasNext())
+        {
+            // get the next command line token
+            String token = (String) iter.next();
+
+            // handle long option --foo or --foo=bar
+            if (token.startsWith(""--""))
+            {
+                int pos = token.indexOf('=');
+                String opt = pos == -1 ? token : token.substring(0, pos); // --foo
+
+                if (!options.hasOption(opt))
+                {
+                    processNonOptionToken(token);
+                }
+                else
+                {
+                    
+                    tokens.add(opt);
+                    if (pos != -1)
+                    {
+                        tokens.add(token.substring(pos + 1));
+                    }
+                }
+            }
+
+            // single hyphen
+            else if (""-"".equals(token))
+            {
+                tokens.add(token);
+            }
+            else if (token.startsWith(""-""))
+            {
+                if (token.length() == 2 || options.hasOption(token))
+                {
+                    processOptionToken(token, stopAtNonOption);
+                }
+                // requires bursting
+                else
+                {
+                    burstToken(token, stopAtNonOption);
+                }
+            }
+            else if (stopAtNonOption)
+            {
+                processNonOptionToken(token);
+            }
+            else
+            {
+                tokens.add(token);
+            }
+
+            gobble(iter);
+        }
+
+        return (String[]) tokens.toArray(new String[tokens.size()]);
+    }",func_3ab675f2b94ec6889fc354439d5f31c7278f7a7ef414645c774017e1bdac24dc

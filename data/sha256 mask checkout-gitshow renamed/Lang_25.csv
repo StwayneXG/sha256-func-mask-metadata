@@ -1,0 +1,2 @@
+Original Function Name,Function Code,Hash Mask Name
+ISO8859_1_ESCAPE,    public static String[][] ISO8859_1_ESCAPE() { return ISO8859_1_ESCAPE.clone(); },func_dd8bdc4ec774877a584d43ba5992e7985c8af5f8f2a859c55d4bcf02e87aab16

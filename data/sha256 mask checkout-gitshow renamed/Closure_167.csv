@@ -1,0 +1,64 @@
+Original Function Name,Function Code,Hash Mask Name
+caseAndOrNotShortCircuiting,"  private FlowScope caseAndOrNotShortCircuiting(Node left, Node right,
+        FlowScope blindScope, boolean condition) {
+    // left type
+    JSType leftType = getTypeIfRefinable(left, blindScope);
+    boolean leftIsRefineable;
+    if (leftType != null) {
+      leftIsRefineable = true;
+    } else {
+      leftIsRefineable = false;
+      leftType = left.getJSType();
+      blindScope = firstPreciserScopeKnowingConditionOutcome(
+          left, blindScope, condition);
+    }
+
+    // restricting left type
+    JSType restrictedLeftType = (leftType == null) ? null :
+        leftType.getRestrictedTypeGivenToBooleanOutcome(condition);
+    if (restrictedLeftType == null) {
+      return firstPreciserScopeKnowingConditionOutcome(
+          right, blindScope, condition);
+    }
+
+    // right type
+    JSType rightType = getTypeIfRefinable(right, blindScope);
+    boolean rightIsRefineable;
+    if (rightType != null) {
+      rightIsRefineable = true;
+    } else {
+      rightIsRefineable = false;
+      rightType = right.getJSType();
+      blindScope = firstPreciserScopeKnowingConditionOutcome(
+          right, blindScope, condition);
+    }
+
+    if (condition) {
+      JSType restrictedRightType = (rightType == null) ? null :
+          rightType.getRestrictedTypeGivenToBooleanOutcome(condition);
+
+      // creating new scope
+      return maybeRestrictTwoNames(
+          blindScope,
+          left, leftIsRefineable, restrictedLeftType,
+          right, rightIsRefineable, restrictedRightType);
+    }
+    return blindScope;
+  }",func_84ee11cd37a3c6c02b054d4fdb62aa8aa719364401874401a00b1738e00f5583
+caseEquality,"  private FlowScope caseEquality(Node condition, FlowScope blindScope,
+      Function<TypePair, TypePair> merging) {
+    return caseEquality(condition.getFirstChild(), condition.getLastChild(),
+                        blindScope, merging);
+  }",func_63298ca6cab5a6cc013d88734e4ed26640c56e66667e603ceb390204992e2e31
+caseNameOrGetProp,"  private FlowScope caseNameOrGetProp(Node name, FlowScope blindScope,
+      boolean outcome) {
+    JSType type = getTypeIfRefinable(name, blindScope);
+    if (type != null) {
+      JSType restrictedType =
+          type.getRestrictedTypeGivenToBooleanOutcome(outcome);
+      FlowScope informed = blindScope.createChildFlowScope();
+      declareNameInScope(informed, name, restrictedType);
+      return informed;
+    }
+    return blindScope;
+  }",func_1a6b7de3b8aea7e63986456ebd335ac0efb5e13e2bb31d3d0c423a5d2b1f9d28

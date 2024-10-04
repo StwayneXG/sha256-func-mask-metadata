@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+toJavaVersionInt,"    static float toJavaVersionInt(String version) {
+        return toVersionInt(toJavaVersionIntArray(version, JAVA_VERSION_TRIM_SIZE));
+    }",func_36d3fe15c4516d2767d42063485b595cd786cd65c692b4a5ada4c9dbdeab73ed

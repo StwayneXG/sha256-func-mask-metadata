@@ -1,0 +1,6 @@
+Original Function Name,Function Code,Hash Mask Name
+anythingElse,"        private boolean anythingElse(Token t, TreeBuilder tb) {
+            tb.insert(""html"");
+            tb.transition(BeforeHead);
+            return tb.process(t);
+        }",func_5fe684275a87e2d5d8cc308aa00e6e4ff75fa742d9e1df78fe8af3e1a7af2394

@@ -1,0 +1,17 @@
+Original Function Name,Function Code,Hash Mask Name
+visitNew,"  private void visitNew(NodeTraversal t, Node n) {
+    Node constructor = n.getFirstChild();
+    JSType type = getJSType(constructor).restrictByNotNullOrUndefined();
+    if (type.isConstructor() || type.isEmptyType() || type.isUnknownType()) {
+      FunctionType fnType = type.toMaybeFunctionType();
+      if (fnType != null) {
+        visitParameterList(t, n, fnType);
+        ensureTyped(t, n, fnType.getInstanceType());
+      } else {
+        ensureTyped(t, n);
+      }
+    } else {
+      report(t, n, NOT_A_CONSTRUCTOR);
+      ensureTyped(t, n);
+    }
+  }",func_d2ba8f658c4e4d85959eda41bb618819d525b06013eaf51f5ce0870a5321a5dd

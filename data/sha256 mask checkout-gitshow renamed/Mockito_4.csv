@@ -1,0 +1,21 @@
+Original Function Name,Function Code,Hash Mask Name
+noMoreInteractionsWanted,"    public void noMoreInteractionsWanted(Invocation undesired, List<VerificationAwareInvocation> invocations) {
+        ScenarioPrinter scenarioPrinter = new ScenarioPrinter();
+        String scenario = scenarioPrinter.print(invocations);
+
+        throw new NoInteractionsWanted(join(
+                ""No interactions wanted here:"",
+                new LocationImpl(),
+                ""But found this interaction on mock '"" + undesired.getMock() + ""':"",
+                undesired.getLocation(),
+                scenario
+        ));
+    }",func_8747130f533d0bd024ae9b6a6ae687b24eedceca48583bf344169f8c248a36a6
+noMoreInteractionsWantedInOrder,"    public void noMoreInteractionsWantedInOrder(Invocation undesired) {
+        throw new VerificationInOrderFailure(join(
+                ""No interactions wanted here:"",
+                new LocationImpl(),
+                ""But found this interaction on mock '"" + undesired.getMock() + ""':"",
+                undesired.getLocation()
+        ));
+    }",func_b6a97fa6d10b4654161bf2a39dea37a5a02330db551e3c484f0834eb66605c8a

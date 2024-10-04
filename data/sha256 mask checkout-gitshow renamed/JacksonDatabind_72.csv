@@ -1,0 +1,4 @@
+Original Function Name,Function Code,Hash Mask Name
+setAndReturn,"    public Object setAndReturn(Object instance, Object value) throws IOException {
+        return _delegate.setAndReturn(instance, value);
+    }",func_163e2087c96d499b519488dbd70f6dd1c23f6be7817fc36f03bfed492cd8856f
