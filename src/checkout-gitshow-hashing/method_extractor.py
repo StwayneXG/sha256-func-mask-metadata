@@ -84,7 +84,8 @@ class MethodExtractor:
 
     @staticmethod
     def _find_method(tree, method_name: str):
-        for path, node in tree.filter(javalang.tree.MethodDeclaration):
+        for path, node in tree.filter(javalang.tree.MethodDeclaration,
+                                      javalang.tree.ConstructorDeclaration):
             if node.name == method_name:
                 return node.position, node.documentation
         return None
