@@ -115,6 +115,7 @@ class MethodExtractor:
     @staticmethod
     def _find_method_by_line(method_line: str, content: str) -> str:
         lines = content.split('\n')
+        print(f"Looking for method line:\n{method_line}")
         for i, line in enumerate(lines):
             if method_line == line:
                 return i + 1
