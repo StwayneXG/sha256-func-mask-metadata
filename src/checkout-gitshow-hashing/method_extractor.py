@@ -82,7 +82,8 @@ class MethodExtractor:
                     print(f"Method position for {method_name}: {method_info[0]}")
                     method_body = MethodExtractor._find_method_body(method_info[0], content)
                     method_implementations[method_name] = method_body
-        
+        return method_implementations
+
         method_implementations = {}
 
         for file_path, method_line in method_lines.items():
