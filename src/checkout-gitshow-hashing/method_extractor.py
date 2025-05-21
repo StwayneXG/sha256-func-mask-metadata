@@ -86,18 +86,17 @@ class MethodExtractor:
         method_implementations = {}
 
         for file_path, method_line in method_lines.items():
-            if file_path not in methods:
-                content = open(base_path + file_path, errors='ignore').read()
-                try:
-                    tree = javalang.parse.parse(content)
-                except javalang.parser.JavaSyntaxError:
-                    print(f"Error parsing file: {file_path}")
-                    continue
-                method_line_number = MethodExtractor._find_method_by_line(method_line, content)
-                if method_line_number:
-                    print(f"Method position for {method_line}: {method_line_number}")
-                    method_body = MethodExtractor._find_method_body((method_line_number, 0), content)
-                    method_implementations[method_line] = method_body
+            content = open(base_path + file_path, errors='ignore').read()
+            try:
+                tree = javalang.parse.parse(content)
+            except javalang.parser.JavaSyntaxError:
+                print(f"Error parsing file: {file_path}")
+                continue
+            method_line_number = MethodExtractor._find_method_by_line(method_line, content)
+            if method_line_number:
+                print(f"Method position for {method_line}: {method_line_number}")
+                method_body = MethodExtractor._find_method_body((method_line_number, 0), content)
+                method_implementations[method_line] = method_body
 
         return method_implementations
 
