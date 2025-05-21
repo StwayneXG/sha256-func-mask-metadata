@@ -95,7 +95,7 @@ class MethodExtractor:
                 continue
             method_line_number = MethodExtractor._find_method_by_line(method_line, content)
             print(f"Method position for {method_line}: {method_line_number}")
-            method_position = javalang.tokenizer.Position(method_line_number, 0)
+            method_position = javalang.tokenizer.Position(method_line_number, 12)
             print(f"Method position for {method_line}: {method_position}")
             if method_line_number:
                 method_body = MethodExtractor._find_method_body(method_position, content)
