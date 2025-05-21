@@ -93,8 +93,8 @@ class MethodExtractor:
                 print(f"Error parsing file: {file_path}")
                 continue
             method_line_number = MethodExtractor._find_method_by_line(method_line, content)
+            print(f"Method position for {method_line}: {method_line_number}")
             if method_line_number:
-                print(f"Method position for {method_line}: {method_line_number}")
                 method_body = MethodExtractor._find_method_body((method_line_number, 0), content)
                 method_implementations[method_line] = method_body
 
