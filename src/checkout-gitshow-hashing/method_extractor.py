@@ -100,6 +100,7 @@ class MethodExtractor:
             if method_line_number:
                 method_body = MethodExtractor._find_method_body(method_position, content)
                 print(f"Method body for {method_line}:\n{method_body}")
+                print(f"Method Name: {method_name}")
                 method_implementations[method_name] = method_body
         print(f"Method implementations:\n{method_implementations}")
         return method_implementations
