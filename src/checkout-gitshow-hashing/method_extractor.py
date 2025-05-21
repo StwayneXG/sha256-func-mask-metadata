@@ -84,7 +84,7 @@ class MethodExtractor:
         #             method_body = MethodExtractor._find_method_body(method_info[0], content)
         #             method_implementations[method_name] = method_body
 
-        method_implementations = {}
+        method_implementations = dict()
 
         for (file_path, method_name), (file_path2, method_line) in zip(methods.items(), method_lines.items()):
             content = open(base_path + file_path, errors='ignore').read()
