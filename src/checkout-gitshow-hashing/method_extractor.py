@@ -114,7 +114,7 @@ class MethodExtractor:
         #         print(f"Method body for {method_line}:\n{method_body}")
         #         print(f"Method Name: {method_name}")
         #         method_implementations[method_name] = method_body
-        print(f"Method implementations:\n{method_implementations}")
+        # print(f"Method implementations:\n{method_implementations}")
         return method_implementations
 
     @staticmethod
@@ -131,7 +131,7 @@ class MethodExtractor:
     @staticmethod
     def _find_method_by_line(method_line: str, content: str) -> str:
         lines = content.split('\n')
-        print(f"Looking for method line:\n{method_line}")
+        # print(f"Looking for method line:\n{method_line}")
         for i, line in enumerate(lines):
             if method_line.strip() == line.strip():
                 return i + 1
