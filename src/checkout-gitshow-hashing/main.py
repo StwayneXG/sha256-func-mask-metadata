@@ -21,7 +21,7 @@ class MainProcessor:
         diff = GitDiffParser.get_diff(project_dir)
         methods, method_lines = MethodExtractor.extract_methods(diff)
         base_path = f'/root/data/Defects4J/repos/{project}_{bug_num}/'
-        method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
+        method_implementations = MethodExtractor.extract_method_implementations(diff, methods, method_lines, base_path)
         
         method_triples = []
         for file_path, method_names in methods.items():
