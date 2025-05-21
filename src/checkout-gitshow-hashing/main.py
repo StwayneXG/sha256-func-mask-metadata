@@ -19,7 +19,7 @@ class MainProcessor:
     def process(self, project, bug_num):
         project_dir = self.project_checkout.checkout(project, bug_num)
         diff = GitDiffParser.get_diff(project_dir)
-        methods = MethodExtractor.extract_methods(diff)
+        methods, method_lines = MethodExtractor.extract_methods(diff)
         base_path = f'/root/data/Defects4J/repos/{project}_{bug_num}/'
         method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
         

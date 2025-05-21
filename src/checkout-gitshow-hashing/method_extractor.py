@@ -42,6 +42,7 @@ class MethodExtractor:
     def extract_methods(diff):
         lines = diff.split('\n')
         methods = {}
+        method_lines = {}
         current_file = None
 
         for i, line in enumerate(lines):
@@ -53,6 +54,7 @@ class MethodExtractor:
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):
+                        method_lines[current_file] = lines[j]
                         method_name = MethodExtractor.extract_method_name(lines[j])
                         if method_name:
                             if current_file not in methods:
@@ -60,10 +62,10 @@ class MethodExtractor:
                             methods[current_file].add(method_name)
                         break  # Stop looking once we've found the function declaration
 
-        return methods
-
+        return methods, method_lines
+    
     @staticmethod
-    def extract_method_implementations(diff, methods, base_path):
+    def extract_method_implementations(diff, methods, method_lines, base_path):
         method_implementations = {}
 
         for file_path, method_names in methods.items():
@@ -77,8 +79,25 @@ class MethodExtractor:
             for method_name in method_names:
                 method_info = MethodExtractor._find_method(tree, method_name)
                 if method_info:
+                    print(f"Method position for {method_name}: {method_info[0]}")
                     method_body = MethodExtractor._find_method_body(method_info[0], content)
                     method_implementations[method_name] = method_body
+        
+        method_implementations = {}
+
+        for file_path, method_line in method_lines.items():
+            if file_path not in methods:
+                content = open(base_path + file_path, errors='ignore').read()
+                try:
+                    tree = javalang.parse.parse(content)
+                except javalang.parser.JavaSyntaxError:
+                    print(f"Error parsing file: {file_path}")
+                    continue
+                method_line_number = MethodExtractor._find_method_by_line(method_line, content)
+                if method_line_number:
+                    print(f"Method position for {method_line}: {method_line_number}")
+                    method_body = MethodExtractor._find_method_body(method_line_number, content)
+                    method_implementations[method_line] = method_body
 
         return method_implementations
 
@@ -92,6 +111,13 @@ class MethodExtractor:
             if node.name == method_name:
                 return node.position, node.documentation
         return None
+
+    @staticmethod
+    def _find_method_by_line(method_line: str, content: str) -> str:
+        lines = content.split('\n')
+        for i, line in enumerate(lines):
+            if method_line == line:
+                return i + 1
 
     @staticmethod
     def _find_method_body(start_position, content: str) -> str:
