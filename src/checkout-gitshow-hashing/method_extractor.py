@@ -66,23 +66,23 @@ class MethodExtractor:
     
     @staticmethod
     def extract_method_implementations(diff, methods, method_lines, base_path):
-        method_implementations = {}
+        # method_implementations = {}
 
-        for file_path, method_names in methods.items():
-            content = open(base_path + file_path, errors='ignore').read()
-            try:
-                tree = javalang.parse.parse(content)
-            except javalang.parser.JavaSyntaxError:
-                print(f"Error parsing file: {file_path}")
-                continue
+        # for file_path, method_names in methods.items():
+        #     content = open(base_path + file_path, errors='ignore').read()
+        #     try:
+        #         tree = javalang.parse.parse(content)
+        #     except javalang.parser.JavaSyntaxError:
+        #         print(f"Error parsing file: {file_path}")
+        #         continue
 
-            for method_name in method_names:
-                method_info = MethodExtractor._find_method(tree, method_name)
-                if method_info:
-                    print(f"Method position for {method_name}: {method_info[0]}")
-                    print(f"Type for methodname0: {type(method_info[0])}")
-                    method_body = MethodExtractor._find_method_body(method_info[0], content)
-                    method_implementations[method_name] = method_body
+        #     for method_name in method_names:
+        #         method_info = MethodExtractor._find_method(tree, method_name)
+        #         if method_info:
+        #             print(f"Method position for {method_name}: {method_info[0]}")
+        #             print(f"Type for methodname0: {type(method_info[0])}")
+        #             method_body = MethodExtractor._find_method_body(method_info[0], content)
+        #             method_implementations[method_name] = method_body
 
         method_implementations = {}
 
@@ -101,7 +101,7 @@ class MethodExtractor:
                 method_body = MethodExtractor._find_method_body(method_position, content)
                 print(f"Method body for {method_line}:\n{method_body}")
                 method_implementations[method_line] = method_body
-
+        print(f"Method implementations:\n{method_implementations}")
         return method_implementations
 
     @staticmethod
