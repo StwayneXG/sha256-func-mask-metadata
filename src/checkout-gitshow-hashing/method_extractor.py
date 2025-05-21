@@ -86,7 +86,7 @@ class MethodExtractor:
 
         method_implementations = {}
 
-        for file_path, method_line in method_lines.items():
+        for (file_path, method_name), (file_path2, method_line) in zip(methods.items(), method_lines.items()):
             content = open(base_path + file_path, errors='ignore').read()
             try:
                 tree = javalang.parse.parse(content)
@@ -100,7 +100,7 @@ class MethodExtractor:
             if method_line_number:
                 method_body = MethodExtractor._find_method_body(method_position, content)
                 print(f"Method body for {method_line}:\n{method_body}")
-                method_implementations[method_line] = method_body
+                method_implementations[method_name] = method_body
         print(f"Method implementations:\n{method_implementations}")
         return method_implementations
 
