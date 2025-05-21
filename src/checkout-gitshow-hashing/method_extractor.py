@@ -54,7 +54,10 @@ class MethodExtractor:
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):
-                        method_lines[current_file] = lines[j]
+                        if current_file not in method_lines:
+                            method_lines[current_file] = set()
+                        method_lines[current_file].add(lines[j])
+
                         method_name = MethodExtractor.extract_method_name(lines[j])
                         if method_name:
                             if current_file not in methods:
@@ -84,24 +87,33 @@ class MethodExtractor:
         #             method_body = MethodExtractor._find_method_body(method_info[0], content)
         #             method_implementations[method_name] = method_body
 
-        method_implementations = dict()
+        method_implementations = {}
 
-        for (file_path, method_name), (file_path2, method_line) in zip(methods.items(), method_lines.items()):
+        for (file_path, method_names), (file_path2, method_line_s) in zip(methods.items(), method_lines.items()):
             content = open(base_path + file_path, errors='ignore').read()
             try:
                 tree = javalang.parse.parse(content)
             except javalang.parser.JavaSyntaxError:
                 print(f"Error parsing file: {file_path}")
                 continue
-            method_line_number = MethodExtractor._find_method_by_line(method_line, content)
-            print(f"Method position for {method_line}: {method_line_number}")
-            method_position = javalang.tokenizer.Position(method_line_number, 1)
-            print(f"Method position for {method_line}: {method_position}")
-            if method_line_number:
-                method_body = MethodExtractor._find_method_body(method_position, content)
-                print(f"Method body for {method_line}:\n{method_body}")
-                print(f"Method Name: {method_name}")
-                method_implementations[method_name] = method_body
+
+            for method_name, method_line in zip(method_names, method_line_s):
+                method_line_number = MethodExtractor._find_method_by_line(method_line, content)
+                method_position = javalang.tokenizer.Position(method_line_number, 1)
+                if method_line_number:
+                    method_body = MethodExtractor._find_method_body(method_position, content)
+                    method_implementations[method_name] = method_body
+
+
+        #     method_line_number = MethodExtractor._find_method_by_line(method_line, content)
+        #     print(f"Method position for {method_line}: {method_line_number}")
+        #     method_position = javalang.tokenizer.Position(method_line_number, 1)
+        #     print(f"Method position for {method_line}: {method_position}")
+        #     if method_line_number:
+        #         method_body = MethodExtractor._find_method_body(method_position, content)
+        #         print(f"Method body for {method_line}:\n{method_body}")
+        #         print(f"Method Name: {method_name}")
+        #         method_implementations[method_name] = method_body
         print(f"Method implementations:\n{method_implementations}")
         return method_implementations
 
