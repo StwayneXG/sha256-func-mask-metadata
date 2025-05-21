@@ -116,7 +116,7 @@ class MethodExtractor:
         lines = content.split('\n')
         print(f"Looking for method line:\n{method_line}")
         for i, line in enumerate(lines):
-            if method_line == line:
+            if method_line.strip() == line.strip():
                 return i + 1
 
     @staticmethod
