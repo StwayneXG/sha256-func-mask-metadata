@@ -80,9 +80,9 @@ class MethodExtractor:
                 method_info = MethodExtractor._find_method(tree, method_name)
                 if method_info:
                     print(f"Method position for {method_name}: {method_info[0]}")
+                    print(f"Type for methodname0: {type(method_info[0])}")
                     method_body = MethodExtractor._find_method_body(method_info[0], content)
                     method_implementations[method_name] = method_body
-        return method_implementations
 
         method_implementations = {}
 
