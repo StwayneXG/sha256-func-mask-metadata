@@ -24,6 +24,9 @@ class MainProcessor:
         base_path = f'/tmp/repos/{project}_{bug_num}/'
         method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
 
+        for method_name, implementation in method_implementations.items():
+            print(f"Method: {method_name}\nImplementation:\n{implementation}")
+
         method_triples = []
         for file_path, method_name_line_pairs in methods.items():
             for method_name, method_line in method_name_line_pairs:
@@ -31,7 +34,7 @@ class MainProcessor:
                 implementation = method_implementations.get(method_name, "")
                 method_triples.append((method_name, f"func_{hashed_name}", implementation))
 
-        self.csv_writer.write_csv(project, bug_num, method_triples)
+        # self.csv_writer.write_csv(project, bug_num, method_triples)
 
 if __name__ == "__main__":
     base_dir = "/tmp/repos/"
