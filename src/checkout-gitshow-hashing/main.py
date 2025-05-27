@@ -20,26 +20,22 @@ class MainProcessor:
     def process(self, project, bug_num):
         project_dir = self.project_checkout.checkout(project, bug_num)
         diff = GitDiffParser.get_diff(project_dir)
-        methods, method_lines = MethodExtractor.extract_methods(diff)
+        methods = MethodExtractor.extract_methods(diff)
         print(f"Methods found:\n")
-        for file_path, method_names in methods.items():
+        for file_path, method_name_line_pairs in methods.items():
             print(f"File: {file_path}")
-            for method_name in method_names:
+            for method_name, method_line in method_name_line_pairs:
                 print(f"  Method: {method_name}")
-        print(f"Method lines found:\n")
-        for file_path, lines in method_lines.items():
-            print(f"File: {file_path}")
-            for line in lines:
-                print(f"  Line: {line}")
+                print(f"  Line: {method_line}")
         base_path = f'/tmp/repos/{project}_{bug_num}/'
-        method_implementations = MethodExtractor.extract_method_implementations(diff, methods, method_lines, base_path)
+        # method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
         
-        method_triples = []
-        for file_path, method_names in methods.items():
-            for method_name in method_names:
-                hashed_name = MethodNameHasher.hash_method_name(method_name)
-                implementation = method_implementations.get(method_name, "")
-                method_triples.append((method_name, f"func_{hashed_name}", implementation))
+        # method_triples = []
+        # for file_path, method_names in methods.items():
+        #     for method_name in method_names:
+        #         hashed_name = MethodNameHasher.hash_method_name(method_name)
+        #         implementation = method_implementations.get(method_name, "")
+        #         method_triples.append((method_name, f"func_{hashed_name}", implementation))
 
         # self.csv_writer.write_csv(project, bug_num, method_triples)
 

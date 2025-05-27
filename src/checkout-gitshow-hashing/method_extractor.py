@@ -57,7 +57,6 @@ class MethodExtractor:
     def extract_methods(diff):
         lines = diff.split('\n')
         methods = {}
-        method_lines = {}
         current_file = None
 
         for i, line in enumerate(lines):
@@ -69,18 +68,18 @@ class MethodExtractor:
                 # Look upwards for the function declaration
                 for j in range(i-1, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):
-                        if current_file not in method_lines:
-                            method_lines[current_file] = set()
-                        method_lines[current_file].add(lines[j])
+                        # if current_file not in method_lines:
+                        #     method_lines[current_file] = set()
+                        # method_lines[current_file].add(lines[j])
 
                         method_name = MethodExtractor.extract_method_name(lines[j])
                         if method_name:
                             if current_file not in methods:
                                 methods[current_file] = set()
-                            methods[current_file].add(method_name)
+                            methods[current_file].add((method_name, lines[j]))
                         break  # Stop looking once we've found the function declaration
 
-        return methods, method_lines
+        return methods
     
     @staticmethod
     def extract_method_implementations(diff, methods, method_lines, base_path):
