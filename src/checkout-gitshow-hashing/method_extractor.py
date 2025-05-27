@@ -66,11 +66,15 @@ class MethodExtractor:
 
             if line.startswith('+'):
                 # Look upwards for the function declaration
-                for j in range(i-1, -1, -1):
+                for j in range(i, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):
                         # if current_file not in method_lines:
                         #     method_lines[current_file] = set()
                         # method_lines[current_file].add(lines[j])
+
+                        if lines[j].startswith('+'):
+                            # Remove the '+' prefix
+                            lines[j] = lines[j][1:]
 
                         method_name = MethodExtractor.extract_method_name(lines[j])
                         if method_name:
