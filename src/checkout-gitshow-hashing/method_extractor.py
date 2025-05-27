@@ -52,7 +52,7 @@ class MethodExtractor:
 
             if line.startswith('+'):
                 # Look upwards for the function declaration
-                for j in range(i, -1, -1):
+                for j in range(i-1, -1, -1):
                     if MethodExtractor.is_function_line(lines[j]):
                         if current_file not in method_lines:
                             method_lines[current_file] = set()
