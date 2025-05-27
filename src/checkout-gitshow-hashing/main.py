@@ -41,7 +41,7 @@ class MainProcessor:
                 implementation = method_implementations.get(method_name, "")
                 method_triples.append((method_name, f"func_{hashed_name}", implementation))
 
-        self.csv_writer.write_csv(project, bug_num, method_triples)
+        # self.csv_writer.write_csv(project, bug_num, method_triples)
 
 if __name__ == "__main__":
     base_dir = "/tmp/repos/"
