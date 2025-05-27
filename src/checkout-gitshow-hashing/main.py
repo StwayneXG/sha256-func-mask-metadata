@@ -21,27 +21,17 @@ class MainProcessor:
         project_dir = self.project_checkout.checkout(project, bug_num)
         diff = GitDiffParser.get_diff(project_dir)
         methods = MethodExtractor.extract_methods(diff)
-        print(f"Methods found:\n")
-        for file_path, method_name_line_pairs in methods.items():
-            print(f"File: {file_path}")
-            for method_name, method_line in method_name_line_pairs:
-                print(f"  Method: {method_name}")
-                print(f"  Line: {method_line}")
         base_path = f'/tmp/repos/{project}_{bug_num}/'
         method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
-        print(f"Method implementations found:\n")
-        for method_name, implementation in method_implementations.items():
-            print(f"Method: {method_name}")
-            print(f"Implementation:\n{implementation}")
 
         method_triples = []
-        for file_path, method_names in methods.items():
-            for method_name in method_names:
+        for file_path, method_name_line_pairs in methods.items():
+            for method_name, method_line in method_name_line_pairs:
                 hashed_name = MethodNameHasher.hash_method_name(method_name)
                 implementation = method_implementations.get(method_name, "")
                 method_triples.append((method_name, f"func_{hashed_name}", implementation))
 
-        # self.csv_writer.write_csv(project, bug_num, method_triples)
+        self.csv_writer.write_csv(project, bug_num, method_triples)
 
 if __name__ == "__main__":
     base_dir = "/tmp/repos/"
