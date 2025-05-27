@@ -4,6 +4,7 @@ from method_extractor import MethodExtractor
 from method_name_hasher import MethodNameHasher
 from csv_writer import CSVWriter
 import argparse
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Process a project")
@@ -20,7 +21,17 @@ class MainProcessor:
         project_dir = self.project_checkout.checkout(project, bug_num)
         diff = GitDiffParser.get_diff(project_dir)
         methods, method_lines = MethodExtractor.extract_methods(diff)
-        base_path = f'/root/data/Defects4J/repos/{project}_{bug_num}/'
+        print(f"Methods found:\n")
+        for file_path, method_names in methods.items():
+            print(f"File: {file_path}")
+            for method_name in method_names:
+                print(f"  Method: {method_name}")
+        print(f"Method lines found:\n")
+        for file_path, lines in method_lines.items():
+            print(f"File: {file_path}")
+            for line in lines:
+                print(f"  Line: {line}")
+        base_path = f'/tmp/repos/{project}_{bug_num}/'
         method_implementations = MethodExtractor.extract_method_implementations(diff, methods, method_lines, base_path)
         
         method_triples = []
@@ -33,7 +44,8 @@ class MainProcessor:
         self.csv_writer.write_csv(project, bug_num, method_triples)
 
 if __name__ == "__main__":
-    base_dir = "/root/data/Defects4J/repos/"
+    base_dir = "/tmp/repos/"
+    os.makedirs(base_dir, exist_ok=True)
     output_dir = "data/sha256 mask checkout-gitshow/"
     
     processor = MainProcessor(base_dir, output_dir)
