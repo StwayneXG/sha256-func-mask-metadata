@@ -28,14 +28,18 @@ class MainProcessor:
                 print(f"  Method: {method_name}")
                 print(f"  Line: {method_line}")
         base_path = f'/tmp/repos/{project}_{bug_num}/'
-        # method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
-        
-        # method_triples = []
-        # for file_path, method_names in methods.items():
-        #     for method_name in method_names:
-        #         hashed_name = MethodNameHasher.hash_method_name(method_name)
-        #         implementation = method_implementations.get(method_name, "")
-        #         method_triples.append((method_name, f"func_{hashed_name}", implementation))
+        method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
+        print(f"Method implementations found:\n")
+        for method_name, implementation in method_implementations.items():
+            print(f"Method: {method_name}")
+            print(f"Implementation:\n{implementation}")
+
+        method_triples = []
+        for file_path, method_names in methods.items():
+            for method_name in method_names:
+                hashed_name = MethodNameHasher.hash_method_name(method_name)
+                implementation = method_implementations.get(method_name, "")
+                method_triples.append((method_name, f"func_{hashed_name}", implementation))
 
         # self.csv_writer.write_csv(project, bug_num, method_triples)
 
