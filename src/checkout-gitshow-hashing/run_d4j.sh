@@ -1,7 +1,7 @@
 #!/bin/bash
 
 D4J_HOME="$(dirname $(which defects4j))/../.."
-REPO_DIR="/root/data/Defects4J/repos/"
+REPO_DIR="/tmp/repos/"
 
 for proj in $(defects4j pids); do
     for bug in $(cut -f1 -d',' "$D4J_HOME/framework/projects/$proj/commit-db"); do
