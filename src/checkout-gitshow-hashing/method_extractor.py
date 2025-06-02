@@ -1,6 +1,10 @@
 import re
 import javalang
 
+from config import logging_level
+from logging_utils import get_console_logger
+script_logger = get_console_logger(__name__, level=logging_level)
+
 class MethodExtractor:
     @staticmethod
     def is_function_line(line):
@@ -58,18 +62,26 @@ class MethodExtractor:
         lines = diff.split('\n')
         methods = {}
         current_file = None
+        current_diff_line = ""
 
         for i, line in enumerate(lines):
             if line.startswith('+++'):
                 current_file = line[4:].strip()
+                script_logger.debug(f"Currently analyzing file: {current_file}")
                 continue
 
             if line.startswith('+') or line.startswith('-'):
+                current_diff_line = line.strip()  # Remove the '+' or '-' prefix
+                script_logger.debug(f"Current diff line: {current_diff_line}")
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
+                    # If reach the start of the file without finding a function declaration, break
+                    if lines[j].startswith('---') or lines[j].startswith('+++'):
+                        script_logger.debug(f"Reached the start of the file without finding a function declaration in {current_file}")
+                        break
                     is_function_line = MethodExtractor.is_function_line(lines[j])
                     if is_function_line and lines[j].startswith('-'):
-                        # If the line is a removal of a function, we can skip it
+                        script_logger.debug(f"Found function, but was added after patch fix, skipping current diff line.\nFunction line found: {lines[j]}")
                         break
                     elif is_function_line:
                         # if current_file not in method_lines:
@@ -79,17 +91,14 @@ class MethodExtractor:
                         if lines[j].startswith('+'):
                             # Remove the '+' prefix
                             lines[j] = lines[j][1:]
-
+                        script_logger.debug(f"Found function declaration: {lines[j]}")
                         method_name = MethodExtractor.extract_method_name(lines[j])
+                        script_logger.debug(f"Extracted method name: {method_name} from line: {lines[j]}")
                         if method_name:
                             if current_file not in methods:
                                 methods[current_file] = set()
                             methods[current_file].add((method_name, lines[j]))
                         break  # Stop looking once we've found the function declaration
-
-                    # If reach the start of the file without finding a function declaration, break
-                    if lines[j].startswith('---') or lines[j].startswith('+++'):
-                        break
 
         return methods
     
