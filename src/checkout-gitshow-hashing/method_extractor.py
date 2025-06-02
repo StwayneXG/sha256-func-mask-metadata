@@ -64,11 +64,14 @@ class MethodExtractor:
                 current_file = line[4:].strip()
                 continue
 
-            if line.startswith('+'):
+            if line.startswith('+') or line.startswith('-'):
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
-                    
-                    if MethodExtractor.is_function_line(lines[j]):
+                    is_function_line = MethodExtractor.is_function_line(lines[j])
+                    if is_function_line and lines[j].startswith('-'):
+                        # If the line is a removal of a function, we can skip it
+                        break
+                    elif is_function_line:
                         # if current_file not in method_lines:
                         #     method_lines[current_file] = set()
                         # method_lines[current_file].add(lines[j])

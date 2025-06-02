@@ -20,21 +20,28 @@ class MainProcessor:
     def process(self, project, bug_num):
         project_dir = self.project_checkout.checkout(project, bug_num)
         diff = GitDiffParser.get_diff(project_dir)
-        methods = MethodExtractor.extract_methods(diff)
-        base_path = f'/tmp/repos/{project}_{bug_num}/'
-        method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
 
-        # for method_name, implementation in method_implementations.items():
-        #     print(f"Method: {method_name}\nImplementation:\n{implementation}")
+        # Save diff to folder "/root/data/Defects4J/project_diffs/{project}_{bug_num}.txt"
+        diff_file_path = f"/root/data/Defects4J/project_diffs/{project}_{bug_num}.txt"
+        os.makedirs(os.path.dirname(diff_file_path), exist_ok=True)
+        with open(diff_file_path, 'w') as diff_file:
+            diff_file.write(diff)
+            
+        # methods = MethodExtractor.extract_methods(diff)
+        # base_path = f'/tmp/repos/{project}_{bug_num}/'
+        # method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
 
-        method_triples = []
-        for file_path, method_name_line_pairs in methods.items():
-            for method_name, method_line in method_name_line_pairs:
-                hashed_name = MethodNameHasher.hash_method_name(method_name)
-                implementation = method_implementations.get(method_name, "")
-                method_triples.append((method_name, f"func_{hashed_name}", implementation))
+        # # for method_name, implementation in method_implementations.items():
+        # #     print(f"Method: {method_name}\nImplementation:\n{implementation}")
 
-        self.csv_writer.write_csv(project, bug_num, method_triples)
+        # method_triples = []
+        # for file_path, method_name_line_pairs in methods.items():
+        #     for method_name, method_line in method_name_line_pairs:
+        #         hashed_name = MethodNameHasher.hash_method_name(method_name)
+        #         implementation = method_implementations.get(method_name, "")
+        #         method_triples.append((method_name, f"func_{hashed_name}", implementation))
+
+        # self.csv_writer.write_csv(project, bug_num, method_triples)
 
 if __name__ == "__main__":
     base_dir = "/tmp/repos/"
