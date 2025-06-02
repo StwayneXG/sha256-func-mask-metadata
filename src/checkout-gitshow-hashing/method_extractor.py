@@ -20,7 +20,7 @@ class MethodExtractor:
             if '=' in pre_comment:
                 return False
             return True
-        elif "class " in trimmed_line and "{" in trimmed_line:
+        elif "class " in trimmed_line:
             if trimmed_line.endswith(";"):
                 return False
             pre_comment = trimmed_line.split("//")[0].strip()
@@ -38,14 +38,14 @@ class MethodExtractor:
         # Case 1: Check if it's a class declaration
         if "class " in trimmed_line:
             # Extract class name, which follows the 'class' keyword
-            class_match = re.search(r'class\s+(\w+)', trimmed_line)
+            class_match = re.search(r'class\s+([A-Za-z_][A-Za-z0-9_]*)', trimmed_line)
             if class_match:
                 return class_match.group(1)
             return None
         
         # Case 2: General method or constructor extraction
         # This pattern captures method/constructor name before the '('
-        method_match = re.search(r'(\w+)\s*\(', trimmed_line)
+        method_match = re.search(r'([A-Za-z_][A-Za-z0-9_]*)\s*\(', trimmed_line)
         if method_match:
             return method_match.group(1)
 
@@ -58,6 +58,7 @@ class MethodExtractor:
         current_file = None
         current_diff_line = ""
 
+        newly_added_methods = set()
         for i, line in enumerate(lines):
             if line.startswith('+++'):
                 current_file = line[4:].strip()
@@ -87,7 +88,8 @@ class MethodExtractor:
 
                     is_function_line = MethodExtractor.is_function_line(lines[j])
                     if is_function_line and lines[j].startswith('-'):
-                        script_logger.warning(f"Found function, but was added after patch fix, skipping current diff line.\nFunction line found: {lines[j]}")
+                        newly_added_methods.add(lines[j][1:].strip())
+                        # script_logger.warning(f"Found function, but was added after patch fix, skipping current diff line.\nFunction line found: {lines[j]}")
                         break
 
                     elif is_function_line:
@@ -105,7 +107,7 @@ class MethodExtractor:
                                 methods[current_file] = set()
                             methods[current_file].add((method_name, lines[j]))
                         break  # Stop looking once we've found the function declaration
-
+        script_logger.warning(f"Patch included {len(newly_added_methods)} newly added methods which were skipped.")
         return methods
     
     @staticmethod
