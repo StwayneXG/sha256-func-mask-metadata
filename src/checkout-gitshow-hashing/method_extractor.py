@@ -107,8 +107,8 @@ class MethodExtractor:
                                 methods[current_file] = set()
                             methods[current_file].add((method_name, lines[j]))
                         break  # Stop looking once we've found the function declaration
-        script_logger.warning(f"Patch included {len(newly_added_methods)} newly added methods which were skipped.")
-        return methods
+
+        return methods, newly_added_methods
     
     @staticmethod
     def extract_method_implementations(diff, methods, base_path):

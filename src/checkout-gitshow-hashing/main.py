@@ -37,7 +37,9 @@ class MainProcessor:
             with open(diff_file_path, 'r') as diff_file:
                 diff = diff_file.read()
         
-        methods = MethodExtractor.extract_methods(diff)
+        methods, newly_added_methods = MethodExtractor.extract_methods(diff)
+        if len(newly_added_methods) > 0:
+            script_logger.warning(f"Newly added methods found in diff for project {project} bug {bug_num}: {newly_added_methods}")
         script_logger.debug(f"Extracted methods from {len(methods)} files in the diff for project {project} bug {bug_num}")
         for file_path, method_name_line_pairs in methods.items():
             script_logger.debug(f"File: {file_path}, Methods: {len(method_name_line_pairs)}")
