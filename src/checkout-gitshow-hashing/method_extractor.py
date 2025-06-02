@@ -139,6 +139,7 @@ class MethodExtractor:
             for method_name, method_line in method_name_line_pairs:
                 method_line_number = MethodExtractor._find_method_by_line(method_line, content)
                 if not method_line_number:
+                    script_logger.warning(f"Method line not found in content for method: {method_name} in file: {file_path}")
                     continue
 
                 method_position = javalang.tokenizer.Position(method_line_number, 1)
