@@ -83,27 +83,29 @@ class MethodExtractor:
                     continue
                 current_diff_line = line.strip()  # Remove the '+' or '-' prefix
                 script_logger.debug(f"Current diff line: {current_diff_line}")
+
                 # Look upwards for the function declaration
                 for j in range(i, -1, -1):
                     # If reach the start of the file without finding a function declaration, break
                     if lines[j].startswith('---') or lines[j].startswith('+++'):
                         script_logger.debug(f"Reached the start of the file without finding a function declaration in {current_file}")
                         break
+
                     is_function_line = MethodExtractor.is_function_line(lines[j])
                     if is_function_line and lines[j].startswith('-'):
                         script_logger.debug(f"Found function, but was added after patch fix, skipping current diff line.\nFunction line found: {lines[j]}")
                         break
-                    elif is_function_line:
-                        # if current_file not in method_lines:
-                        #     method_lines[current_file] = set()
-                        # method_lines[current_file].add(lines[j])
 
+                    elif is_function_line:
                         if lines[j].startswith('+'):
                             # Remove the '+' prefix
                             lines[j] = lines[j][1:]
+
                         script_logger.debug(f"Found function declaration: {lines[j]}")
+                        
                         method_name = MethodExtractor.extract_method_name(lines[j])
                         script_logger.debug(f"Extracted method name: {method_name} from line: {lines[j]}")
+
                         if method_name:
                             if current_file not in methods:
                                 methods[current_file] = set()
@@ -114,68 +116,41 @@ class MethodExtractor:
     
     @staticmethod
     def extract_method_implementations(diff, methods, base_path):
-        # method_implementations = {}
-
-        # for file_path, method_names in methods.items():
-        #     content = open(base_path + file_path, errors='ignore').read()
-        #     try:
-        #         tree = javalang.parse.parse(content)
-        #     except javalang.parser.JavaSyntaxError:
-        #         print(f"Error parsing file: {file_path}")
-        #         continue
-
-        #     for method_name in method_names:
-        #         method_info = MethodExtractor._find_method(tree, method_name)
-        #         if method_info:
-        #             print(f"Method position for {method_name}: {method_info[0]}")
-        #             print(f"Type for methodname0: {type(method_info[0])}")
-        #             method_body = MethodExtractor._find_method_body(method_info[0], content)
-        #             method_implementations[method_name] = method_body
-
         method_implementations = {}
 
         for file_path, method_name_line_pairs in methods.items():
-            content = open(base_path + file_path, errors='ignore').read()
+            abs_path = os.path.join(base_path, file_path)
+            try:
+                with open(abs_path, errors='ignore') as f:
+                    content = f.read()
+            except FileNotFoundError:
+                print(f"File not found: {abs_path}")
+                continue
+
             try:
                 tree = javalang.parse.parse(content)
             except javalang.parser.JavaSyntaxError:
                 print(f"Error parsing file: {file_path}")
                 continue
 
+            file_method_map = {}
+
             for method_name, method_line in method_name_line_pairs:
                 method_line_number = MethodExtractor._find_method_by_line(method_line, content)
+                if not method_line_number:
+                    continue
+
                 method_position = javalang.tokenizer.Position(method_line_number, 1)
-                if method_line_number:
-                    method_body = MethodExtractor._find_method_body(method_position, content)
-                    method_implementations[method_name] = method_body
+                method_body = MethodExtractor._find_method_body(method_position, content)
 
-        # for (file_path, method_names), (file_path2, method_line_s) in zip(methods.items(), method_lines.items()):
-        #     content = open(base_path + file_path, errors='ignore').read()
-        #     try:
-        #         tree = javalang.parse.parse(content)
-        #     except javalang.parser.JavaSyntaxError:
-        #         print(f"Error parsing file: {file_path}")
-        #         continue
+                if method_body:
+                    file_method_map[(method_name, method_line_number)] = method_body
 
-        #     for method_name, method_line in zip(method_names, method_line_s):
-        #         method_line_number = MethodExtractor._find_method_by_line(method_line, content)
-        #         method_position = javalang.tokenizer.Position(method_line_number, 1)
-        #         if method_line_number:
-        #             method_body = MethodExtractor._find_method_body(method_position, content)
-        #             method_implementations[method_name] = method_body
+            if file_method_map:
+                method_implementations[file_path] = file_method_map
 
-
-        #     method_line_number = MethodExtractor._find_method_by_line(method_line, content)
-        #     print(f"Method position for {method_line}: {method_line_number}")
-        #     method_position = javalang.tokenizer.Position(method_line_number, 1)
-        #     print(f"Method position for {method_line}: {method_position}")
-        #     if method_line_number:
-        #         method_body = MethodExtractor._find_method_body(method_position, content)
-        #         print(f"Method body for {method_line}:\n{method_body}")
-        #         print(f"Method Name: {method_name}")
-        #         method_implementations[method_name] = method_body
-        # print(f"Method implementations:\n{method_implementations}")
         return method_implementations
+
 
     @staticmethod
     def _find_method(tree, method_name: str):

@@ -44,8 +44,14 @@ class MainProcessor:
         base_path = f'/tmp/repos/{project}_{bug_num}/'
         method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
 
-        for method_name, implementation in method_implementations.items():
-            print(f"Method: {method_name}\nImplementation:\n{implementation}")
+        for file_path, method_impls in method_implementations.items():
+            script_logger.debug(f"File: {file_path}, Implementations: {len(method_impls)}")
+            for method_name, impl in method_impls.items():
+                script_logger.debug(f"Method: {method_name}, Implementation: {impl}")
+                
+
+        # for method_name, implementation in method_implementations.items():
+        #     print(f"Method: {method_name}\nImplementation:\n{implementation}")
 
         # method_triples = []
         # for file_path, method_name_line_pairs in methods.items():
