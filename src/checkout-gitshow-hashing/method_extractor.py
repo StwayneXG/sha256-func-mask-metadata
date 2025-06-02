@@ -69,6 +69,8 @@ class MethodExtractor:
                 current_file = line[4:].strip()
                 script_logger.debug(f"Currently analyzing file: {current_file}")
                 continue
+            elif line.startswith('---'):
+                continue
 
             if line.startswith('+') or line.startswith('-'):
                 current_diff_line = line.strip()  # Remove the '+' or '-' prefix
