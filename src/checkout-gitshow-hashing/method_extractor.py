@@ -79,7 +79,7 @@ class MethodExtractor:
 
             if line.startswith('+') or line.startswith('-'):
                 if current_file is None:
-                    script_logger.debug("No current file set, skipping line.")
+                    script_logger.debug(f"No current file set, skipping line: {line}")
                     continue
                 current_diff_line = line.strip()  # Remove the '+' or '-' prefix
                 script_logger.debug(f"Current diff line: {current_diff_line}")

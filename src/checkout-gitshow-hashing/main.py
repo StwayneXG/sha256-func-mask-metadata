@@ -6,6 +6,10 @@ from csv_writer import CSVWriter
 import argparse
 import os
 
+from config import logging_level
+from logging_utils import get_console_logger
+script_logger = get_console_logger(__name__, level=logging_level)
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Process a project")
     parser.add_argument("--project", help="The project to process")
@@ -34,6 +38,9 @@ class MainProcessor:
                 diff = diff_file.read()
         
         methods = MethodExtractor.extract_methods(diff)
+        script_logger.debug(f"Extracted methods from {len(methods)} files in the diff for project {project} bug {bug_num}")
+        for file_path, method_name_line_pairs in methods.items():
+            script_logger.debug(f"File: {file_path}, Methods: {len(method_name_line_pairs)}")
         base_path = f'/tmp/repos/{project}_{bug_num}/'
         method_implementations = MethodExtractor.extract_method_implementations(diff, methods, base_path)
 
