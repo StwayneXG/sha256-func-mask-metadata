@@ -94,7 +94,7 @@ class MethodExtractor:
 
                     is_function_line = MethodExtractor.is_function_line(lines[j])
                     if is_function_line and lines[j].startswith('-'):
-                        script_logger.debug(f"Found function, but was added after patch fix, skipping current diff line.\nFunction line found: {lines[j]}")
+                        script_logger.warning(f"Found function, but was added after patch fix, skipping current diff line.\nFunction line found: {lines[j]}")
                         break
 
                     elif is_function_line:
