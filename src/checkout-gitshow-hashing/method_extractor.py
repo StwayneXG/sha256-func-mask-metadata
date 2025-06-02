@@ -20,13 +20,6 @@ class MethodExtractor:
             if '=' in pre_comment:
                 return False
             return True
-        elif "JSType" in trimmed_line and "{" in trimmed_line:
-            if trimmed_line.endswith(";"):
-                return False
-            pre_comment = trimmed_line.split("//")[0].strip()
-            if '=' in pre_comment:
-                return False
-            return True
         elif "class " in trimmed_line and "{" in trimmed_line:
             if trimmed_line.endswith(";"):
                 return False
