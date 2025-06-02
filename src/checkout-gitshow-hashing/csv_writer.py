@@ -1,6 +1,10 @@
 import os
 import pandas as pd
 
+from config import logging_level
+from logging_utils import get_console_logger
+script_logger = get_console_logger(__name__, level=logging_level)
+
 class CSVWriter:
     def __init__(self, output_dir):
         self.output_dir = output_dir
@@ -16,3 +20,4 @@ class CSVWriter:
 
         df = pd.DataFrame(rows, columns=["File Path", "Method Name", "Method Line Number", "Method Implementation"])
         df.to_csv(filename, index=False)
+        script_logger.debug(f"CSV written to {filename} with {len(rows)} rows")
