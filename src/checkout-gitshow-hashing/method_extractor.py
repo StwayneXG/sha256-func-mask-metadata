@@ -36,7 +36,7 @@ class MethodExtractor:
         trimmed_line = line.strip()
         
         # Case 1: Check if it's a class declaration
-        if "class" in trimmed_line:
+        if "class " in trimmed_line:
             # Extract class name, which follows the 'class' keyword
             class_match = re.search(r'class\s+(\w+)', trimmed_line)
             if class_match:
