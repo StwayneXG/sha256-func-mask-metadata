@@ -67,12 +67,17 @@ class MethodExtractor:
         for i, line in enumerate(lines):
             if line.startswith('+++'):
                 current_file = line[4:].strip()
-                script_logger.debug(f"Currently analyzing file: {current_file}")
-                continue
+                if not current_file.strip().endswith('.java'):
+                    script_logger.debug(f"Skipping non-Java file: {current_file}")
+                    current_file = None
+                    continue
+                else:
+                    script_logger.debug(f"Currently analyzing file: {current_file}")
+                    continue
             elif line.startswith('---'):
                 continue
 
-            if line.startswith('+') or line.startswith('-'):
+            if line.startswith('+') or line.startswith('-') and current_file:
                 current_diff_line = line.strip()  # Remove the '+' or '-' prefix
                 script_logger.debug(f"Current diff line: {current_diff_line}")
                 # Look upwards for the function declaration
