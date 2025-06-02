@@ -1,7 +1,37 @@
 #!/bin/bash
 
-PROJECT="Mockito"
-BUG_NUM=32
 REPO_DIR="/tmp/repos/"
+SCRIPT="src/checkout-gitshow-hashing/main.py"
 
-python3.9 src/checkout-gitshow-hashing/main.py --project $PROJECT --bug_num $BUG_NUM
+# Define the list of (Project, BugID) pairs
+PROJECT_BUG_LIST=(
+    "Mockito 32"
+    "JacksonDatabind 44"
+    "Closure 35"
+    "Closure 176"
+    "Jsoup 61"
+    "JacksonDatabind 26"
+    "Closure 6"
+    "Closure 172"
+    "Collections 27"
+    "JacksonDatabind 37"
+    "JacksonDatabind 105"
+    "Gson 3"
+    "Math 12"
+    "Cli 36"
+    "Gson 6"
+    "JacksonDatabind 89"
+    "JacksonDatabind 92"
+    "Mockito 8"
+    "Lang 41"
+    "Chart 23"
+)
+
+# Loop through the list and run the Python script
+for entry in "${PROJECT_BUG_LIST[@]}"; do
+    # Read project and bug ID from each entry
+    read -r PROJECT BUG_NUM <<< "$entry"
+    
+    echo "Running for $PROJECT bug #$BUG_NUM"
+    python3.9 "$SCRIPT" --project "$PROJECT" --bug_num "$BUG_NUM"
+done
