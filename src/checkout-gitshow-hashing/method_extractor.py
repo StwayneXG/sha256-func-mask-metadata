@@ -126,7 +126,7 @@ class MethodExtractor:
                         script_logger.debug(f"Found member variable in line: {lines[j]}")
                         variable_name = MethodExtractor.extract_variable_name(lines[j])
                         script_logger.debug(f"Extracted variable name: {variable_name} from line: {lines[j]}")
-                        methods[current_file].add(variable_name, lines[j])
+                        methods[current_file].add((variable_name, lines[j]))
                         break
 
                     is_function_line = MethodExtractor.is_function_line(lines[j])
