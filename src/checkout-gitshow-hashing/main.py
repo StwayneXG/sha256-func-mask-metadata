@@ -53,7 +53,7 @@ class MainProcessor:
                 script_logger.debug(f"Method: {method_name}, Implementation: {impl}")
                 
         
-        # self.csv_writer.write_csv(project, bug_num, method_implementations)
+        self.csv_writer.write_csv(project, bug_num, method_implementations)
 
         # for method_name, implementation in method_implementations.items():
         #     print(f"Method: {method_name}\nImplementation:\n{implementation}")

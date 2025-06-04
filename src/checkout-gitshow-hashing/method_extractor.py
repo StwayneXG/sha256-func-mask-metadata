@@ -120,7 +120,7 @@ class MethodExtractor:
                         break
                     
                     is_member_variable = MethodExtractor.is_member_variable(lines[j])
-                    if is_member_variable:
+                    if is_member_variable and lines[j].startswith('+'):
                         lines[j] = lines[j][1:]
                         if current_file not in methods:
                             methods[current_file] = set()

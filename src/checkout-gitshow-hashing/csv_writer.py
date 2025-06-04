@@ -19,5 +19,9 @@ class CSVWriter:
                 rows.append([file_path, method_name, line_number, implementation])
 
         df = pd.DataFrame(rows, columns=["File Path", "Method/Class Name", "Method/Class Line Number", "Method/Class Implementation"])
-        df.to_csv(filename, index=False)
+        if os.path.exists(filename):
+            existing_df = pd.read_csv(filename)
+            if not existing_df.equals(df):
+                script_logger.info(f"Updating {filename} as contents differ.")
+        # df.to_csv(filename, index=False)
         script_logger.debug(f"CSV written to {filename} with {len(rows)} rows")
