@@ -18,6 +18,6 @@ class CSVWriter:
             for (method_name, line_number), implementation in method_map.items():
                 rows.append([file_path, method_name, line_number, implementation])
 
-        df = pd.DataFrame(rows, columns=["File Path", "Method Name", "Method Line Number", "Method Implementation"])
+        df = pd.DataFrame(rows, columns=["File Path", "Method/Class Name", "Method/Class Line Number", "Method/Class Implementation"])
         df.to_csv(filename, index=False)
         script_logger.debug(f"CSV written to {filename} with {len(rows)} rows")

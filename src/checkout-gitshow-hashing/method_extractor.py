@@ -50,6 +50,39 @@ class MethodExtractor:
             return method_match.group(1)
 
         return None
+    
+    @staticmethod
+    def is_member_variable(line):
+        line = line.strip()
+
+        if any(keyword in line for keyword in ["private", "protected", "public", "static"]):
+            # Exclude methods: lines with () and no '='
+            if '(' in line and ')' in line and '=' not in line:
+                return False
+            # Must end with semicolon
+            if line.endswith(';'):
+                return True
+
+        return False
+    
+    @staticmethod
+    def extract_variable_name(line):
+        line = line.strip()
+
+        # If there's an '=', take only the part before it
+        if '=' in line:
+            left_part = line.split('=')[0].strip()
+        else:
+            left_part = line
+
+        # Split into tokens
+        tokens = left_part.replace(",", " ").split()
+
+        if not tokens:
+            return None
+
+        # The last token is almost always the variable name
+        return tokens[-1]
 
     @staticmethod
     def extract_methods(diff):
@@ -84,6 +117,12 @@ class MethodExtractor:
                     # If reach the start of the file without finding a function declaration, break
                     if lines[j].startswith('---') or lines[j].startswith('+++'):
                         script_logger.debug(f"Reached the start of the file without finding a function declaration in {current_file}")
+                        break
+                    
+                    is_member_variable = MethodExtractor.is_member_variable(lines[j])
+                    if is_member_variable:
+                        variable_name = MethodExtractor.extract_variable_name(lines[j])
+                        methods[current_file].add(variable_name, lines[j])
                         break
 
                     is_function_line = MethodExtractor.is_function_line(lines[j])
