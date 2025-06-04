@@ -23,5 +23,9 @@ class CSVWriter:
             existing_df = pd.read_csv(filename)
             if not existing_df.equals(df):
                 script_logger.info(f"Updating {filename} as contents differ.")
+                script_logger.info("Existing DataFrame:")
+                script_logger.info(f"\n{existing_df}")
+                script_logger.info("Current DataFrame:")
+                script_logger.info(f"\n{df}")
         # df.to_csv(filename, index=False)
         script_logger.debug(f"CSV written to {filename} with {len(rows)} rows")
