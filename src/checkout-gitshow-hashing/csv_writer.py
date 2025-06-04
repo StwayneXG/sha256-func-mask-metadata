@@ -18,7 +18,7 @@ class CSVWriter:
             for (method_name, line_number), implementation in method_map.items():
                 rows.append([file_path, method_name, line_number, implementation])
 
-        df = pd.DataFrame(rows, columns=["File Path", "Method/Class Name", "Method/Class Line Number", "Method/Class Implementation"])
+        df = pd.DataFrame(rows, columns=["File Path", "Method Name", "Method Line Number", "Method Implementation"])
         if os.path.exists(filename):
             existing_df = pd.read_csv(filename)
             if not existing_df.equals(df):
