@@ -121,6 +121,8 @@ class MethodExtractor:
                     
                     is_member_variable = MethodExtractor.is_member_variable(lines[j])
                     if is_member_variable:
+                        if current_file not in methods:
+                            methods[current_file] = set()
                         variable_name = MethodExtractor.extract_variable_name(lines[j])
                         methods[current_file].add(variable_name, lines[j])
                         break
