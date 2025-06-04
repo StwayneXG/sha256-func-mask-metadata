@@ -120,15 +120,19 @@ class MethodExtractor:
                         break
                     
                     is_member_variable = MethodExtractor.is_member_variable(lines[j])
-                    if is_member_variable and lines[j].startswith('+'):
-                        lines[j] = lines[j][1:]
-                        if current_file not in methods:
-                            methods[current_file] = set()
-                        script_logger.debug(f"Found member variable in line: {lines[j]}")
-                        variable_name = MethodExtractor.extract_variable_name(lines[j])
-                        script_logger.debug(f"Extracted variable name: {variable_name} from line: {lines[j]}")
-                        methods[current_file].add((variable_name, lines[j]))
-                        break
+                    if is_member_variable:
+                        if lines[j].startswith('+'):
+                            lines[j] = lines[j][1:]
+                            if current_file not in methods:
+                                methods[current_file] = set()
+                            script_logger.debug(f"Found member variable in line: {lines[j]}")
+                            variable_name = MethodExtractor.extract_variable_name(lines[j])
+                            script_logger.debug(f"Extracted variable name: {variable_name} from line: {lines[j]}")
+                            methods[current_file].add((variable_name, lines[j]))
+                            break
+                        elif lines[j].startswith('-'):
+                            newly_added_methods.add(lines[j][1:].strip())
+                            break
 
                     is_function_line = MethodExtractor.is_function_line(lines[j])
                     if is_function_line and lines[j].startswith('-'):
