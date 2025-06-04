@@ -21,12 +21,17 @@ class CSVWriter:
         df = pd.DataFrame(rows, columns=["File Path", "Method Name", "Method Line Number", "Method Implementation"])
         if os.path.exists(filename):
             existing_df = pd.read_csv(filename)
-            if not existing_df.equals(df):
+
+            # Sort both DataFrames by all columns to ignore row order
+            df_sorted = df.sort_values(by=df.columns.tolist()).reset_index(drop=True)
+            existing_df_sorted = existing_df.sort_values(by=existing_df.columns.tolist()).reset_index(drop=True)
+
+            if not existing_df_sorted.equals(df_sorted):
                 script_logger.info(f"Updating {filename} as contents differ.")
                 script_logger.info("Existing DataFrame:")
-                script_logger.info(f"\n{existing_df}")
+                script_logger.info(f"\n{existing_df_sorted}")
                 script_logger.info("Current DataFrame:")
-                script_logger.info(f"\n{df}")
+                script_logger.info(f"\n{df_sorted}")
             else:
                 script_logger.info(f"Both df are equal for {filename}")
 
