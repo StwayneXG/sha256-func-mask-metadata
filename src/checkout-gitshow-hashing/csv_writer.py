@@ -27,5 +27,8 @@ class CSVWriter:
                 script_logger.info(f"\n{existing_df}")
                 script_logger.info("Current DataFrame:")
                 script_logger.info(f"\n{df}")
+            else:
+                script_logger.info(f"Both df are equal for {filename}")
+
         # df.to_csv(filename, index=False)
         script_logger.debug(f"CSV written to {filename} with {len(rows)} rows")
