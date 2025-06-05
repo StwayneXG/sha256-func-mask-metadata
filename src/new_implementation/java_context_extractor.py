@@ -166,7 +166,7 @@ class JavaContextExtractor:
         """
         context: List[Dict] = []
         in_block_comment = False
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
 
         idx = 0
