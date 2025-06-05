@@ -282,11 +282,11 @@ class JavaContextExtractor:
 
             # 8) class / interface / enum / method declarations
             if cls._is_function_line(stripped):
-                if re.search(r'\bclass\b', stripped):
+                if re.search(r'\bclass \b', stripped):
                     decl_type = "class"
-                elif re.search(r'\binterface\b', stripped):
+                elif re.search(r'\binterface \b', stripped):
                     decl_type = "interface"
-                elif re.search(r'\benum\b', stripped):
+                elif re.search(r'\benum \b', stripped):
                     decl_type = "enum"
                 else:
                     decl_type = "method"
