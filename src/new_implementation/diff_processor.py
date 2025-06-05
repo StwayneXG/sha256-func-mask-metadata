@@ -50,20 +50,20 @@ class DiffProcessor:
                 continue
 
             full_disk = os.path.join(self.repo_root, fp)
-            if not os.path.exists(full_disk):
-                print(f"File not found: {full_disk}")
-            else:
-                with open(full_disk, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-                print(f"--- {fp} (lines 0-100) ---")
-                for idx in range(0, 101):
-                    if 1 <= idx <= len(lines):
-                        print(f"{idx:4}: {lines[idx - 1].rstrip()}")
+            # if not os.path.exists(full_disk):
+            #     print(f"File not found: {full_disk}")
+            # else:
+            #     with open(full_disk, "r", encoding="utf-8") as f:
+            #         lines = f.readlines()
+            #     print(f"--- {fp} (lines 0-100) ---")
+            #     for idx in range(0, 101):
+            #         if 1 <= idx <= len(lines):
+            #             print(f"{idx:4}: {lines[idx - 1].rstrip()}")
             try:
                 contexts = JavaContextExtractor.extract_context(full_disk)
-                print(f"\nContexts for {fp}:")
-                for i, ctx in enumerate(contexts):
-                    print(f"  [{i}] {ctx['type']} '{ctx['element_name']}' (lines {ctx['start_line']}-{ctx['end_line']})")
+                # print(f"\nContexts for {fp}:")
+                # for i, ctx in enumerate(contexts):
+                #     print(f"  [{i}] {ctx['type']} '{ctx['element_name']}' (lines {ctx['start_line']}-{ctx['end_line']})")
                 full_source_lines = open(full_disk, "r", encoding="utf-8", errors="ignore").readlines()
             except FileNotFoundError:
                 contexts = []
@@ -185,9 +185,9 @@ class DiffProcessor:
                 if not changes:
                     continue
                 ctx = contexts[idx]
-                print(f"\nContext {idx}: {ctx['type']} '{ctx['element_name']}' (lines {ctx['start_line']}-{ctx['end_line']})")
-                for chg in changes:
-                    print(f"  {chg['change_type']} line {chg['line_number']}: {chg['raw_text']}")
+                # print(f"\nContext {idx}: {ctx['type']} '{ctx['element_name']}' (lines {ctx['start_line']}-{ctx['end_line']})")
+                # for chg in changes:
+                #     print(f"  {chg['change_type']} line {chg['line_number']}: {chg['raw_text']}")
             # Build one record per context with remaining changes
             for idx_ctx, change_list in context_changes.items():
                 if not change_list:
