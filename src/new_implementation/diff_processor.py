@@ -339,35 +339,32 @@ class DiffProcessor:
 
             if raw.startswith("-"):
                 content = raw[1:]
-                previous_removed_line = running_old
                 records.append({
                     "file_path": current_file,
                     "change_type": "removed",
-                    "line_number": running_old,
+                    "line_number": running_new,  # 👈 Note: use running_new, not running_old
                     "raw_text": content,
                 })
-                running_old += 1
-                removed_so_far += 1
+                # 👇 Do NOT increment running_new
+                script_logger.debug(f"Removed line {running_new}: {content}")
                 continue
 
             if raw.startswith("+"):
                 content = raw[1:]
-                if previous_removed_line is not None:
-                    # Replacement: use removed line's number
-                    adjusted_line_number = previous_removed_line
-                    previous_removed_line = None  # Reset
-                else:
-                    # Insertion: apply adjustment
-                    adjusted_line_number = running_new + (removed_so_far - added_so_far)
                 records.append({
                     "file_path": current_file,
                     "change_type": "added",
-                    "line_number": adjusted_line_number,
+                    "line_number": running_new,
                     "raw_text": content,
                 })
-                running_new += 1
-                added_so_far += 1
+                running_new += 1  # 👈 Only increment on add
+                script_logger.debug(f"Added line {running_new - 1}: {content}")
                 continue
+
+            if raw.startswith(" "):
+                running_new += 1
+                continue
+
 
         return pd.DataFrame(records, columns=["file_path", "change_type", "line_number", "raw_text"])
 
