@@ -23,6 +23,7 @@ class DiffProcessor:
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text)
+        return changed_df
 
         # Phase 2: filter to .java files and build contexts
         file_to_contexts = {}
@@ -33,16 +34,16 @@ class DiffProcessor:
                 continue
             full_disk = os.path.join(self.repo_root, fp)
 
-            # Print all lines in the file with line numbers
-            try:
-                with open(full_disk, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-                script_logger.debug(f"--- File contents for {fp} ---")
-                for idx, line in enumerate(lines, start=1):
-                    script_logger.debug(f"{idx:4}: {line.rstrip()}")
-                script_logger.debug(f"--- End of file contents for {fp} ---")
-            except Exception as e:
-                script_logger.error(f"Failed to read file {full_disk}: {e}")
+            # # Print all lines in the file with line numbers
+            # try:
+            #     with open(full_disk, "r", encoding="utf-8") as f:
+            #         lines = f.readlines()
+            #     script_logger.debug(f"--- File contents for {fp} ---")
+            #     for idx, line in enumerate(lines, start=1):
+            #         script_logger.debug(f"{idx:4}: {line.rstrip()}")
+            #     script_logger.debug(f"--- End of file contents for {fp} ---")
+            # except Exception as e:
+            #     script_logger.error(f"Failed to read file {full_disk}: {e}")
 
             try:
                 contexts = JavaContextExtractor.extract_context(full_disk)
@@ -50,25 +51,25 @@ class DiffProcessor:
                 script_logger.error(f"Could not read file: {full_disk}")
                 contexts = []
             
+            file_to_contexts[fp] = contexts
+
             # ─── PRINT the “context” for debugging ───
-            script_logger.debug(f"--- Context for {fp} (start) ---")
-            for elem in contexts:
-                summary = (
-                    f"{elem['type']:15} | "
-                    f"{elem['element_name']:25} | "
-                    f"lines {elem['start_line']:3}–{elem['end_line']:3}"
-                )
-                if elem["type"] in ("class", "interface", "enum"):
-                    if elem["extends"]:
-                        summary += f" | extends: {elem['extends']}"
-                    if elem["implements"]:
-                        summary += f" | implements: {elem['implements']}"
+            # script_logger.debug(f"--- Context for {fp} (start) ---")
+            # for elem in contexts:
+            #     summary = (
+            #         f"{elem['type']:15} | "
+            #         f"{elem['element_name']:25} | "
+            #         f"lines {elem['start_line']:3}–{elem['end_line']:3}"
+            #     )
+            #     if elem["type"] in ("class", "interface", "enum"):
+            #         if elem["extends"]:
+            #             summary += f" | extends: {elem['extends']}"
+            #         if elem["implements"]:
+            #             summary += f" | implements: {elem['implements']}"
 
-                script_logger.debug(summary)
-            script_logger.debug(f"--- Context for {fp} (end) ---\n")
+            #     script_logger.debug(summary)
+            # script_logger.debug(f"--- Context for {fp} (end) ---\n")
             
-        return file_to_contexts
-
         # Phase 3: group changes per file by element
         # TODO
 
