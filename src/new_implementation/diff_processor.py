@@ -78,7 +78,11 @@ class DiffProcessor:
                 if current_run:
                     runs.append(current_run)
                 
-                print(runs)
+                # Print runs in a readable format for debugging
+                for i, run in enumerate(runs):
+                    script_logger.debug(f"Run {i}: lines {run[0]['line_number']} to {run[-1]['line_number']}, count={len(run)}")
+                    for r in run:
+                        script_logger.debug(f"    {r['line_number']}: {r['raw_text']}")
 
                 # For each run of consecutive '-' lines, check against method contexts
                 for run in runs:
