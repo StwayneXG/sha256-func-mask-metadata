@@ -198,30 +198,6 @@ class DiffProcessor:
                     overall_type = "modified"
 
                 diff_lines = [chg["diff_line"] for chg in change_list]
-                
-                # Special case for import/package
-                if element_type in ("import", "package"):
-                    print(f"import or package found:{element_name}")
-                    if len(removed_lns) == span_length and not added:
-                        overall_type = "removed"
-                        element_source = None
-                    elif len(added_lns) == span_length and not removed:
-                        overall_type = "added"
-                        element_source = "".join(full_source_lines[start_line - 1:end_line]) if full_source_lines else None
-                    else:
-                        overall_type = "modified"
-                        element_source = "".join(full_source_lines[start_line - 1:end_line]) if full_source_lines else None
-
-                    all_records.append({
-                        "file_path": fp,
-                        "class_name": None,
-                        "element_type": element_type,
-                        "element_name": element_name,
-                        "change_type": overall_type,
-                        "diff_lines": [chg["diff_line"] for chg in change_list],
-                        "element_source": element_source
-                    })
-                    continue  # Skip remaining logic for import/package
 
                 # Determine class_name for this element
                 class_name = None
