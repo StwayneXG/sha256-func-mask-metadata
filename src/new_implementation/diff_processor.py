@@ -192,20 +192,25 @@ class DiffProcessor:
 
                 if len(removed_lns) == span_length and not added:
                     overall_type = "removed"
-                    element_source = None
                 elif len(added_lns) == span_length and not removed:
                     overall_type = "added"
-                    element_source = "".join(full_source_lines[start_line - 1:end_line]) if full_source_lines else None
                 else:
                     overall_type = "modified"
-                    element_source = "".join(full_source_lines[start_line - 1:end_line]) if full_source_lines else None
 
-                # Determine class_name if this is inside a class
+                diff_lines = [chg["diff_line"] for chg in change_list]
+
+                # Determine class_name for this element
                 class_name = None
                 for parent_ctx in class_contexts:
                     if parent_ctx["start_line"] <= start_line <= parent_ctx["end_line"]:
                         class_name = parent_ctx["element_name"]
                         break
+
+                if overall_type == "removed":
+                    element_source = None
+                else:
+                    snippet = "".join(full_source_lines[start_line - 1 : end_line]) if full_source_lines else None
+                    element_source = snippet
 
                 all_records.append({
                     "file_path": fp,
@@ -213,24 +218,27 @@ class DiffProcessor:
                     "element_type": element_type,
                     "element_name": element_name,
                     "change_type": overall_type,
-                    "diff_lines": [chg["diff_line"] for chg in change_list],
+                    "diff_lines": diff_lines,
                     "element_source": element_source
                 })
 
-            # Handle class-level row (one per class if any internal changes occurred)
-            df_file = changed_df[changed_df["file_path"] == fp]
-            file_changed_lns = set(df_file["line_number"])
-
+            # ---------- Finally, add one row per class context if it had any changes  ----------
+            file_changed_lns = set(changed_df[changed_df["file_path"] == fp]["line_number"])
             for cctx in class_contexts:
                 c_start, c_end = cctx["start_line"], cctx["end_line"]
                 class_span = c_end - c_start + 1
-                changed_in_class = {ln for ln in file_changed_lns if c_start <= ln <= c_end}
 
+                changed_in_class = {ln for ln in file_changed_lns if c_start <= ln <= c_end}
                 if not changed_in_class:
                     continue
 
-                removed_in_class = {ln for ln in df_file[df_file["change_type"] == "removed"]["line_number"]
-                                    if c_start <= ln <= c_end}
+                removed_in_class = {ln for ln in changed_df[
+                    (changed_df["file_path"] == fp) & 
+                    (changed_df["change_type"] == "removed")
+                ]["line_number"] if c_start <= ln <= c_end}
+
+                # Collect all diff_lines inside this class span
+                df_file = changed_df[changed_df["file_path"] == fp]
                 diff_lines_class = df_file[
                     (df_file["line_number"] >= c_start) & (df_file["line_number"] <= c_end)
                 ]["diff_line"].tolist()
@@ -252,49 +260,15 @@ class DiffProcessor:
                     "element_source": class_source
                 })
 
-            # Handle import/package separately (not associated with class)
-            global_elements = [ctx for ctx in contexts if ctx["type"] in ("import", "package")]
-            for gctx in global_elements:
-                g_start, g_end = gctx["start_line"], gctx["end_line"]
-                g_span = g_end - g_start + 1
-
-                g_changes = df_file[(df_file["line_number"] >= g_start) & (df_file["line_number"] <= g_end)]
-                if g_changes.empty:
-                    continue
-
-                removed_lines = g_changes[g_changes["change_type"] == "removed"]
-                added_lines = g_changes[g_changes["change_type"] == "added"]
-                diff_lines = g_changes["diff_line"].tolist()
-
-                if len(removed_lines) == g_span and not len(added_lines):
-                    change_type = "removed"
-                    source = None
-                elif len(added_lines) == g_span and not len(removed_lines):
-                    change_type = "added"
-                    source = "".join(full_source_lines[g_start - 1:g_end])
-                else:
-                    change_type = "modified"
-                    source = "".join(full_source_lines[g_start - 1:g_end])
-
-                all_records.append({
-                    "file_path": fp,
-                    "class_name": None,
-                    "element_type": gctx["type"],
-                    "element_name": gctx["element_name"],
-                    "change_type": change_type,
-                    "diff_lines": diff_lines,
-                    "element_source": source
-                })
-
-            return pd.DataFrame(all_records, columns=[
-                "file_path",
-                "class_name",
-                "element_type",
-                "element_name",
-                "change_type",
-                "diff_lines",
-                "element_source"
-            ])
+        return pd.DataFrame(all_records, columns=[
+            "file_path",
+            "class_name",
+            "element_type",
+            "element_name",
+            "change_type",
+            "diff_lines",
+            "element_source"
+        ])
 
     def _collect_changed_lines(self, diff_text: str) -> pd.DataFrame:
         records = []
