@@ -32,8 +32,8 @@ class DiffProcessor:
         """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text).copy()
-        print("Changed lines DataFrame:")
-        print(changed_df.to_string(index=False))
+        # print("Changed lines DataFrame:")
+        # print(changed_df.to_string(index=False))
         # Reconstruct each diff line with its prefix
         changed_df["diff_line"] = changed_df.apply(
             lambda row: ("+" + row["raw_text"]
@@ -50,15 +50,15 @@ class DiffProcessor:
                 continue
 
             full_disk = os.path.join(self.repo_root, fp)
-            if not os.path.exists(full_disk):
-                print(f"File not found: {full_disk}")
-            else:
-                with open(full_disk, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-                print(f"--- {fp} (lines 1400-1500) ---")
-                for idx in range(1400, 1501):
-                    if 1 <= idx <= len(lines):
-                        print(f"{idx:4}: {lines[idx - 1].rstrip()}")
+            # if not os.path.exists(full_disk):
+            #     print(f"File not found: {full_disk}")
+            # else:
+            #     with open(full_disk, "r", encoding="utf-8") as f:
+            #         lines = f.readlines()
+            #     print(f"--- {fp} (lines 1400-1500) ---")
+            #     for idx in range(1400, 1501):
+            #         if 1 <= idx <= len(lines):
+            #             print(f"{idx:4}: {lines[idx - 1].rstrip()}")
             try:
                 contexts = JavaContextExtractor.extract_context(full_disk)
                 full_source_lines = open(full_disk, "r", encoding="utf-8").readlines()
