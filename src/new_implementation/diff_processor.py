@@ -49,19 +49,19 @@ class DiffProcessor:
 
             for (class_name, elem_type, elem_name), info in groups.items():
                 change_type = info.get('computed_change_type')
-                if elem_type == 'method' and change_type == 'completely_removed':
-                    continue
                 elem_src = ''
-                if elem_type == 'method' and change_type != 'completely_removed':
-                    ctx = info.get('context')
-                    if ctx and file_lines:
-                        start, end = ctx.start_line, ctx.end_line
-                        elem_src = "\n".join(file_lines[start-1:end])
+                if elem_type == 'method':
+                    if change_type != 'completely_removed':
+                        ctx = info.get('context')
+                        if ctx and file_lines:
+                            start, end = ctx.start_line, ctx.end_line
+                            elem_src = "\n".join(file_lines[start-1:end])
                 elif elem_type == 'member_variable' and change_type != 'removed':
                     ctx = info.get('context')
                     if ctx and file_lines:
                         idx = ctx.start_line
                         elem_src = file_lines[idx-1]
+
                 records.append({
                     'file_path': fp,
                     'class_name': class_name,
@@ -107,6 +107,7 @@ class DiffProcessor:
                 continue
             if raw.startswith('--- '):
                 continue
+
             m = hunk_re.match(raw)
             if m and current_file:
                 running_old = int(m.group(1))
@@ -144,6 +145,7 @@ class DiffProcessor:
             return max(cands, key=lambda c: c.start_line) if cands else None
 
         grouped = {}
+        removed_method_ranges = {}
         for item in changes:
             old_ln = item['old_lineno']
             new_ln = item['new_lineno']
@@ -200,6 +202,7 @@ class DiffProcessor:
                         method_ctx = find_deepest_context(lookup_ln)
                         if method_ctx and method_ctx.type == 'method' and method_ctx.name == mname:
                             entry['context'] = method_ctx
+                            removed_method_ranges[key] = (method_ctx.start_line, method_ctx.end_line)
                 if prefix == '+': entry['add_sig'] = True
                 continue
 
@@ -227,7 +230,19 @@ class DiffProcessor:
                 if prefix == '+': entry['add_sig'] = True
                 continue
 
-            # BODY CHANGE INSIDE METHOD
+            # BODY CHANGE INSIDE METHOD: first check removed_method_ranges
+            assigned = False
+            if old_ln is not None:
+                for mkey, (start, end) in removed_method_ranges.items():
+                    if start <= old_ln <= end:
+                        entry = grouped.setdefault(mkey, grouped[mkey])
+                        entry['diff_lines'].append(raw_line)
+                        assigned = True
+                        break
+            if assigned:
+                continue
+
+            # Otherwise use context resolution for body change
             lookup_ln = old_ln if old_ln is not None else new_ln
             ctx = find_deepest_context(lookup_ln) if lookup_ln else None
             if not ctx: continue
@@ -246,16 +261,13 @@ class DiffProcessor:
                     'body_changes': [], 'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
-                entry['body_changes'].append(lookup_ln)
 
         # Compute change_type
         for key, info in grouped.items():
             elem_type = key[1]
             if elem_type == 'method':
-                # completely_removed if signature removed and no additions
                 if info['remove_sig'] and not info['add_sig']:
                     info['computed_change_type'] = 'completely_removed'
-                # completely_added if signature added and no removals
                 elif info['add_sig'] and not info['remove_sig']:
                     info['computed_change_type'] = 'completely_added'
                 else:
