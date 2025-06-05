@@ -90,7 +90,7 @@ class DiffProcessor:
 
                 for row in rows:
                     ln = row["line_number"]
-                    if prev_ln is None or ln == prev_ln + 1:
+                    if prev_ln is None or ln == prev_ln:
                         current_run.append(row)
                     else:
                         runs.append(current_run)
