@@ -190,6 +190,8 @@ class DiffProcessor:
 
                 ctx = contexts[idx_ctx]
                 element_type = ctx["type"]
+                if element_type == "class":
+                    continue
                 element_name = ctx["element_name"]
                 start_line = ctx["start_line"]
                 end_line = ctx["end_line"]
