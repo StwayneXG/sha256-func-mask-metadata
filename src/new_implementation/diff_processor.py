@@ -166,7 +166,26 @@ class DiffProcessor:
             return max(cands, key=lambda c: c.start_line) if cands else None
 
         grouped = {}
-        active_removal = {}  # file_path -> (method_key, brace_count)
+        removed_method_ranges = {}  # key -> (start_line, end_line)
+
+        # First pass: identify signature removals to populate removed_method_ranges
+        for item in changes:
+            raw_line = item['raw']
+            prefix = raw_line[0]
+            content = raw_line[1:].strip()
+            if prefix == '-' and MethodExtractor.is_function_line(content):
+                # Possible method signature removed
+                mname = MethodExtractor.extract_method_name(content) or 'N/A'
+                old_ln = item['old_lineno']
+                script_logger.debug(f"Checking for full removal of method signature: {content} at line {old_ln}")
+                parent = find_deepest_context(old_ln) if old_ln else None
+                while parent and parent.type not in ('class', 'enum'):
+                    parent = parent.parent
+                class_name = parent.name if parent and parent.type in ('class', 'enum') else ''
+                key = (class_name, 'method', mname)
+                if parent and parent.type == 'method' and parent.name == mname:
+                    removed_method_ranges[key] = (parent.start_line, parent.end_line)
+                    script_logger.debug(f"Marked method {key} as removed range {parent.start_line}-{parent.end_line}")
 
         for item in changes:
             old_ln = item['old_lineno']
@@ -177,20 +196,25 @@ class DiffProcessor:
             stripped = content.strip()
             script_logger.debug(f"Processing change line: {raw_line}")
 
-            # First, if active removal in process, assign to that method
-            if old_ln is not None and file_path in active_removal:
-                key, brace_count = active_removal[file_path]
-                script_logger.debug(f"Active removal in progress for {key}, appending line")
-                grouped[key]['diff_lines'].append(raw_line)
-                brace_delta = content.count('{') - content.count('}')
-                brace_count += brace_delta
-                script_logger.debug(f"Updated brace_count to {brace_count}")
-                if brace_count == 0:
-                    script_logger.debug(f"Completed removal of method {key}")
-                    del active_removal[file_path]
+            # If this removal falls in a removed_method_ranges, assign directly
+            if old_ln is not None:
+                for key, (start, end) in removed_method_ranges.items():
+                    if start <= old_ln <= end:
+                        entry = grouped.setdefault(key, {
+                            'diff_lines': [], 'context': None,
+                            'remove_sig': False, 'add_sig': False,
+                            'body_changes': [], 'change_types': set()
+                        })
+                        entry['diff_lines'].append(raw_line)
+                        entry['remove_sig'] = True
+                        entry['context'] = entry.get('context') or _Context('method', key[2], start, end, '', None)
+                        script_logger.debug(f"Assigned removal to fully removed method {key}")
+                        break
                 else:
-                    active_removal[file_path] = (key, brace_count)
-                continue
+                    # Not part of fully removed method, fall through
+                    pass
+                if key in grouped and start <= old_ln <= end:
+                    continue
 
             # IMPORT
             if stripped.startswith('import '):
@@ -225,7 +249,7 @@ class DiffProcessor:
                 entry['change_types'].add('modified')
                 continue
 
-            # METHOD SIGNATURE
+            # METHOD SIGNATURE (partial mod or addition)
             if MethodExtractor.is_function_line(stripped) and '(' in stripped:
                 script_logger.debug(f"Detected method signature change: {stripped}")
                 mname = MethodExtractor.extract_method_name(stripped) or 'N/A'
@@ -250,9 +274,6 @@ class DiffProcessor:
                         method_ctx = find_deepest_context(lookup_ln)
                         if method_ctx and method_ctx.type == 'method' and method_ctx.name == mname:
                             entry['context'] = method_ctx
-                            # start active removal: assume first brace encountered in signature
-                            active_removal[file_path] = (key, 1)
-                            script_logger.debug(f"Started active removal for {key} with initial brace_count 1")
                 if prefix == '+':
                     entry['add_sig'] = True
                     script_logger.debug("Method signature addition logged")
@@ -287,7 +308,7 @@ class DiffProcessor:
                     script_logger.debug("Member variable addition logged")
                 continue
 
-            # BODY CHANGE INSIDE METHOD (non-full removal)
+            # BODY CHANGE INSIDE METHOD (partial)
             script_logger.debug(f"Attempting body change assignment for line {raw_line}")
             lookup_ln = old_ln if old_ln is not None else new_ln
             ctx = find_deepest_context(lookup_ln) if lookup_ln else None
@@ -318,7 +339,7 @@ class DiffProcessor:
             elem_type = key[1]
             if elem_type == 'method':
                 script_logger.debug(f"Determining change_type for method {key}")
-                if info['remove_sig'] and not info['add_sig']:
+                if info['remove_sig'] and not info['add_sig'] and key in removed_method_ranges:
                     info['computed_change_type'] = 'completely_removed'
                     script_logger.debug(f"Method {key} labeled completely_removed")
                 elif info['add_sig'] and not info['remove_sig']:
