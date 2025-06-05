@@ -152,8 +152,8 @@ class JavaContextExtractor:
           - package declaration
           - import statements
           - class/interface/enum declarations (with extends/implements)
-          - method declarations (only name and span; no return_type/parameters)
-          - member variables (only name; no data_type)
+          - method declarations (only name and span)
+          - member variables (including multi-line declarations)
 
         Returns a list of dicts with keys:
           - element_name
@@ -166,44 +166,41 @@ class JavaContextExtractor:
         """
         context: List[Dict] = []
         in_block_comment = False
-
         with open(file_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
-        for idx, raw_line in enumerate(lines):
+        idx = 0
+        while idx < len(lines):
+            raw_line = lines[idx]
             line = raw_line
 
-            # 1) If we are currently inside a block comment, look for closing '*/'
+            # 1) If inside a block comment, skip until "*/"
             if in_block_comment:
                 if "*/" in line:
-                    # Remove up through '*/' then continue processing remainder
                     line = line.split("*/", 1)[1]
                     in_block_comment = False
                 else:
-                    # Entire line is inside block comment → skip
+                    idx += 1
                     continue
 
-            # 2) Remove any new block comment sections in this line
+            # 2) Strip any new /* */ blocks on this line
             while "/*" in line:
                 start = line.find("/*")
                 end = line.find("*/", start + 2)
                 if end != -1:
-                    # Remove from '/*' through '*/'
                     line = line[:start] + line[end + 2:]
-                    continue  # Continue in case of multiple /*...*/ on one line
                 else:
-                    # Remove from '/*' to end, set in_block_comment, break
                     line = line[:start]
                     in_block_comment = True
                     break
 
-            # 3) Remove inline '//' comments
+            # 3) Strip inline //
             if "//" in line:
                 line = line.split("//", 1)[0]
 
-            # Now `line` has no comments. Work with trimmed version:
             stripped = line.strip()
             if not stripped:
+                idx += 1
                 continue
 
             # 4) package declaration
@@ -217,6 +214,7 @@ class JavaContextExtractor:
                     "extends": [],
                     "implements": []
                 })
+                idx += 1
                 continue
 
             # 5) import statement
@@ -230,9 +228,45 @@ class JavaContextExtractor:
                     "extends": [],
                     "implements": []
                 })
+                idx += 1
                 continue
 
-            # 6) member variable (field) declaration
+            # 6) Multi-line member variable (starts with visibility/static and contains "=", not ending with ";")
+            if any(k in stripped for k in ["private", "protected", "public", "static"]) \
+               and "=" in stripped and not stripped.endswith(";") \
+               and not cls._is_function_line(stripped):
+                # This is start of a multi-line field. Find semicolon end.
+                start_idx = idx
+                var_line = stripped
+                # Extract variable name from this start line
+                var_name = cls._extract_variable_name(stripped)
+
+                # Now find the line where declaration ends (first ";" outside comments)
+                end_idx = idx
+                while end_idx < len(lines):
+                    check_line = lines[end_idx]
+                    # Strip comments from check_line
+                    temp = check_line
+                    if "/*" in temp:
+                        temp = temp.split("/*", 1)[0]
+                    if "//" in temp:
+                        temp = temp.split("//", 1)[0]
+                    if ";" in temp:
+                        break
+                    end_idx += 1
+
+                context.append({
+                    "element_name": var_name,
+                    "type": "member_variable",
+                    "start_line": start_idx + 1,
+                    "end_line": end_idx + 1,
+                    "extends": [],
+                    "implements": []
+                })
+                idx = end_idx + 1
+                continue
+
+            # 7) Single-line member variable
             if cls._is_member_variable(stripped):
                 var_name = cls._extract_variable_name(stripped)
                 context.append({
@@ -243,11 +277,11 @@ class JavaContextExtractor:
                     "extends": [],
                     "implements": []
                 })
+                idx += 1
                 continue
 
-            # 7) class / interface / enum / method declarations
+            # 8) class / interface / enum / method declarations
             if cls._is_function_line(stripped):
-                # Determine whether it's a class/interface/enum or a method
                 if re.search(r'\bclass\b', stripped):
                     decl_type = "class"
                 elif re.search(r'\binterface\b', stripped):
@@ -263,7 +297,6 @@ class JavaContextExtractor:
                 extends_list = []
                 implements_list = []
 
-                # Parse extends/implements for class/interface/enum
                 if decl_type in ("class", "interface", "enum"):
                     type_pattern = (
                         r'\b(?:class|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)'
@@ -287,7 +320,6 @@ class JavaContextExtractor:
                         "implements": implements_list
                     })
                 else:
-                    # It's a method declaration; record only name and span
                     context.append({
                         "element_name": elem_name,
                         "type": "method",
@@ -296,7 +328,9 @@ class JavaContextExtractor:
                         "extends": [],
                         "implements": []
                     })
-
+                idx += 1
                 continue
+
+            idx += 1
 
         return context
