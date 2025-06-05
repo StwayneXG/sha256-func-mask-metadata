@@ -86,23 +86,20 @@ class DiffProcessor:
                 rows = removed_only.to_dict("records")
                 runs: List[List[Dict]] = []
                 current_run: List[Dict] = []
+                prev_ln = None
 
                 for row in rows:
-                    if not current_run:
+                    ln = row["line_number"]
+                    if prev_ln is None or ln == prev_ln:
                         current_run.append(row)
                     else:
-                        # Since removed lines all share same line_number, group by physical diff order
-                        prev_idx = rows.index(current_run[-1])
-                        curr_idx = rows.index(row)
-                        if curr_idx == prev_idx + 1:
-                            current_run.append(row)
-                        else:
-                            runs.append(current_run)
-                            current_run = [row]
+                        runs.append(current_run)
+                        current_run = [row]
+                    prev_ln = ln
                 if current_run:
                     runs.append(current_run)
 
-                # For each run of consecutive removed lines, see if it covers exactly one method
+                # For each run of removed lines with same line_number
                 for run in runs:
                     sig_idx = None
                     for i, r in enumerate(run):
@@ -113,14 +110,10 @@ class DiffProcessor:
                     if sig_idx is None:
                         continue
 
-                    # Since all line_numbers are the same, just take it from the first row
-                    run_line_number = run[0]["line_number"]
-                    run_len = len(run)
-
-                    # Now count braces from sig_idx onward (within the run) to find body end
+                    # Now count braces from sig_idx onward (within the run) to verify full method body
                     brace_balance = 0
                     found_start_brace = False
-                    local_end_idx = None
+                    valid_block = False
 
                     for i in range(sig_idx, len(run)):
                         t = run[i]["raw_text"]
@@ -135,20 +128,20 @@ class DiffProcessor:
                             elif ch == "}":
                                 brace_balance -= 1
                                 if found_start_brace and brace_balance == 0:
-                                    local_end_idx = i
+                                    valid_block = True
                                     break
-                        if local_end_idx is not None:
+                        if valid_block:
                             break
 
-                    # If the body ends at the last line of the run, we assume full-method removal
-                    if local_end_idx is not None and (local_end_idx == run_len - 1):
+                    # Only add method if we found a complete code block (opened and closed properly)
+                    if valid_block:
                         sig_text = run[sig_idx]["raw_text"].strip()
                         method_name = JavaContextExtractor._extract_method_name(sig_text)
 
                         # Find enclosing class
                         class_name = None
                         for parent_ctx in class_contexts:
-                            if parent_ctx["start_line"] <= run_line_number <= parent_ctx["end_line"]:
+                            if parent_ctx["start_line"] <= run[0]["line_number"] <= parent_ctx["end_line"]:
                                 class_name = parent_ctx["element_name"]
                                 break
 
