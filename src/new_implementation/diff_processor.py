@@ -214,7 +214,7 @@ class DiffProcessor:
 
                 all_records.append({
                     "file_path": fp,
-                    "class_name": class_name,
+                    "class_name": class_name if element_type != "class" else None,
                     "element_type": element_type,
                     "element_name": element_name,
                     "change_type": overall_type,
