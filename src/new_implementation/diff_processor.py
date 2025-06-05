@@ -12,32 +12,21 @@ script_logger = logging.getLogger("diff_processor")
 class DiffProcessor:
     """
     Parses a unified diff and produces a DataFrame of changed elements
-    (class, enum, method, or member_variable).  Each element row includes
+    (class, enum, method, member_variable, or import).  Each element row includes
     the full source body of that element as 'element_source'.
 
-    For methods, change_type becomes one of:
-      - completely_added   (method signature + entire body added)
-      - completely_removed (entire original method signature + body removed)
-      - modified           (any partial changes inside a method)
+    For methods, change_type becomes:
+      - completely_added   (signature added, no removals)
+      - completely_removed (signature removed, no additions)
+      - modified           (any mixed or partial changes)
     """
 
     def __init__(self, repo_root: str):
         self.repo_root = repo_root
 
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
-        """
-        Main entry point.  Returns a pandas DataFrame with columns:
-          - file_path
-          - class_name
-          - element_type    (class | enum | method | member_variable | import)
-          - element_name
-          - change_type     (added | removed | modified for non-methods; for methods: completely_added | completely_removed | modified)
-          - diff_lines      (list of +/− lines)
-          - element_source  (full source code for methods and member_variables, empty for others)
-        """
         per_file_changes = self._collect_changed_lines(diff_text)
 
-        # Build contexts
         file_to_contexts = {}
         for fp in per_file_changes:
             full_disk = os.path.join(self.repo_root, fp)
@@ -62,7 +51,6 @@ class DiffProcessor:
                 change_type = info.get('computed_change_type')
                 if elem_type == 'method' and change_type == 'completely_removed':
                     continue
-
                 elem_src = ''
                 if elem_type == 'method' and change_type != 'completely_removed':
                     ctx = info.get('context')
@@ -74,8 +62,6 @@ class DiffProcessor:
                     if ctx and file_lines:
                         idx = ctx.start_line
                         elem_src = file_lines[idx-1]
-                # imports have no source
-
                 records.append({
                     'file_path': fp,
                     'class_name': class_name,
@@ -93,10 +79,6 @@ class DiffProcessor:
         return df
 
     def _collect_changed_lines(self, diff_text: str):
-        """
-        Parse unified diff into file_path → list of {old_lineno, new_lineno, raw}.
-        Skip metadata.  Keep import changes.
-        """
         per_file_changes = defaultdict(list)
         current_file = None
         running_old = None
@@ -113,7 +95,6 @@ class DiffProcessor:
                 continue
             if raw.startswith('\\ No newline at end of file'):
                 continue
-
             if raw.startswith('+++ '):
                 path = raw[4:].strip()
                 if path != '/dev/null':
@@ -126,22 +107,18 @@ class DiffProcessor:
                 continue
             if raw.startswith('--- '):
                 continue
-
             m = hunk_re.match(raw)
             if m and current_file:
                 running_old = int(m.group(1))
                 running_new = int(m.group(2))
                 in_hunk = True
                 continue
-
             if not in_hunk or not current_file:
                 continue
-
             if raw.startswith(' '):
                 running_old += 1
                 running_new += 1
                 continue
-
             prefix = raw[0]
             if prefix == '-':
                 per_file_changes[current_file].append({
@@ -159,13 +136,9 @@ class DiffProcessor:
                 running_new += 1
             else:
                 script_logger.debug(f"Unexpected line in hunk: {raw}")
-
         return per_file_changes
 
     def _group_changes_for_file(self, file_path, changes, contexts):
-        """
-        Group changed lines into elements; classify methods correctly.
-        """
         def find_deepest_context(line_no):
             cands = [c for c in contexts if c.start_line <= line_no <= c.end_line]
             return max(cands, key=lambda c: c.start_line) if cands else None
@@ -185,13 +158,11 @@ class DiffProcessor:
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
-                    'body_changes': [], 'change_types': set()
+                    'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
-                if prefix == '+':
-                    entry['add_sig'] = True
-                elif prefix == '-':
-                    entry['remove_sig'] = True
+                if prefix == '+': entry['add_sig'] = True
+                if prefix == '-': entry['remove_sig'] = True
                 continue
 
             # CLASS/ENUM
@@ -202,7 +173,7 @@ class DiffProcessor:
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
-                    'body_changes': [], 'change_types': set()
+                    'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
                 entry['change_types'].add('modified')
@@ -229,8 +200,7 @@ class DiffProcessor:
                         method_ctx = find_deepest_context(lookup_ln)
                         if method_ctx and method_ctx.type == 'method' and method_ctx.name == mname:
                             entry['context'] = method_ctx
-                elif prefix == '+':
-                    entry['add_sig'] = True
+                if prefix == '+': entry['add_sig'] = True
                 continue
 
             # MEMBER VARIABLE
@@ -245,7 +215,7 @@ class DiffProcessor:
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
-                    'body_changes': [], 'change_types': set()
+                    'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
                 if prefix == '-':
@@ -254,15 +224,13 @@ class DiffProcessor:
                         field_ctx = find_deepest_context(lookup_ln)
                         if field_ctx and field_ctx.type == 'member_variable' and field_ctx.name == varname:
                             entry['context'] = field_ctx
-                elif prefix == '+':
-                    entry['add_sig'] = True
+                if prefix == '+': entry['add_sig'] = True
                 continue
 
             # BODY CHANGE INSIDE METHOD
             lookup_ln = old_ln if old_ln is not None else new_ln
             ctx = find_deepest_context(lookup_ln) if lookup_ln else None
-            if not ctx:
-                continue
+            if not ctx: continue
             c = ctx
             while c and c.type != 'method':
                 c = c.parent
@@ -278,22 +246,17 @@ class DiffProcessor:
                     'body_changes': [], 'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
-                entry['body_changes'].append(old_ln)
+                entry['body_changes'].append(lookup_ln)
 
         # Compute change_type
         for key, info in grouped.items():
             elem_type = key[1]
             if elem_type == 'method':
-                ctx = info.get('context')
-                if ctx:
-                    orig_range = set(range(ctx.start_line, ctx.end_line + 1))
-                    removed_set = set(info.get('body_changes', [])) | (set([ctx.start_line]) if info['remove_sig'] else set())
-                    # completely removed if all original lines removed and no additions
-                    if info['remove_sig'] and not info['add_sig'] and removed_set >= orig_range:
-                        info['computed_change_type'] = 'completely_removed'
-                        continue
-                # check added
-                if info['add_sig'] and not info['remove_sig'] and ctx is None:
+                # completely_removed if signature removed and no additions
+                if info['remove_sig'] and not info['add_sig']:
+                    info['computed_change_type'] = 'completely_removed'
+                # completely_added if signature added and no removals
+                elif info['add_sig'] and not info['remove_sig']:
                     info['computed_change_type'] = 'completely_added'
                 else:
                     info['computed_change_type'] = 'modified'
