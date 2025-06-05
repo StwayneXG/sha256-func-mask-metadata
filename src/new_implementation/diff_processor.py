@@ -12,7 +12,7 @@ script_logger = logging.getLogger("diff_processor")
 class DiffProcessor:
     """
     Parses a unified diff and produces a DataFrame of changed elements
-    (class, enum, method, member_variable, or import).  Each element row includes
+    (class, enum, method, member_variable, or import). Each element row includes
     the full source body of that element as 'element_source'.
 
     For methods, change_type becomes:
@@ -25,20 +25,24 @@ class DiffProcessor:
         self.repo_root = repo_root
 
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
+        script_logger.debug("Starting parse_diff_to_dataframe")
         per_file_changes = self._collect_changed_lines(diff_text)
 
         file_to_contexts = {}
         for fp in per_file_changes:
+            script_logger.debug(f"Building contexts for file: {fp}")
             full_disk = os.path.join(self.repo_root, fp)
             file_to_contexts[fp] = build_contexts_for_file(full_disk)
 
         grouped = {}
         for fp, changes in per_file_changes.items():
+            script_logger.debug(f"Grouping changes for file: {fp}")
             contexts = file_to_contexts.get(fp, [])
             grouped[fp] = self._group_changes_for_file(fp, changes, contexts)
 
         records = []
         for fp, groups in grouped.items():
+            script_logger.debug(f"Flattening grouped results for file: {fp}")
             full_disk = os.path.join(self.repo_root, fp)
             file_lines = []
             if os.path.isfile(full_disk):
@@ -51,16 +55,22 @@ class DiffProcessor:
                 change_type = info.get('computed_change_type')
                 elem_src = ''
                 if elem_type == 'method':
+                    script_logger.debug(f"Processing method '{elem_name}' with change_type '{change_type}'")
                     if change_type != 'completely_removed':
                         ctx = info.get('context')
                         if ctx and file_lines:
                             start, end = ctx.start_line, ctx.end_line
                             elem_src = "\n".join(file_lines[start-1:end])
                 elif elem_type == 'member_variable' and change_type != 'removed':
+                    script_logger.debug(f"Processing member_variable '{elem_name}' with change_type '{change_type}'")
                     ctx = info.get('context')
                     if ctx and file_lines:
                         idx = ctx.start_line
                         elem_src = file_lines[idx-1]
+                elif elem_type == 'import':
+                    script_logger.debug(f"Processing import '{elem_name}' with change_type '{change_type}'")
+                else:
+                    script_logger.debug(f"Processing {elem_type} '{elem_name}' with change_type '{change_type}'")
 
                 records.append({
                     'file_path': fp,
@@ -76,9 +86,11 @@ class DiffProcessor:
             'file_path', 'class_name', 'element_type',
             'element_name', 'change_type', 'diff_lines', 'element_source'
         ])
+        script_logger.debug("parse_diff_to_dataframe complete")
         return df
 
     def _collect_changed_lines(self, diff_text: str):
+        script_logger.debug("Starting _collect_changed_lines")
         per_file_changes = defaultdict(list)
         current_file = None
         running_old = None
@@ -87,7 +99,9 @@ class DiffProcessor:
         hunk_re = re.compile(r'^@@\s+-(\d+)(?:,\d+)?\s+\+(\d+)(?:,\d+)?\s+@@')
 
         for raw in diff_text.splitlines():
+            script_logger.debug(f"Reading diff line: {raw}")
             if raw.startswith('diff --git '):
+                script_logger.debug("Found diff header, resetting current_file and in_hunk")
                 current_file = None
                 in_hunk = False
                 continue
@@ -97,9 +111,11 @@ class DiffProcessor:
                 continue
             if raw.startswith('+++ '):
                 path = raw[4:].strip()
+                script_logger.debug(f"Processing file header +++: {path}")
                 if path != '/dev/null':
                     current_file = path
                     per_file_changes[current_file] = []
+                    script_logger.debug(f"Set current_file to {current_file}")
                 else:
                     script_logger.warning(f"Entire file deleted or /dev/null: {raw}")
                     current_file = None
@@ -113,6 +129,7 @@ class DiffProcessor:
                 running_old = int(m.group(1))
                 running_new = int(m.group(2))
                 in_hunk = True
+                script_logger.debug(f"Starting hunk: old={running_old}, new={running_new} in {current_file}")
                 continue
             if not in_hunk or not current_file:
                 continue
@@ -122,6 +139,7 @@ class DiffProcessor:
                 continue
             prefix = raw[0]
             if prefix == '-':
+                script_logger.debug(f"Recording removal at old_lineno={running_old}: {raw}")
                 per_file_changes[current_file].append({
                     'old_lineno': running_old,
                     'new_lineno': None,
@@ -129,6 +147,7 @@ class DiffProcessor:
                 })
                 running_old += 1
             elif prefix == '+':
+                script_logger.debug(f"Recording addition at new_lineno={running_new}: {raw}")
                 per_file_changes[current_file].append({
                     'old_lineno': None,
                     'new_lineno': running_new,
@@ -137,9 +156,11 @@ class DiffProcessor:
                 running_new += 1
             else:
                 script_logger.debug(f"Unexpected line in hunk: {raw}")
+        script_logger.debug("_collect_changed_lines complete")
         return per_file_changes
 
     def _group_changes_for_file(self, file_path, changes, contexts):
+        script_logger.debug(f"Starting _group_changes_for_file for {file_path}")
         def find_deepest_context(line_no):
             cands = [c for c in contexts if c.start_line <= line_no <= c.end_line]
             return max(cands, key=lambda c: c.start_line) if cands else None
@@ -154,14 +175,18 @@ class DiffProcessor:
             prefix = raw_line[0]
             content = raw_line[1:].rstrip()
             stripped = content.strip()
+            script_logger.debug(f"Processing change line: {raw_line}")
 
             # First, if active removal in process, assign to that method
             if old_ln is not None and file_path in active_removal:
                 key, brace_count = active_removal[file_path]
+                script_logger.debug(f"Active removal in progress for {key}, appending line")
                 grouped[key]['diff_lines'].append(raw_line)
-                # Update brace count ignoring comments/strings
-                brace_count += content.count('{') - content.count('}')
+                brace_delta = content.count('{') - content.count('}')
+                brace_count += brace_delta
+                script_logger.debug(f"Updated brace_count to {brace_count}")
                 if brace_count == 0:
+                    script_logger.debug(f"Completed removal of method {key}")
                     del active_removal[file_path]
                 else:
                     active_removal[file_path] = (key, brace_count)
@@ -169,6 +194,7 @@ class DiffProcessor:
 
             # IMPORT
             if stripped.startswith('import '):
+                script_logger.debug(f"Detected import change: {stripped}")
                 key = ('', 'import', stripped)
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
@@ -176,13 +202,18 @@ class DiffProcessor:
                     'body_changes': [], 'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
-                if prefix == '+': entry['add_sig'] = True
-                if prefix == '-': entry['remove_sig'] = True
+                if prefix == '+':
+                    entry['add_sig'] = True
+                    script_logger.debug("Import addition logged")
+                if prefix == '-':
+                    entry['remove_sig'] = True
+                    script_logger.debug("Import removal logged")
                 continue
 
             # CLASS/ENUM
             if (stripped.startswith('class ') or ' class ' in stripped or
                 stripped.startswith('enum ') or ' enum ' in stripped):
+                script_logger.debug(f"Detected class/enum change: {stripped}")
                 name = MethodExtractor.extract_method_name(stripped) or 'N/A'
                 key = (name, 'class', name)
                 entry = grouped.setdefault(key, {
@@ -196,13 +227,16 @@ class DiffProcessor:
 
             # METHOD SIGNATURE
             if MethodExtractor.is_function_line(stripped) and '(' in stripped:
+                script_logger.debug(f"Detected method signature change: {stripped}")
                 mname = MethodExtractor.extract_method_name(stripped) or 'N/A'
                 lookup_ln = old_ln if old_ln is not None else new_ln
+                script_logger.debug(f"Looking up context at line {lookup_ln}")
                 parent = find_deepest_context(lookup_ln) if lookup_ln else None
                 while parent and parent.type not in ('class', 'enum'):
                     parent = parent.parent
                 class_name = parent.name if parent and parent.type in ('class', 'enum') else ''
                 key = (class_name, 'method', mname)
+                script_logger.debug(f"Mapped signature to method key: {key}")
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
@@ -211,17 +245,22 @@ class DiffProcessor:
                 entry['diff_lines'].append(raw_line)
                 if prefix == '-':
                     entry['remove_sig'] = True
+                    script_logger.debug("Method signature removal logged")
                     if lookup_ln:
                         method_ctx = find_deepest_context(lookup_ln)
                         if method_ctx and method_ctx.type == 'method' and method_ctx.name == mname:
                             entry['context'] = method_ctx
-                            # start active removal: brace_count starts at 1 for '{'
+                            # start active removal: assume first brace encountered in signature
                             active_removal[file_path] = (key, 1)
-                if prefix == '+': entry['add_sig'] = True
+                            script_logger.debug(f"Started active removal for {key} with initial brace_count 1")
+                if prefix == '+':
+                    entry['add_sig'] = True
+                    script_logger.debug("Method signature addition logged")
                 continue
 
             # MEMBER VARIABLE
             if MethodExtractor.is_member_variable(stripped):
+                script_logger.debug(f"Detected member variable change: {stripped}")
                 varname = MethodExtractor.extract_variable_name(stripped) or 'N/A'
                 lookup_ln = old_ln if old_ln is not None else new_ln
                 parent = find_deepest_context(lookup_ln) if lookup_ln else None
@@ -229,6 +268,7 @@ class DiffProcessor:
                     parent = parent.parent
                 class_name = parent.name if parent and parent.type in ('class', 'enum') else ''
                 key = (class_name, 'member_variable', varname)
+                script_logger.debug(f"Mapped field to key: {key}")
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
@@ -237,17 +277,23 @@ class DiffProcessor:
                 entry['diff_lines'].append(raw_line)
                 if prefix == '-':
                     entry['remove_sig'] = True
+                    script_logger.debug("Member variable removal logged")
                     if lookup_ln:
                         field_ctx = find_deepest_context(lookup_ln)
                         if field_ctx and field_ctx.type == 'member_variable' and field_ctx.name == varname:
                             entry['context'] = field_ctx
-                if prefix == '+': entry['add_sig'] = True
+                if prefix == '+':
+                    entry['add_sig'] = True
+                    script_logger.debug("Member variable addition logged")
                 continue
 
             # BODY CHANGE INSIDE METHOD (non-full removal)
+            script_logger.debug(f"Attempting body change assignment for line {raw_line}")
             lookup_ln = old_ln if old_ln is not None else new_ln
             ctx = find_deepest_context(lookup_ln) if lookup_ln else None
-            if not ctx: continue
+            if not ctx:
+                script_logger.debug("No context found for body change line")
+                continue
             c = ctx
             while c and c.type != 'method':
                 c = c.parent
@@ -257,6 +303,7 @@ class DiffProcessor:
                     class_parent = class_parent.parent
                 class_name = class_parent.name if class_parent and class_parent.type in ('class', 'enum') else ''
                 key = (class_name, 'method', c.name)
+                script_logger.debug(f"Assigning body change to method {key}")
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': c,
                     'remove_sig': False, 'add_sig': False,
@@ -266,24 +313,33 @@ class DiffProcessor:
                 entry['body_changes'].append(lookup_ln)
 
         # Compute change_type
+        script_logger.debug("Computing final change types for grouped elements")
         for key, info in grouped.items():
             elem_type = key[1]
             if elem_type == 'method':
+                script_logger.debug(f"Determining change_type for method {key}")
                 if info['remove_sig'] and not info['add_sig']:
                     info['computed_change_type'] = 'completely_removed'
+                    script_logger.debug(f"Method {key} labeled completely_removed")
                 elif info['add_sig'] and not info['remove_sig']:
                     info['computed_change_type'] = 'completely_added'
+                    script_logger.debug(f"Method {key} labeled completely_added")
                 else:
                     info['computed_change_type'] = 'modified'
+                    script_logger.debug(f"Method {key} labeled modified")
             elif elem_type == 'import':
+                script_logger.debug(f"Determining change_type for import {key[2]}")
                 adds = info['add_sig']
                 removes = info['remove_sig']
                 if adds and not removes:
                     info['computed_change_type'] = 'added'
+                    script_logger.debug("Import labeled added")
                 elif removes and not adds:
                     info['computed_change_type'] = 'removed'
+                    script_logger.debug("Import labeled removed")
                 else:
                     info['computed_change_type'] = 'modified'
+                    script_logger.debug("Import labeled modified")
             else:
                 adds = any(l.startswith('+') for l in info['diff_lines'])
                 removes = any(l.startswith('-') for l in info['diff_lines'])
@@ -294,4 +350,7 @@ class DiffProcessor:
                 else:
                     info['computed_change_type'] = 'modified'
 
+        script_logger.debug(f"_group_changes_for_file complete for {file_path}")
         return grouped
+
+    # Consider adding more helper methods if needed for clarity
