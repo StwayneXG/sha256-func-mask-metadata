@@ -7,27 +7,21 @@ class JavaContextExtractor:
     """
     - Contains helper methods to detect class/interface/enum/method/field lines.
     - Provides a single entry point, `extract_context`, which reads a .java file
-      line by line and returns a list of declaration‐dicts.
+      line by line and returns a list of declaration‐dicts without extra fields.
     """
-
-    # ------------------------------------------------------------
-    # Part A: “MethodExtractor” logic stays here as static methods
-    # ------------------------------------------------------------
 
     @staticmethod
     def _is_function_line(line: str) -> bool:
         """Return True if 'line' looks like a method/constructor or class/interface/enum declaration."""
         trimmed = line.strip()
-        if trimmed.startswith("//"):
+        if not trimmed:
             return False
-
         # Method or constructor: must have “(” and one of the visibility/return keywords
         if "(" in trimmed and any(k in trimmed for k in ["private", "protected", "public", "static", "void"]):
             # Exclude field‐style lines that end with ";" and contain no "="
             if trimmed.endswith(";"):
                 return False
-            pre_comment = trimmed.split("//")[0].strip()
-            if "=" in pre_comment:
+            if "=" in trimmed.split("//")[0].strip():
                 return False
             return True
 
@@ -39,8 +33,7 @@ class JavaContextExtractor:
         ):
             if trimmed.endswith(";"):
                 return False
-            pre_comment = trimmed.split("//")[0].strip()
-            if "=" in pre_comment:
+            if "=" in trimmed.split("//")[0].strip():
                 return False
             return True
 
@@ -152,19 +145,15 @@ class JavaContextExtractor:
 
         return None
 
-    # ------------------------------------------------------------
-    # Part B: “extract_context” is now an instance (or static) method
-    # ------------------------------------------------------------
-
     @classmethod
     def extract_context(cls, file_path: str) -> List[Dict]:
         """
-        Read `file_path` line by line and extract:
+        Read `file_path` line by line, strip comments (// and /* */), and extract:
           - package declaration
           - import statements
           - class/interface/enum declarations (with extends/implements)
-          - method declarations (with return_type, parameters, and body end‐line)
-          - member variables (field name + data_type)
+          - method declarations (only name and span; no return_type/parameters)
+          - member variables (only name; no data_type)
 
         Returns a list of dicts with keys:
           - element_name
@@ -174,18 +163,50 @@ class JavaContextExtractor:
           - end_line           (1-based; same as start_line for single‐line items)
           - extends            (list[str], only for class/interface/enum)
           - implements         (list[str], only for class/interface/enum)
-          - return_type        (str or None, only for methods)
-          - parameters         (List[Tuple[str,str]], method params)
-          - data_type          (str or None, only for member_variable)
         """
         context: List[Dict] = []
+        in_block_comment = False
+
         with open(file_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
         for idx, raw_line in enumerate(lines):
-            stripped = raw_line.strip()
+            line = raw_line
 
-            # 1) package declaration
+            # 1) If we are currently inside a block comment, look for closing '*/'
+            if in_block_comment:
+                if "*/" in line:
+                    # Remove up through '*/' then continue processing remainder
+                    line = line.split("*/", 1)[1]
+                    in_block_comment = False
+                else:
+                    # Entire line is inside block comment → skip
+                    continue
+
+            # 2) Remove any new block comment sections in this line
+            while "/*" in line:
+                start = line.find("/*")
+                end = line.find("*/", start + 2)
+                if end != -1:
+                    # Remove from '/*' through '*/'
+                    line = line[:start] + line[end + 2:]
+                    continue  # Continue in case of multiple /*...*/ on one line
+                else:
+                    # Remove from '/*' to end, set in_block_comment, break
+                    line = line[:start]
+                    in_block_comment = True
+                    break
+
+            # 3) Remove inline '//' comments
+            if "//" in line:
+                line = line.split("//", 1)[0]
+
+            # Now `line` has no comments. Work with trimmed version:
+            stripped = line.strip()
+            if not stripped:
+                continue
+
+            # 4) package declaration
             if stripped.startswith("package ") and stripped.endswith(";"):
                 pkg_name = stripped[len("package "):-1].strip()
                 context.append({
@@ -194,14 +215,11 @@ class JavaContextExtractor:
                     "start_line": idx + 1,
                     "end_line": idx + 1,
                     "extends": [],
-                    "implements": [],
-                    "return_type": None,
-                    "parameters": [],
-                    "data_type": None
+                    "implements": []
                 })
                 continue
 
-            # 2) import statement
+            # 5) import statement
             if stripped.startswith("import ") and stripped.endswith(";"):
                 imp_name = stripped[len("import "):-1].strip()
                 context.append({
@@ -210,37 +228,26 @@ class JavaContextExtractor:
                     "start_line": idx + 1,
                     "end_line": idx + 1,
                     "extends": [],
-                    "implements": [],
-                    "return_type": None,
-                    "parameters": [],
-                    "data_type": None
+                    "implements": []
                 })
                 continue
 
-            # 3) member variable (field) declaration
-            if cls._is_member_variable(raw_line):
-                var_name = cls._extract_variable_name(raw_line)
-                # Extract data_type as the token before var_name (naive approach)
-                left_side = raw_line.strip().split("=")[0].strip().rstrip(";")
-                tokens = left_side.split()
-                data_type = tokens[-2] if len(tokens) >= 2 else None
-
+            # 6) member variable (field) declaration
+            if cls._is_member_variable(stripped):
+                var_name = cls._extract_variable_name(stripped)
                 context.append({
                     "element_name": var_name,
                     "type": "member_variable",
                     "start_line": idx + 1,
                     "end_line": idx + 1,
                     "extends": [],
-                    "implements": [],
-                    "return_type": None,
-                    "parameters": [],
-                    "data_type": data_type
+                    "implements": []
                 })
                 continue
 
-            # 4) class / interface / enum / method declarations
-            if cls._is_function_line(raw_line):
-                # Decide whether this is a class/interface/enum or a method
+            # 7) class / interface / enum / method declarations
+            if cls._is_function_line(stripped):
+                # Determine whether it's a class/interface/enum or a method
                 if re.search(r'\bclass\b', stripped):
                     decl_type = "class"
                 elif re.search(r'\binterface\b', stripped):
@@ -250,17 +257,13 @@ class JavaContextExtractor:
                 else:
                     decl_type = "method"
 
-                elem_name = cls._extract_method_name(raw_line)
-                # Find where the corresponding “}” lives
+                elem_name = cls._extract_method_name(stripped)
                 end_line = cls._find_body_end(idx, 0, lines) or (idx + 1)
 
                 extends_list = []
                 implements_list = []
-                return_type = None
-                parameters: List[tuple] = []
-                data_type = None
 
-                # If class/interface/enum, parse extends/implements
+                # Parse extends/implements for class/interface/enum
                 if decl_type in ("class", "interface", "enum"):
                     type_pattern = (
                         r'\b(?:class|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)'
@@ -281,39 +284,17 @@ class JavaContextExtractor:
                         "start_line": idx + 1,
                         "end_line": end_line,
                         "extends": extends_list,
-                        "implements": implements_list,
-                        "return_type": None,
-                        "parameters": [],
-                        "data_type": None
+                        "implements": implements_list
                     })
                 else:
-                    # It’s a method/constructor
-                    method_regex = (
-                        r'^(?:public|protected|private|\s)*(?:static\s+)?([A-Za-z_<>\[\]]+)\s+'
-                        r'([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)'
-                    )
-                    m2 = re.search(method_regex, stripped)
-                    if m2:
-                        return_type = m2.group(1).strip()
-                        params_str = m2.group(3).strip()
-                        if params_str:
-                            for param in params_str.split(","):
-                                parts = param.strip().split()
-                                if len(parts) >= 2:
-                                    param_type = " ".join(parts[:-1])
-                                    param_name = parts[-1]
-                                    parameters.append((param_type, param_name))
-
+                    # It's a method declaration; record only name and span
                     context.append({
                         "element_name": elem_name,
                         "type": "method",
                         "start_line": idx + 1,
                         "end_line": end_line,
                         "extends": [],
-                        "implements": [],
-                        "return_type": return_type,
-                        "parameters": parameters,
-                        "data_type": None
+                        "implements": []
                     })
 
                 continue

@@ -49,32 +49,24 @@ class DiffProcessor:
             except FileNotFoundError:
                 script_logger.error(f"Could not read file: {full_disk}")
                 contexts = []
-
+            
             # ─── PRINT the “context” for debugging ───
-            # You said you only need to see this once, so we print every element neatly:
             script_logger.debug(f"--- Context for {fp} (start) ---")
             for elem in contexts:
-                # A simple, one-line summary per element dictionary:
                 summary = (
                     f"{elem['type']:15} | "
                     f"{elem['element_name']:25} | "
                     f"lines {elem['start_line']:3}–{elem['end_line']:3}"
                 )
-                # Append extends/implements if present
                 if elem["type"] in ("class", "interface", "enum"):
                     if elem["extends"]:
                         summary += f" | extends: {elem['extends']}"
                     if elem["implements"]:
                         summary += f" | implements: {elem['implements']}"
-                if elem["type"] == "method":
-                    summary += f" | return: {elem['return_type']}"
-                    if elem["parameters"]:
-                        summary += f" | params: {elem['parameters']}"
-                if elem["type"] == "member_variable":
-                    summary += f" | data_type: {elem['data_type']}"
 
                 script_logger.debug(summary)
             script_logger.debug(f"--- Context for {fp} (end) ---\n")
+            
         return file_to_contexts
 
         # Phase 3: group changes per file by element
