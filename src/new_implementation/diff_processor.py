@@ -183,6 +183,13 @@ class DiffProcessor:
                 )
                 context_changes[best_idx].append(change_row)
 
+            for idx, changes in context_changes.items():
+                if not changes:
+                    continue
+                ctx = contexts[idx]
+                print(f"\nContext {idx}: {ctx['type']} '{ctx['element_name']}' (lines {ctx['start_line']}-{ctx['end_line']})")
+                for chg in changes:
+                    print(f"  {chg['change_type']} line {chg['line_number']}: {chg['raw_text']}")
             # Build one record per context with remaining changes
             for idx_ctx, change_list in context_changes.items():
                 if not change_list:
@@ -190,8 +197,6 @@ class DiffProcessor:
 
                 ctx = contexts[idx_ctx]
                 element_type = ctx["type"]
-                if element_type == "class":
-                    continue
                 element_name = ctx["element_name"]
                 start_line = ctx["start_line"]
                 end_line = ctx["end_line"]
