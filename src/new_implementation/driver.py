@@ -1,14 +1,20 @@
 import os
 import argparse
-import pandas as pd
-import logging
 from diff_processor import DiffProcessor
+import logging
 
-# Configure root logger to show messages from diff_processor
+# Configure root logger to show debug/warning messages from diff_processor
 logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
 logger = logging.getLogger("diff_processor")
 
 if __name__ == "__main__":
+    """
+    Example usage:
+      python driver.py \
+        --diff-file /root/data/Defects4J/project_diffs/Foo_123.diff \
+        --repo-root /home/irtaza11/myproject \
+        --out-csv changes.csv
+    """
     parser = argparse.ArgumentParser(
         description="Parse a unified diff and output a DataFrame of changed Java elements."
     )
@@ -42,7 +48,7 @@ if __name__ == "__main__":
     processor = DiffProcessor(repo_root=args.repo_root)
     df = processor.parse_diff_to_dataframe(diff_text)
 
-    # Print first few rows
+    # Print first few rows (now columns are file_path, class_name, element_type, element_name, change_type, diff_lines, element_source)
     logger.info("Parsed diff into DataFrame:")
     print(df.head(10).to_string(index=False))
 

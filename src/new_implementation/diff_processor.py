@@ -4,17 +4,16 @@ import logging
 import pandas as pd
 from collections import defaultdict
 
-# Import our helper modules
 from method_extractor import MethodExtractor
 from context_builder import build_contexts_for_file, _Context
 
-# Configure or get the same logger
 script_logger = logging.getLogger("diff_processor")
 
 class DiffProcessor:
     """
-    Parses a unified diff and produces a DataFrame of changed elements (class, method, member variable).
-    Each method row also includes the full source body of that method.
+    Parses a unified diff and produces a DataFrame of changed elements
+    (class, enum, method, or member_variable).  Each element row includes
+    the full source body of that element as 'element_source'.
     """
 
     def __init__(self, repo_root: str):
@@ -22,20 +21,19 @@ class DiffProcessor:
 
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
         """
-        Given a unified diff string (no a/ or b/ prefixes), return a DataFrame with columns:
+        Main entry point.  Returns a pandas DataFrame with columns:
           - file_path
-          - package
           - class_name
           - element_type    (class | enum | method | member_variable)
           - element_name
           - change_type     (added | removed | modified)
-          - diff_lines      (list of raw +/− lines)
-          - method_source   (full source code for methods, empty for others)
+          - diff_lines      (list of +/− lines)
+          - element_source  (full source code for methods and member_variables, empty for others)
         """
         # 1) Collect changed lines per file
         per_file_changes = self._collect_changed_lines(diff_text)
 
-        # 2) Build contexts per file using original Java files
+        # 2) Build contexts per file using the ORIGINAL Java file on disk
         file_to_contexts = {}
         for fp in per_file_changes:
             full_disk = os.path.join(self.repo_root, fp)
@@ -47,20 +45,19 @@ class DiffProcessor:
             contexts = file_to_contexts.get(fp, [])
             grouped[fp] = self._group_changes_for_file(fp, changes, contexts)
 
-        # 4) Flatten to records, add method_source for methods
+        # 4) Flatten grouped → list of records, then DataFrame
         records = []
         for fp, groups in grouped.items():
-            # For reading method source, load all lines once
+            # Preload the entire original file so we can extract element source
             full_disk = os.path.join(self.repo_root, fp)
             file_lines = []
             if os.path.isfile(full_disk):
                 with open(full_disk, 'r', encoding='utf-8') as f:
                     file_lines = f.read().splitlines()
             else:
-                script_logger.warning(f"Cannot open {full_disk} to extract method source.")
+                script_logger.warning(f"Cannot open {full_disk} to extract element source.")
 
             for (class_name, elem_type, elem_name), info in groups.items():
-                pkg = info['package']
                 cset = info['change_types']
                 if cset == {'added'}:
                     cfinal = 'added'
@@ -69,39 +66,48 @@ class DiffProcessor:
                 else:
                     cfinal = 'modified'
 
-                # Determine method_source if this is a method
-                method_src = ''
+                # Determine element_source for methods and member_variables
+                elem_src = ''
                 if elem_type == 'method':
-                    ctx = info.get('context')  # should be a _Context for the method
+                    ctx = info.get('context')  # Should be a _Context for that method
                     if ctx and file_lines:
                         start, end = ctx.start_line, ctx.end_line
-                        # Convert 1-based to 0-based list indices
-                        method_src = "\n".join(file_lines[start-1:end])
+                        elem_src = "\n".join(file_lines[start-1:end])
                     else:
                         script_logger.warning(f"No context or file lines for method {elem_name} in {fp}.")
-                        method_src = ''
+                        elem_src = ''
+                elif elem_type == 'member_variable':
+                    ctx = info.get('context')
+                    if ctx and file_lines:
+                        idx = ctx.start_line
+                        elem_src = file_lines[idx-1]
+                    else:
+                        script_logger.warning(f"No context or file lines for member_variable {elem_name} in {fp}.")
+                        elem_src = ''
 
                 records.append({
                     'file_path': fp,
-                    'package': pkg,
                     'class_name': class_name,
                     'element_type': elem_type,
                     'element_name': elem_name,
                     'change_type': cfinal,
                     'diff_lines': info['diff_lines'],
-                    'method_source': method_src
+                    'element_source': elem_src
                 })
 
         df = pd.DataFrame(records, columns=[
-            'file_path', 'package', 'class_name', 'element_type',
-            'element_name', 'change_type', 'diff_lines', 'method_source'
+            'file_path', 'class_name', 'element_type',
+            'element_name', 'change_type', 'diff_lines', 'element_source'
         ])
         return df
 
     def _collect_changed_lines(self, diff_text: str):
         """
-        Step 1: Parse diff_text to collect a list of changed lines for each file.
-        Returns: dict[file_path] -> list of dicts {old_lineno, new_lineno, raw}
+        Step 1: Parse the unified diff text into a dict:
+            file_path -> [ { old_lineno, new_lineno, raw } , ... ]
+
+        Skips any "import ..." additions/deletions.  Tracks running line counters
+        from the hunk headers ("@@ -a,b +c,d @@").
         """
         per_file_changes = defaultdict(list)
         current_file = None
@@ -122,6 +128,7 @@ class DiffProcessor:
                     current_file = None
                 in_hunk = False
                 continue
+
             if raw.startswith('--- '):
                 continue
 
@@ -151,6 +158,7 @@ class DiffProcessor:
                 else:
                     script_logger.debug(f"Ignoring import‐line removal: {raw[1:].strip()}")
                 running_old += 1
+
             elif prefix == '+':
                 if not raw.lstrip().startswith('+ import '):
                     per_file_changes[current_file].append({
@@ -161,6 +169,7 @@ class DiffProcessor:
                 else:
                     script_logger.debug(f"Ignoring import‐line addition: {raw[1:].strip()}")
                 running_new += 1
+
             else:
                 script_logger.debug(f"Unexpected line in hunk: {raw}")
 
@@ -168,21 +177,24 @@ class DiffProcessor:
 
     def _group_changes_for_file(self, file_path, changes, contexts):
         """
-        Step 3: Group changed lines by (class_name, element_type, element_name).
-        Skip any lines not in a class or method.  We only produce rows for:
+        Step 3: Given a list of changed lines (with old_lineno/new_lineno/raw)
+        plus the list of contexts from the original file, group all changed lines
+        into a dict:
+            (class_name, element_type, element_name) -> {
+                'change_types': set(...), 'diff_lines': [...], 'context': <_Context or None>
+            }
+
+        We only produce entries for:
           - class declarations
           - enum declarations
-          - method declarations or body changes
+          - method declarations or any change inside a method
           - member variable declarations
 
-        Returns a dict: key -> {
-            'package': ..., 'change_types': set(...), 'diff_lines': [...], 'context': <_Context or None>
-        }
-        where key = (class_name, element_type, element_name).
+        We skip lines that do not fall inside any class or method.
         """
         def find_deepest_context(line_no):
-            cands = [c for c in contexts if c.start_line <= line_no <= c.end_line]
-            return max(cands, key=lambda c: c.start_line) if cands else None
+            matches = [c for c in contexts if c.start_line <= line_no <= c.end_line]
+            return max(matches, key=lambda c: c.start_line) if matches else None
 
         grouped = {}
         for item in changes:
@@ -197,12 +209,9 @@ class DiffProcessor:
             if stripped.startswith('class ') or ' class ' in stripped or \
                stripped.startswith('enum ') or ' enum ' in stripped:
                 name = MethodExtractor.extract_method_name(stripped) or 'N/A'
-                pkg_ctx = next((c for c in contexts if c.type == 'package'), None)
-                pkg = pkg_ctx.name if pkg_ctx else ''
                 key = (name, 'class', name)
                 if key not in grouped:
                     grouped[key] = {
-                        'package': pkg,
                         'change_types': set(),
                         'diff_lines': [],
                         'context': None
@@ -216,21 +225,20 @@ class DiffProcessor:
                 mname = MethodExtractor.extract_method_name(stripped) or 'N/A'
                 lookup_ln = old_ln if old_ln is not None else new_ln
                 parent = find_deepest_context(lookup_ln) if lookup_ln else None
-                while parent and parent.type not in ('class', 'enum', 'package'):
+                while parent and parent.type not in ('class', 'enum'):
                     parent = parent.parent
                 class_name = parent.name if parent and parent.type in ('class', 'enum') else ''
-                pkg = parent.parent.name if (parent and parent.parent and parent.parent.type=='package') else ''
                 key = (class_name, 'method', mname)
                 if key not in grouped:
                     grouped[key] = {
-                        'package': pkg,
                         'change_types': set(),
                         'diff_lines': [],
                         'context': None
                     }
                 grouped[key]['change_types'].add(change_type)
                 grouped[key]['diff_lines'].append(raw_line)
-                # Also store the method's context if found in original
+
+                # Save the context if this method already exists in the original
                 if lookup_ln:
                     method_ctx = find_deepest_context(lookup_ln)
                     if method_ctx and method_ctx.type == 'method' and method_ctx.name == mname:
@@ -242,29 +250,32 @@ class DiffProcessor:
                 varname = MethodExtractor.extract_variable_name(stripped) or 'N/A'
                 lookup_ln = old_ln if old_ln is not None else new_ln
                 parent = find_deepest_context(lookup_ln) if lookup_ln else None
-                while parent and parent.type not in ('class', 'enum', 'package'):
+                while parent and parent.type not in ('class', 'enum'):
                     parent = parent.parent
                 class_name = parent.name if parent and parent.type in ('class', 'enum') else ''
-                pkg = parent.parent.name if (parent and parent.parent and parent.parent.type=='package') else ''
                 key = (class_name, 'member_variable', varname)
                 if key not in grouped:
                     grouped[key] = {
-                        'package': pkg,
                         'change_types': set(),
                         'diff_lines': [],
                         'context': None
                     }
                 grouped[key]['change_types'].add(change_type)
                 grouped[key]['diff_lines'].append(raw_line)
+                # Store field context if available
+                if lookup_ln:
+                    field_ctx = find_deepest_context(lookup_ln)
+                    if field_ctx and field_ctx.type == 'member_variable' and field_ctx.name == varname:
+                        grouped[key]['context'] = field_ctx
                 continue
 
-            # 3.4) Method body change or removal/add inside a method
+            # 3.4) Any change inside a method's body
             lookup_ln = old_ln if old_ln is not None else new_ln
             ctx = find_deepest_context(lookup_ln) if lookup_ln else None
             if not ctx:
-                # Skip changes not in any context (no class or method)
                 continue
-            # Find the method context in ancestors
+
+            # Climb to find method context
             c = ctx
             while c and c.type != 'method':
                 c = c.parent
@@ -272,20 +283,16 @@ class DiffProcessor:
                 parent = c.parent
                 while parent and parent.type not in ('class', 'enum'):
                     parent = parent.parent
-                class_name = parent.name if parent and parent.type in ('class','enum') else ''
-                pkg = parent.parent.name if (parent and parent.parent and parent.parent.type=='package') else ''
-                element_type = 'method'
-                element_name = c.name
-                key = (class_name, element_type, element_name)
+                class_name = parent.name if parent and parent.type in ('class', 'enum') else ''
+                key = (class_name, 'method', c.name)
                 if key not in grouped:
                     grouped[key] = {
-                        'package': pkg,
                         'change_types': set(),
                         'diff_lines': [],
                         'context': c
                     }
                 grouped[key]['change_types'].add(change_type)
                 grouped[key]['diff_lines'].append(raw_line)
-            # Else: skip anything not in a method
+                # context already set above or here
 
         return grouped
