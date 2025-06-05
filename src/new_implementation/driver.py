@@ -4,7 +4,7 @@ from diff_processor import DiffProcessor
 import logging
 
 # Configure root logger to show debug/warning messages from diff_processor
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger("diff_processor")
 
 if __name__ == "__main__":

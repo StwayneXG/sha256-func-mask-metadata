@@ -7,7 +7,7 @@ from typing import List, Dict
 from java_context_extractor import JavaContextExtractor
 
 script_logger = logging.getLogger("diff_processor")
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 class DiffProcessor:
     """
