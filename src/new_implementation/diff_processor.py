@@ -294,87 +294,75 @@ class DiffProcessor:
         running_old = None
         running_new = None
         in_hunk = False
-        # Unified-diff hunk header: @@ -oldStart,oldCount +newStart,newCount @@
         hunk_re = re.compile(r"^@@\s+-(\d+)(?:,\d+)?\s+\+(\d+)(?:,\d+)?\s+@@")
 
+        removed_so_far = 0
+        added_so_far = 0
+
         for raw in diff_text.splitlines():
-            # Skip high-level diff markers
             if raw.startswith("diff --git "):
                 in_hunk = False
                 continue
-            if raw.startswith("index "):
+            if raw.startswith("index ") or raw.startswith("--- "):
                 continue
             if raw.startswith("\\ No newline at end of file"):
                 continue
 
-            # Detect the “+++” line: indicates the new file path
             if raw.startswith("+++ "):
-                raw_path = raw[4:].strip()  # e.g. "b/src/com/example/MyClass.java" or "/dev/null"
+                raw_path = raw[4:].strip()
                 if raw_path.endswith(".java") and raw_path != "/dev/null":
-                    # Drop leading "a/" or "b/" so file paths are just "src/com/..."
                     if raw_path.startswith(("a/", "b/")):
                         raw_path = raw_path[2:]
                     current_file = raw_path
-                    script_logger.debug(f"Entering file: {current_file}")
                 else:
-                    script_logger.debug(f"Skipping non-Java or deleted file: {raw_path}")
                     current_file = None
                 in_hunk = False
                 continue
 
-            # We don’t need the “---” line for our current logic
-            if raw.startswith("--- "):
-                continue
-
-            # If we see a hunk header and we’re in a valid Java file, start counting
             m = hunk_re.match(raw)
             if m and current_file:
                 running_old = int(m.group(1))
                 running_new = int(m.group(2))
+                removed_so_far = 0
+                added_so_far = 0
                 in_hunk = True
-                script_logger.debug(f"Start hunk in {current_file}: old={running_old}, new={running_new}")
                 continue
 
-            # Ignore everything until we know we’re inside a hunk of a Java file
             if not in_hunk or not current_file:
                 continue
 
-            # Context line — just advance both counters
             if raw.startswith(" "):
                 running_old += 1
                 running_new += 1
                 continue
 
-            # Removed line
             if raw.startswith("-"):
-                content = raw[1:]  # drop the leading “-”
+                content = raw[1:]
                 records.append({
                     "file_path": current_file,
                     "change_type": "removed",
                     "line_number": running_old,
                     "raw_text": content,
                 })
-                script_logger.debug(f"Removed line {running_old}: {content}")
                 running_old += 1
+                removed_so_far += 1
                 continue
 
-            # Added line
             if raw.startswith("+"):
-                content = raw[1:]  # drop the leading “+”
+                content = raw[1:]
+                adjusted_line_number = running_new + (removed_so_far - added_so_far)
                 records.append({
                     "file_path": current_file,
                     "change_type": "added",
-                    "line_number": running_new,
+                    "line_number": adjusted_line_number,
                     "raw_text": content,
                 })
-                script_logger.debug(f"Added line {running_new}: {content}")
                 running_new += 1
+                added_so_far += 1
                 continue
 
-            # If we get here, something strange is inside the hunk
-            script_logger.debug(f"Unexpected line in hunk: {raw}")
-
         return pd.DataFrame(records, columns=["file_path", "change_type", "line_number", "raw_text"])
+
         records = self._adjust_line_numbers(records)
 
     def _adjust_line_numbers(self, records: list[dict]) -> list[dict]:
