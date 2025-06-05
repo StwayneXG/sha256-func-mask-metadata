@@ -26,7 +26,7 @@ class DiffProcessor:
         Groups changes by both high-level class and low-level element (method/member_variable/import).
         Fully removed methods are detected by inspecting consecutive '-' runs.
         Anything not matched as a full-method removal is assigned to contexts and classified.
-        Adds 'class_source' to every record.
+        Adds a separate row for class_source (once per class with changes).
         """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text).copy()
@@ -64,6 +64,9 @@ class DiffProcessor:
                 class_to_source[cctx["element_name"]] = "".join(
                     full_source_lines[c_start - 1 : c_end]
                 )
+
+            # Track which classes had changes
+            classes_with_changes = set()
 
             # Subset of changes for this file
             file_changes = changed_df[changed_df["file_path"] == fp].copy()
@@ -105,7 +108,7 @@ class DiffProcessor:
                     run_end = run[-1]["line_number"]
                     run_len = run_end - run_start + 1
 
-                    # Now count braces from sig_idx onward (within the run) to find body end
+                    # Count braces from sig_idx onward to find body end
                     brace_balance = 0
                     found_start_brace = False
                     local_end_idx = None
@@ -133,6 +136,7 @@ class DiffProcessor:
                         sig_text = run[sig_idx]["raw_text"].strip()
                         method_name = JavaContextExtractor._extract_method_name(sig_text)
 
+                        # Find enclosing class
                         class_name = None
                         for parent_ctx in contexts:
                             if parent_ctx["type"] == "class" \
@@ -140,7 +144,9 @@ class DiffProcessor:
                                 class_name = parent_ctx["element_name"]
                                 break
 
-                        class_source = class_to_source.get(class_name)
+                        # Mark class as changed
+                        if class_name:
+                            classes_with_changes.add(class_name)
 
                         all_records.append({
                             "file_path": fp,
@@ -149,8 +155,7 @@ class DiffProcessor:
                             "element_name": method_name,
                             "change_type": "removed",
                             "diff_lines": ["-" + r["raw_text"] for r in run],
-                            "element_source": None,
-                            "class_source": class_source
+                            "element_source": None
                         })
 
                         # Mark these line numbers as used
@@ -203,6 +208,7 @@ class DiffProcessor:
 
                 diff_lines = [chg["diff_line"] for chg in change_list]
 
+                # Determine enclosing class
                 class_name = None
                 for parent_ctx in contexts:
                     if parent_ctx["type"] == "class" \
@@ -210,13 +216,16 @@ class DiffProcessor:
                         class_name = parent_ctx["element_name"]
                         break
 
+                # Mark class as changed
+                if class_name:
+                    classes_with_changes.add(class_name)
+
+                # Determine element_source
                 if overall_type == "removed":
                     element_source = None
                 else:
                     snippet = "".join(full_source_lines[start_line - 1 : end_line]) if full_source_lines else None
                     element_source = snippet
-
-                class_source = class_to_source.get(class_name)
 
                 all_records.append({
                     "file_path": fp,
@@ -225,8 +234,21 @@ class DiffProcessor:
                     "element_name": element_name,
                     "change_type": overall_type,
                     "diff_lines": diff_lines,
-                    "element_source": element_source,
-                    "class_source": class_source
+                    "element_source": element_source
+                })
+
+            # Finally, add one row per changed class for class_source
+            for cls_name in classes_with_changes:
+                class_src = class_to_source.get(cls_name)
+                all_records.append({
+                    "file_path": fp,
+                    "class_name": cls_name,
+                    "element_type": "class_source",
+                    "element_name": cls_name,
+                    "change_type": "",
+                    "diff_lines": [],
+                    "element_source": None,
+                    "class_source": class_src
                 })
 
         return pd.DataFrame(all_records, columns=[
