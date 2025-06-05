@@ -50,6 +50,14 @@ class DiffProcessor:
                 continue
 
             full_disk = os.path.join(self.repo_root, fp)
+            if not os.path.exists(full_disk):
+                print(f"File not found: {full_disk}")
+            else:
+                with open(full_disk, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                print(f"--- {fp} ---")
+                for idx, line in enumerate(lines, 1):
+                    print(f"{idx:4}: {line.rstrip()}")
             try:
                 contexts = JavaContextExtractor.extract_context(full_disk)
                 full_source_lines = open(full_disk, "r", encoding="utf-8").readlines()
