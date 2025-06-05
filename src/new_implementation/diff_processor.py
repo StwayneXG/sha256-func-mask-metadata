@@ -370,7 +370,7 @@ class DiffProcessor:
         records = self._adjust_line_numbers(records)
         return pd.DataFrame(records, columns=["file_path", "change_type", "line_number", "raw_text"])
 
-    def _adjust_line_numbers(records: list[dict]) -> list[dict]:
+    def _adjust_line_numbers(self, records: list[dict]) -> list[dict]:
         # Sort records by line number for stability
         records.sort(key=lambda r: r["line_number"])
         adjustment = 0
