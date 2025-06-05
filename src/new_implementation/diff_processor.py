@@ -374,8 +374,8 @@ class DiffProcessor:
             # If we get here, something strange is inside the hunk
             script_logger.debug(f"Unexpected line in hunk: {raw}")
 
-        records = self._adjust_line_numbers(records)
         return pd.DataFrame(records, columns=["file_path", "change_type", "line_number", "raw_text"])
+        records = self._adjust_line_numbers(records)
 
     def _adjust_line_numbers(self, records: list[dict]) -> list[dict]:
         # Sort records by line number for stability
@@ -390,7 +390,7 @@ class DiffProcessor:
                 adjustment -= 1  # all following lines shift up
             elif r["change_type"] == "added":
                 r["line_number"] += adjustment
-                adjustment += 0  # all following lines shift down
+                adjustment += 1  # all following lines shift down
             adjusted.append(r)
 
         return adjusted
