@@ -24,12 +24,11 @@ class DiffProcessor:
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
         """
         Groups changes by both high-level class and low-level element (method/member_variable).
-        Fully removed methods (all consecutive '-' lines covering the method span)
-        are recorded first. Remaining changes get assigned to contexts and classified.
+        Fully removed methods are detected by inspecting consecutive '-' runs.
+        Anything not matched as a full-method removal is assigned to contexts as before.
         """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text).copy()
-
         # Reconstruct each diff line with its prefix
         changed_df["diff_line"] = changed_df.apply(
             lambda row: ("+" + row["raw_text"]
@@ -40,7 +39,7 @@ class DiffProcessor:
 
         all_records: List[Dict] = []
 
-        # Phase 2: for each unique .java file...
+        # Phase 2: process each Java file separately
         for fp in changed_df["file_path"].unique():
             if not fp.endswith(".java"):
                 continue
@@ -56,18 +55,17 @@ class DiffProcessor:
             # Subset of changes for this file
             file_changes = changed_df[changed_df["file_path"] == fp].copy()
 
-            # ---------- FIRST: Detect entire-method removals ----------
-            # Filter only removed lines and sort by line_number
-            removed_only = file_changes[file_changes["change_type"] == "removed"]
+            # ---------- Detect full-method removals by inspecting runs of consecutive '-'
+            removed_only = file_changes[file_changes["change_type"] == "removed"].sort_values("line_number")
             used_indices = set()
+
             if not removed_only.empty:
-                removed_sorted = removed_only.sort_values("line_number")
-                removed_rows = removed_sorted.to_dict("records")
+                rows = removed_only.to_dict("records")
                 runs: List[List[Dict]] = []
                 current_run: List[Dict] = []
-
                 prev_ln = None
-                for row in removed_rows:
+
+                for row in rows:
                     ln = row["line_number"]
                     if prev_ln is None or ln == prev_ln + 1:
                         current_run.append(row)
@@ -77,67 +75,86 @@ class DiffProcessor:
                     prev_ln = ln
                 if current_run:
                     runs.append(current_run)
-                
-                # Print runs in a readable format for debugging
-                for i, run in enumerate(runs):
-                    script_logger.debug(f"Run {i}: lines {run[0]['line_number']} to {run[-1]['line_number']}, count={len(run)}")
-                    for r in run:
-                        script_logger.debug(f"    {r['line_number']}: {r['raw_text']}")
 
-                # For each run of consecutive '-' lines, check against method contexts
+                # For each run of consecutive '-' lines, see if it starts with a function signature
                 for run in runs:
                     run_start = run[0]["line_number"]
                     run_end = run[-1]["line_number"]
                     run_len = run_end - run_start + 1
 
-                    # Find a method context whose span exactly matches
-                    for idx_ctx, ctx in enumerate(contexts):
-                        if ctx["type"] == "method" \
-                           and ctx["start_line"] == run_start \
-                           and ctx["end_line"] == run_end:
-                            # Entire method removed
-                            # Find enclosing class for class_name
-                            class_name = None
-                            for parent_ctx in contexts:
-                                if parent_ctx["type"] == "class" \
-                                   and parent_ctx["start_line"] <= run_start <= parent_ctx["end_line"]:
-                                    class_name = parent_ctx["element_name"]
-                                    break
+                    # Step A: strip leading '-' and check for a function signature in run[0]
+                    sig_line = run[0]["raw_text"].strip()
+                    if not JavaContextExtractor._is_function_line(sig_line):
+                        continue
 
-                            all_records.append({
-                                "file_path": fp,
-                                "class_name": class_name,
-                                "element_type": "method",
-                                "element_name": ctx["element_name"],
-                                "change_type": "removed",
-                                "diff_lines": ["-" + r["raw_text"] for r in run],
-                                "element_source": None
-                            })
-                            # Mark these rows as used
-                            for r in run:
-                                used_indices.add(r["line_number"])
+                    # Step B: find method-body end by scanning run's raw_text lines and counting braces
+                    brace_balance = 0
+                    found_start_brace = False
+                    local_end_idx = None
+
+                    for i, r in enumerate(run):
+                        text = r["raw_text"]
+                        # Remove any '//' or '/* */' sections before counting braces
+                        t = text
+                        if "//" in t:
+                            t = t.split("//", 1)[0]
+                        while "/*" in t and "*/" in t:
+                            t = t[:t.find("/*")] + t[t.find("*/") + 2:]
+                        for ch in t:
+                            if ch == "{":
+                                brace_balance += 1
+                                found_start_brace = True
+                            elif ch == "}":
+                                brace_balance -= 1
+                                if found_start_brace and brace_balance == 0:
+                                    local_end_idx = i
+                                    break
+                        if local_end_idx is not None:
                             break
 
-            # Remove used rows from file_changes
+                    # If local_end_idx matches the end of the run (i.e., run length), treat as full-method removal
+                    if local_end_idx is not None and (local_end_idx + 1) == run_len:
+                        # Extract method name from signature
+                        method_name = JavaContextExtractor._extract_method_name(sig_line)
+
+                        # Find enclosing class by looking up contexts
+                        class_name = None
+                        for parent_ctx in contexts:
+                            if parent_ctx["type"] == "class" and parent_ctx["start_line"] <= run_start <= parent_ctx["end_line"]:
+                                class_name = parent_ctx["element_name"]
+                                break
+
+                        all_records.append({
+                            "file_path": fp,
+                            "class_name": class_name,
+                            "element_type": "method",
+                            "element_name": method_name,
+                            "change_type": "removed",
+                            "diff_lines": ["-" + r["raw_text"] for r in run],
+                            "element_source": None
+                        })
+
+                        # Mark these line numbers as used
+                        for r in run:
+                            used_indices.add(r["line_number"])
+
+            # Remove those used rows before further assignment
             file_changes = file_changes[~file_changes["line_number"].isin(used_indices)]
 
-            # ---------- NEXT: Assign remaining changes to contexts ----------
-            # Map each context index to its list of remaining change rows
+            # ---------- Assign remaining changes to contexts ----------
             context_changes: Dict[int, List[pd.Series]] = {i: [] for i in range(len(contexts))}
-
             for _, change_row in file_changes.iterrows():
                 ln = change_row["line_number"]
-                # Find all contexts containing this line
-                matching_indices = [
+                # Find all contexts that include this line
+                matching = [
                     idx_ctx for idx_ctx, ctx in enumerate(contexts)
                     if ctx["start_line"] <= ln <= ctx["end_line"]
                 ]
-                if not matching_indices:
+                if not matching:
                     continue
-
-                # Choose smallest-span context
+                # Pick the smallest-span context
                 best_idx = min(
-                    matching_indices,
+                    matching,
                     key=lambda i: (contexts[i]["end_line"] - contexts[i]["start_line"])
                 )
                 context_changes[best_idx].append(change_row)
@@ -154,23 +171,22 @@ class DiffProcessor:
                 end_line = ctx["end_line"]
                 span_length = end_line - start_line + 1
 
-                added_lines = [chg for chg in change_list if chg["change_type"] == "added"]
-                removed_lines = [chg for chg in change_list if chg["change_type"] == "removed"]
+                added = [chg for chg in change_list if chg["change_type"] == "added"]
+                removed = [chg for chg in change_list if chg["change_type"] == "removed"]
 
-                removed_line_numbers = {chg["line_number"] for chg in removed_lines}
-                added_line_numbers = {chg["line_number"] for chg in added_lines}
+                removed_lns = {chg["line_number"] for chg in removed}
+                added_lns = {chg["line_number"] for chg in added}
 
-                # Determine if entire element added/removed
-                if len(removed_line_numbers) == span_length and not added_lines:
-                    overall_change_type = "removed"
-                elif len(added_line_numbers) == span_length and not removed_lines:
-                    overall_change_type = "added"
+                if len(removed_lns) == span_length and not added:
+                    overall_type = "removed"
+                elif len(added_lns) == span_length and not removed:
+                    overall_type = "added"
                 else:
-                    overall_change_type = "modified"
+                    overall_type = "modified"
 
                 diff_lines = [chg["diff_line"] for chg in change_list]
 
-                # Determine class_name
+                # Determine class_name for this element
                 class_name = None
                 if element_type == "class":
                     class_name = element_name
@@ -181,8 +197,8 @@ class DiffProcessor:
                             class_name = parent_ctx["element_name"]
                             break
 
-                # Extract element_source
-                if overall_change_type == "removed":
+                # Determine element_source
+                if overall_type == "removed":
                     element_source = None
                 else:
                     snippet = "".join(full_source_lines[start_line - 1 : end_line]) if full_source_lines else None
@@ -193,12 +209,11 @@ class DiffProcessor:
                     "class_name": class_name,
                     "element_type": element_type,
                     "element_name": element_name,
-                    "change_type": overall_change_type,
+                    "change_type": overall_type,
                     "diff_lines": diff_lines,
                     "element_source": element_source
                 })
 
-        # Return as DataFrame
         return pd.DataFrame(all_records, columns=[
             "file_path",
             "class_name",
