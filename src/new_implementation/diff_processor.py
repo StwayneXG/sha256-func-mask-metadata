@@ -58,6 +58,11 @@ class DiffProcessor:
                 script_logger.warning(f"Cannot open {full_disk} to extract element source.")
 
             for (class_name, elem_type, elem_name), info in groups.items():
+                # Skip completely removed methods: context is None and change_type is 'removed'
+                if elem_type == 'method':
+                    if info['change_types'] == {'removed'} and info.get('context') is None:
+                        continue
+
                 cset = info['change_types']
                 if cset == {'added'}:
                     cfinal = 'added'
@@ -66,23 +71,30 @@ class DiffProcessor:
                 else:
                     cfinal = 'modified'
 
-                # Determine element_source for methods and member_variables
+                # If member_variable is only removed, no need to lookup source
                 elem_src = ''
                 if elem_type == 'method':
-                    ctx = info.get('context')  # Should be a _Context for that method
-                    if ctx and file_lines:
-                        start, end = ctx.start_line, ctx.end_line
-                        elem_src = "\n".join(file_lines[start-1:end])
+                    # Added or modified: attempt to extract source
+                    if cfinal != 'removed':
+                        ctx = info.get('context')  # Should be a _Context for that method
+                        if ctx and file_lines:
+                            start, end = ctx.start_line, ctx.end_line
+                            elem_src = "\n".join(file_lines[start-1:end])
+                        else:
+                            script_logger.warning(f"No context or file lines for method {elem_name} in {fp}.")
+                            elem_src = ''
                     else:
-                        script_logger.warning(f"No context or file lines for method {elem_name} in {fp}.")
                         elem_src = ''
                 elif elem_type == 'member_variable':
-                    ctx = info.get('context')
-                    if ctx and file_lines:
-                        idx = ctx.start_line
-                        elem_src = file_lines[idx-1]
+                    if cfinal != 'removed':
+                        ctx = info.get('context')
+                        if ctx and file_lines:
+                            idx = ctx.start_line
+                            elem_src = file_lines[idx-1]
+                        else:
+                            script_logger.warning(f"No context or file lines for member_variable {elem_name} in {fp}.")
+                            elem_src = ''
                     else:
-                        script_logger.warning(f"No context or file lines for member_variable {elem_name} in {fp}.")
                         elem_src = ''
 
                 records.append({
@@ -271,10 +283,11 @@ class DiffProcessor:
                 grouped[key]['change_types'].add(change_type)
                 grouped[key]['diff_lines'].append(raw_line)
 
-                # Store field context if available
+                # Store field context if available (only needed if not a removal-only)
                 if lookup_ln:
                     field_ctx = find_deepest_context(lookup_ln)
-                    if field_ctx and field_ctx.type == 'member_variable' and field_ctx.name == varname:
+                    if (field_ctx and field_ctx.type == 'member_variable'
+                            and field_ctx.name == varname):
                         grouped[key]['context'] = field_ctx
                 continue
 
