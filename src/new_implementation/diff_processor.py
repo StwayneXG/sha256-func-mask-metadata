@@ -21,13 +21,14 @@ class DiffProcessor:
     def __init__(self, repo_root: str = None):
         self.repo_root = repo_root
 
+
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
         """
         Groups changes by both high-level class and low-level element (method/member_variable/import).
         Fully removed methods are detected by inspecting consecutive '-' runs.
         Anything not matched as a full-method removal is assigned to contexts and classified.
         Adds a separate row for the enclosing class (element_type="class") with its full source
-        and appropriate change_type (added/removed/modified).
+        and a list of all changed lines inside that class.
         """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text).copy()
@@ -236,6 +237,12 @@ class DiffProcessor:
                     (changed_df["change_type"] == "removed")
                 ]["line_number"] if c_start <= ln <= c_end}
 
+                # Collect all diff_lines inside this class span
+                df_file = changed_df[changed_df["file_path"] == fp]
+                diff_lines_class = df_file[
+                    (df_file["line_number"] >= c_start) & (df_file["line_number"] <= c_end)
+                ]["diff_line"].tolist()
+
                 if len(removed_in_class) == class_span:
                     class_change_type = "removed"
                     class_source = None
@@ -249,7 +256,7 @@ class DiffProcessor:
                     "element_type": "class",
                     "element_name": cctx["element_name"],
                     "change_type": class_change_type,
-                    "diff_lines": [],
+                    "diff_lines": diff_lines_class,
                     "element_source": class_source
                 })
 
