@@ -40,61 +40,6 @@ def build_contexts_for_file(full_path: str):
         lines = f.read().splitlines()
     content = "\n".join(lines)
 
-    # Helper to find matching closing brace ignoring comments/strings
-    def find_body_end(start_line_idx, start_col_idx):
-        total_lines = lines
-        brace_count = 0
-        in_string = False
-        in_char = False
-        in_block_comment = False
-        escape_next = False
-        current_line = start_line_idx
-        current_col = start_col_idx
-        while current_line < len(total_lines):
-            line = total_lines[current_line]
-            i = current_col if current_line == start_line_idx else 0
-            in_line_comment = False
-            while i < len(line):
-                char = line[i]
-                if escape_next:
-                    escape_next = False
-                elif char == "\\":
-                    escape_next = True
-                elif in_string:
-                    if char == '"':
-                        in_string = False
-                elif in_char:
-                    if char == "'":
-                        in_char = False
-                elif in_line_comment:
-                    pass
-                elif in_block_comment:
-                    if char == '*' and i + 1 < len(line) and line[i + 1] == '/':
-                        in_block_comment = False
-                        i += 1
-                else:
-                    if char == '"':
-                        in_string = True
-                    elif char == "'":
-                        in_char = True
-                    elif char == '/' and i + 1 < len(line):
-                        if line[i + 1] == '/':
-                            in_line_comment = True
-                            i += 1
-                        elif line[i + 1] == '*':
-                            in_block_comment = True
-                            i += 1
-                    elif char == '{':
-                        brace_count += 1
-                    elif char == '}':
-                        brace_count -= 1
-                        if brace_count == 0:
-                            return current_line + 1  # 1-based end line
-                i += 1
-            current_line += 1
-            current_col = 0
-        return None
-
     # 1) Find package statement (if any)
     pkg_name = ""
     for idx, ln in enumerate(lines, start=1):
@@ -147,7 +92,7 @@ def build_contexts_for_file(full_path: str):
             # Locate the '{'
             brace_idx = sig.find('{')
             if brace_idx >= 0:
-                end = find_body_end(dline - 1, brace_idx)
+                end = MethodExtractor.find_body_end(dline - 1, brace_idx, lines)
                 if end is None:
                     script_logger.warning(f"Braces never closed for {kind} {name} starting at line {dline}")
                     end = len(lines)
@@ -159,7 +104,7 @@ def build_contexts_for_file(full_path: str):
                     line_j = lines[j]
                     idx_br = line_j.find('{')
                     if idx_br >= 0:
-                        end = find_body_end(j, idx_br)
+                        end = MethodExtractor.find_body_end(j, idx_br, lines)
                         if end is None:
                             script_logger.warning(f"Braces never closed for {kind} {name} starting at line {dline}")
                             end = len(lines)
@@ -174,7 +119,7 @@ def build_contexts_for_file(full_path: str):
             # Locate '{' in signature
             brace_idx = sig.find('{')
             if brace_idx >= 0:
-                end = find_body_end(dline - 1, brace_idx)
+                end = MethodExtractor.find_body_end(dline - 1, brace_idx, lines)
                 if end is None:
                     script_logger.warning(f"Braces never closed for method {name} starting at line {dline}")
                     end = len(lines)
@@ -186,7 +131,7 @@ def build_contexts_for_file(full_path: str):
                     line_j = lines[j]
                     idx_br = line_j.find('{')
                     if idx_br >= 0:
-                        end = find_body_end(j, idx_br)
+                        end = MethodExtractor.find_body_end(j, idx_br, lines)
                         if end is None:
                             script_logger.warning(f"Braces never closed for method {name} starting at line {dline}")
                             end = len(lines)
