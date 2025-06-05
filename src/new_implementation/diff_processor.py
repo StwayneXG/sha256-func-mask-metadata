@@ -61,6 +61,9 @@ class DiffProcessor:
                         print(f"{idx:4}: {lines[idx - 1].rstrip()}")
             try:
                 contexts = JavaContextExtractor.extract_context(full_disk)
+                print(f"\nContexts for {fp}:")
+                for i, ctx in enumerate(contexts):
+                    print(f"  [{i}] {ctx['type']} '{ctx['element_name']}' (lines {ctx['start_line']}-{ctx['end_line']})")
                 full_source_lines = open(full_disk, "r", encoding="utf-8", errors="ignore").readlines()
             except FileNotFoundError:
                 contexts = []
