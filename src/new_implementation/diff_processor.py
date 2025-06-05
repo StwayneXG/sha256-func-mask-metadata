@@ -298,6 +298,7 @@ class DiffProcessor:
 
         removed_so_far = 0
         added_so_far = 0
+        previous_removed_line = None  # Track last removed line
 
         for raw in diff_text.splitlines():
             if raw.startswith("diff --git "):
@@ -338,6 +339,7 @@ class DiffProcessor:
 
             if raw.startswith("-"):
                 content = raw[1:]
+                previous_removed_line = running_old
                 records.append({
                     "file_path": current_file,
                     "change_type": "removed",
@@ -350,7 +352,13 @@ class DiffProcessor:
 
             if raw.startswith("+"):
                 content = raw[1:]
-                adjusted_line_number = running_new + (removed_so_far - added_so_far)
+                if previous_removed_line is not None:
+                    # Replacement: use removed line's number
+                    adjusted_line_number = previous_removed_line
+                    previous_removed_line = None  # Reset
+                else:
+                    # Insertion: apply adjustment
+                    adjusted_line_number = running_new + (removed_so_far - added_so_far)
                 records.append({
                     "file_path": current_file,
                     "change_type": "added",
