@@ -33,6 +33,17 @@ class DiffProcessor:
                 continue
             full_disk = os.path.join(self.repo_root, fp)
 
+            # Print all lines in the file with line numbers
+            try:
+                with open(full_disk, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                script_logger.debug(f"--- File contents for {fp} ---")
+                for idx, line in enumerate(lines, start=1):
+                    script_logger.debug(f"{idx:4}: {line.rstrip()}")
+                script_logger.debug(f"--- End of file contents for {fp} ---")
+            except Exception as e:
+                script_logger.error(f"Failed to read file {full_disk}: {e}")
+
             try:
                 contexts = JavaContextExtractor.extract_context(full_disk)
             except FileNotFoundError:
