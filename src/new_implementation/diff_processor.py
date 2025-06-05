@@ -32,6 +32,8 @@ class DiffProcessor:
         """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text).copy()
+        print("Changed lines DataFrame:")
+        print(changed_df.to_string(index=False))
         # Reconstruct each diff line with its prefix
         changed_df["diff_line"] = changed_df.apply(
             lambda row: ("+" + row["raw_text"]
@@ -214,7 +216,7 @@ class DiffProcessor:
 
                 all_records.append({
                     "file_path": fp,
-                    "class_name": class_name if element_type != "class" else None,
+                    "class_name": class_name,
                     "element_type": element_type,
                     "element_name": element_name,
                     "change_type": overall_type,
