@@ -2,6 +2,7 @@ import os
 import re
 import logging
 import pandas as pd
+from typing import List, Dict
 
 from java_context_extractor import JavaContextExtractor
 
@@ -21,57 +22,114 @@ class DiffProcessor:
         self.repo_root = repo_root
 
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
+        """
+        Groups changes by the enclosing element (class/interface/enum/method/member_variable).
+        Returns a DataFrame with columns:
+          - file_path
+          - class_name
+          - element_type
+          - element_name
+          - change_type       (added, removed, or modified)
+          - diff_lines        (list of strings starting with '+' or '-')
+          - element_source    (the full source code for that element, or None if removed)
+        """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text)
-        return changed_df
 
-        # Phase 2: filter to .java files and build contexts
-        file_to_contexts = {}
-        unique_files = changed_df['file_path'].unique()
+        # Reconstruct each diff line with its prefix
+        changed_df = changed_df.copy()
+        changed_df["diff_line"] = changed_df.apply(
+            lambda row: ("+" + row["raw_text"] if row["change_type"] == "added" else "-" + row["raw_text"]),
+            axis=1
+        )
+
+        records: List[Dict] = []
+
+        # Phase 2: for each unique .java file, build its context and group changes
+        unique_files = changed_df["file_path"].unique()
         for fp in unique_files:
-            if not fp.endswith('.java'):
-                script_logger.debug(f"Skipping non-Java file: {fp}")
+            if not fp.endswith(".java"):
                 continue
+
             full_disk = os.path.join(self.repo_root, fp)
-
-            # # Print all lines in the file with line numbers
-            # try:
-            #     with open(full_disk, "r", encoding="utf-8") as f:
-            #         lines = f.readlines()
-            #     script_logger.debug(f"--- File contents for {fp} ---")
-            #     for idx, line in enumerate(lines, start=1):
-            #         script_logger.debug(f"{idx:4}: {line.rstrip()}")
-            #     script_logger.debug(f"--- End of file contents for {fp} ---")
-            # except Exception as e:
-            #     script_logger.error(f"Failed to read file {full_disk}: {e}")
-
             try:
                 contexts = JavaContextExtractor.extract_context(full_disk)
+                full_source_lines = open(full_disk, "r", encoding="utf-8").readlines()
             except FileNotFoundError:
-                script_logger.error(f"Could not read file: {full_disk}")
                 contexts = []
-            
-            file_to_contexts[fp] = contexts
+                full_source_lines = []
 
-            # ─── PRINT the “context” for debugging ───
-            # script_logger.debug(f"--- Context for {fp} (start) ---")
-            # for elem in contexts:
-            #     summary = (
-            #         f"{elem['type']:15} | "
-            #         f"{elem['element_name']:25} | "
-            #         f"lines {elem['start_line']:3}–{elem['end_line']:3}"
-            #     )
-            #     if elem["type"] in ("class", "interface", "enum"):
-            #         if elem["extends"]:
-            #             summary += f" | extends: {elem['extends']}"
-            #         if elem["implements"]:
-            #             summary += f" | implements: {elem['implements']}"
+            file_changes = changed_df[changed_df["file_path"] == fp]
 
-            #     script_logger.debug(summary)
-            # script_logger.debug(f"--- Context for {fp} (end) ---\n")
-            
-        # Phase 3: group changes per file by element
-        # TODO
+            # Map each context index to its list of change rows
+            context_changes: Dict[int, List[pd.Series]] = {i: [] for i in range(len(contexts))}
+            for _, change_row in file_changes.iterrows():
+                ln = change_row["line_number"]
+                for idx_ctx, ctx in enumerate(contexts):
+                    if ctx["start_line"] <= ln <= ctx["end_line"]:
+                        context_changes[idx_ctx].append(change_row)
+                        break
+
+            # Build one output record per context with changes
+            for idx_ctx, change_list in context_changes.items():
+                if not change_list:
+                    continue
+
+                ctx = contexts[idx_ctx]
+                element_type = ctx["type"]
+                element_name = ctx["element_name"]
+                start_line = ctx["start_line"]
+                end_line = ctx["end_line"]
+
+                diff_lines = [chg["diff_line"] for chg in change_list]
+                change_types = set(chg["change_type"] for chg in change_list)
+
+                if len(change_types) == 1:
+                    overall_change_type = next(iter(change_types))
+                else:
+                    overall_change_type = "modified"
+
+                # Determine class_name for this element
+                class_name = None
+                if element_type == "class":
+                    class_name = element_name
+                else:
+                    for parent_ctx in contexts:
+                        if parent_ctx["type"] == "class" and parent_ctx["start_line"] <= start_line <= parent_ctx["end_line"]:
+                            class_name = parent_ctx["element_name"]
+                            break
+
+                # Extract element_source
+                element_source = None
+                if full_source_lines:
+                    snippet = "".join(full_source_lines[start_line - 1 : end_line])
+                    if overall_change_type == "removed":
+                        if element_name in snippet:
+                            element_source = snippet
+                        else:
+                            element_source = None
+                    else:
+                        element_source = snippet
+
+                records.append({
+                    "file_path": fp,
+                    "class_name": class_name,
+                    "element_type": element_type,
+                    "element_name": element_name,
+                    "change_type": overall_change_type,
+                    "diff_lines": diff_lines,
+                    "element_source": element_source
+                })
+
+        return pd.DataFrame(records, columns=[
+            "file_path",
+            "class_name",
+            "element_type",
+            "element_name",
+            "change_type",
+            "diff_lines",
+            "element_source"
+        ])
 
     def _collect_changed_lines(self, diff_text: str) -> pd.DataFrame:
         records = []
