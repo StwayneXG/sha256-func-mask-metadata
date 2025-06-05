@@ -168,7 +168,7 @@ class DiffProcessor:
         grouped = {}
         removed_method_ranges = {}  # key -> (start_line, end_line)
 
-        # First pass: identify signature removals to populate removed_method_ranges
+                # First pass: identify signature removals to populate removed_method_ranges
         for item in changes:
             raw_line = item['raw']
             prefix = raw_line[0]
@@ -197,23 +197,22 @@ class DiffProcessor:
             script_logger.debug(f"Processing change line: {raw_line}")
 
             # If this removal falls in a removed_method_ranges, assign directly
+            assigned = False
             if old_ln is not None:
-                for key, (start, end) in removed_method_ranges.items():
+                for mkey, (start, end) in removed_method_ranges.items():
                     if start <= old_ln <= end:
-                        entry = grouped.setdefault(key, {
+                        entry = grouped.setdefault(mkey, {
                             'diff_lines': [], 'context': None,
                             'remove_sig': False, 'add_sig': False,
                             'body_changes': [], 'change_types': set()
                         })
                         entry['diff_lines'].append(raw_line)
                         entry['remove_sig'] = True
-                        entry['context'] = entry.get('context') or _Context('method', key[2], start, end, '', None)
-                        script_logger.debug(f"Assigned removal to fully removed method {key}")
+                        entry['context'] = entry.get('context') or _Context('method', mkey[2], start, end, '', None)
+                        script_logger.debug(f"Assigned removal to fully removed method {mkey}")
+                        assigned = True
                         break
-                else:
-                    # Not part of fully removed method, fall through
-                    pass
-                if key in grouped and start <= old_ln <= end:
+                if assigned:
                     continue
 
             # IMPORT
