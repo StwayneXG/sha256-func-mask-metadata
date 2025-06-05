@@ -37,7 +37,6 @@ class DiffProcessor:
                          else "-" + row["raw_text"]),
             axis=1
         )
-        return changed_df
 
         all_records: List[Dict] = []
 
@@ -78,6 +77,8 @@ class DiffProcessor:
                     prev_ln = ln
                 if current_run:
                     runs.append(current_run)
+                
+                print(runs)
 
                 # For each run of consecutive '-' lines, check against method contexts
                 for run in runs:
