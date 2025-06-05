@@ -37,6 +37,7 @@ class DiffProcessor:
                          else "-" + row["raw_text"]),
             axis=1
         )
+        return changed_df
 
         all_records: List[Dict] = []
 
