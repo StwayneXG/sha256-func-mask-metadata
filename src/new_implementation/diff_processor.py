@@ -201,6 +201,7 @@ class DiffProcessor:
                 
                 # Special case for import/package
                 if element_type in ("import", "package"):
+                    print(f"import or package found:{element_name}")
                     if len(removed_lns) == span_length and not added:
                         overall_type = "removed"
                         element_source = None
@@ -221,7 +222,7 @@ class DiffProcessor:
                         "element_source": element_source
                     })
                     continue  # Skip remaining logic for import/package
-                
+
                 # Determine class_name for this element
                 class_name = None
                 for parent_ctx in class_contexts:
