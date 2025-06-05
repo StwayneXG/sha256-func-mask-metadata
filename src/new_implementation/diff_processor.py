@@ -390,7 +390,7 @@ class DiffProcessor:
                 adjustment -= 1  # all following lines shift up
             elif r["change_type"] == "added":
                 r["line_number"] += adjustment
-                adjustment += 1  # all following lines shift down
+                adjustment += 0  # all following lines shift down
             adjusted.append(r)
 
         return adjusted
