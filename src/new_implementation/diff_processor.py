@@ -106,8 +106,8 @@ class DiffProcessor:
         Step 1: Parse the unified diff text into a dict:
             file_path -> [ { old_lineno, new_lineno, raw } , ... ]
 
-        Skips any "import ..." additions/deletions.  Tracks running line counters
-        from the hunk headers ("@@ -a,b +c,d @@").
+        Skips any "import ..." additions/deletions, as well as diff headers like "diff --git" and "index".
+        Tracks running line counters from the hunk headers ("@@ -a,b +c,d @@").
         """
         per_file_changes = defaultdict(list)
         current_file = None
@@ -118,6 +118,14 @@ class DiffProcessor:
         hunk_re = re.compile(r'^@@\s+-(\d+)(?:,\d+)?\s+\+(\d+)(?:,\d+)?\s+@@')
 
         for raw in diff_text.splitlines():
+            # Skip diff metadata lines
+            if raw.startswith('diff --git '):
+                current_file = None
+                in_hunk = False
+                continue
+            if raw.startswith('index '):
+                continue
+
             if raw.startswith('+++ '):
                 path = raw[4:].strip()
                 if path != '/dev/null':
@@ -262,6 +270,7 @@ class DiffProcessor:
                     }
                 grouped[key]['change_types'].add(change_type)
                 grouped[key]['diff_lines'].append(raw_line)
+
                 # Store field context if available
                 if lookup_ln:
                     field_ctx = find_deepest_context(lookup_ln)
@@ -293,6 +302,5 @@ class DiffProcessor:
                     }
                 grouped[key]['change_types'].add(change_type)
                 grouped[key]['diff_lines'].append(raw_line)
-                # context already set above or here
 
         return grouped
