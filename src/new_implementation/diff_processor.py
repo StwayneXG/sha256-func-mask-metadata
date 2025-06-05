@@ -145,7 +145,8 @@ class DiffProcessor:
             return max(cands, key=lambda c: c.start_line) if cands else None
 
         grouped = {}
-        removed_method_ranges = {}
+        active_removal = {}  # file_path -> (method_key, brace_count)
+
         for item in changes:
             old_ln = item['old_lineno']
             new_ln = item['new_lineno']
@@ -154,13 +155,25 @@ class DiffProcessor:
             content = raw_line[1:].rstrip()
             stripped = content.strip()
 
+            # First, if active removal in process, assign to that method
+            if old_ln is not None and file_path in active_removal:
+                key, brace_count = active_removal[file_path]
+                grouped[key]['diff_lines'].append(raw_line)
+                # Update brace count ignoring comments/strings
+                brace_count += content.count('{') - content.count('}')
+                if brace_count == 0:
+                    del active_removal[file_path]
+                else:
+                    active_removal[file_path] = (key, brace_count)
+                continue
+
             # IMPORT
             if stripped.startswith('import '):
                 key = ('', 'import', stripped)
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
-                    'change_types': set()
+                    'body_changes': [], 'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
                 if prefix == '+': entry['add_sig'] = True
@@ -175,7 +188,7 @@ class DiffProcessor:
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
-                    'change_types': set()
+                    'body_changes': [], 'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
                 entry['change_types'].add('modified')
@@ -202,7 +215,8 @@ class DiffProcessor:
                         method_ctx = find_deepest_context(lookup_ln)
                         if method_ctx and method_ctx.type == 'method' and method_ctx.name == mname:
                             entry['context'] = method_ctx
-                            removed_method_ranges[key] = (method_ctx.start_line, method_ctx.end_line)
+                            # start active removal: brace_count starts at 1 for '{'
+                            active_removal[file_path] = (key, 1)
                 if prefix == '+': entry['add_sig'] = True
                 continue
 
@@ -218,7 +232,7 @@ class DiffProcessor:
                 entry = grouped.setdefault(key, {
                     'diff_lines': [], 'context': None,
                     'remove_sig': False, 'add_sig': False,
-                    'change_types': set()
+                    'body_changes': [], 'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
                 if prefix == '-':
@@ -230,19 +244,7 @@ class DiffProcessor:
                 if prefix == '+': entry['add_sig'] = True
                 continue
 
-            # BODY CHANGE INSIDE METHOD: first check removed_method_ranges
-            assigned = False
-            if old_ln is not None:
-                for mkey, (start, end) in removed_method_ranges.items():
-                    if start <= old_ln <= end:
-                        entry = grouped.setdefault(mkey, grouped[mkey])
-                        entry['diff_lines'].append(raw_line)
-                        assigned = True
-                        break
-            if assigned:
-                continue
-
-            # Otherwise use context resolution for body change
+            # BODY CHANGE INSIDE METHOD (non-full removal)
             lookup_ln = old_ln if old_ln is not None else new_ln
             ctx = find_deepest_context(lookup_ln) if lookup_ln else None
             if not ctx: continue
@@ -261,6 +263,7 @@ class DiffProcessor:
                     'body_changes': [], 'change_types': set()
                 })
                 entry['diff_lines'].append(raw_line)
+                entry['body_changes'].append(lookup_ln)
 
         # Compute change_type
         for key, info in grouped.items():
