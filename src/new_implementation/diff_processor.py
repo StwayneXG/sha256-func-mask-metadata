@@ -23,9 +23,10 @@ class DiffProcessor:
 
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
         """
-        Groups changes by both high-level class and low-level element (method/member_variable).
+        Groups changes by both high-level class and low-level element (method/member_variable/import).
         Fully removed methods are detected by inspecting consecutive '-' runs.
-        Anything not matched as a full-method removal is assigned to contexts as before.
+        Anything not matched as a full-method removal is assigned to contexts and classified.
+        Adds 'class_source' to every record.
         """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text).copy()
@@ -52,10 +53,22 @@ class DiffProcessor:
                 contexts = []
                 full_source_lines = []
 
+            # Build a quick map from each class context to its source lines
+            class_contexts = [
+                ctx for ctx in contexts
+                if ctx["type"] == "class"
+            ]
+            class_to_source: Dict[str, str] = {}
+            for cctx in class_contexts:
+                c_start, c_end = cctx["start_line"], cctx["end_line"]
+                class_to_source[cctx["element_name"]] = "".join(
+                    full_source_lines[c_start - 1 : c_end]
+                )
+
             # Subset of changes for this file
             file_changes = changed_df[changed_df["file_path"] == fp].copy()
 
-            # ---------- Detect full-method removals by inspecting runs of consecutive '-'
+            # ---------- Detect full-method removals by inspecting runs of consecutive '-' ----------
             removed_only = file_changes[file_changes["change_type"] == "removed"].sort_values("line_number")
             used_indices = set()
 
@@ -76,26 +89,29 @@ class DiffProcessor:
                 if current_run:
                     runs.append(current_run)
 
-                # For each run of consecutive '-' lines, see if it starts with a function signature
+                # For each run of consecutive '-' lines, see if it covers exactly one method
                 for run in runs:
+                    # Attempt to find a signature line anywhere in the run
+                    sig_idx = None
+                    for i, r in enumerate(run):
+                        text = r["raw_text"].strip()
+                        if JavaContextExtractor._is_function_line(text):
+                            sig_idx = i
+                            break
+                    if sig_idx is None:
+                        continue
+
                     run_start = run[0]["line_number"]
                     run_end = run[-1]["line_number"]
                     run_len = run_end - run_start + 1
 
-                    # Step A: strip leading '-' and check for a function signature in run[0]
-                    sig_line = run[0]["raw_text"].strip()
-                    if not JavaContextExtractor._is_function_line(sig_line):
-                        continue
-
-                    # Step B: find method-body end by scanning run's raw_text lines and counting braces
+                    # Now count braces from sig_idx onward (within the run) to find body end
                     brace_balance = 0
                     found_start_brace = False
                     local_end_idx = None
 
-                    for i, r in enumerate(run):
-                        text = r["raw_text"]
-                        # Remove any '//' or '/* */' sections before counting braces
-                        t = text
+                    for i in range(sig_idx, len(run)):
+                        t = run[i]["raw_text"]
                         if "//" in t:
                             t = t.split("//", 1)[0]
                         while "/*" in t and "*/" in t:
@@ -112,17 +128,19 @@ class DiffProcessor:
                         if local_end_idx is not None:
                             break
 
-                    # If local_end_idx matches the end of the run (i.e., run length), treat as full-method removal
+                    # If the body-end is exactly the last line of the run, this run is a full-method removal
                     if local_end_idx is not None and (local_end_idx + 1) == run_len:
-                        # Extract method name from signature
-                        method_name = JavaContextExtractor._extract_method_name(sig_line)
+                        sig_text = run[sig_idx]["raw_text"].strip()
+                        method_name = JavaContextExtractor._extract_method_name(sig_text)
 
-                        # Find enclosing class by looking up contexts
                         class_name = None
                         for parent_ctx in contexts:
-                            if parent_ctx["type"] == "class" and parent_ctx["start_line"] <= run_start <= parent_ctx["end_line"]:
+                            if parent_ctx["type"] == "class" \
+                               and parent_ctx["start_line"] <= run_start <= parent_ctx["end_line"]:
                                 class_name = parent_ctx["element_name"]
                                 break
+
+                        class_source = class_to_source.get(class_name)
 
                         all_records.append({
                             "file_path": fp,
@@ -131,7 +149,8 @@ class DiffProcessor:
                             "element_name": method_name,
                             "change_type": "removed",
                             "diff_lines": ["-" + r["raw_text"] for r in run],
-                            "element_source": None
+                            "element_source": None,
+                            "class_source": class_source
                         })
 
                         # Mark these line numbers as used
@@ -145,14 +164,12 @@ class DiffProcessor:
             context_changes: Dict[int, List[pd.Series]] = {i: [] for i in range(len(contexts))}
             for _, change_row in file_changes.iterrows():
                 ln = change_row["line_number"]
-                # Find all contexts that include this line
                 matching = [
                     idx_ctx for idx_ctx, ctx in enumerate(contexts)
                     if ctx["start_line"] <= ln <= ctx["end_line"]
                 ]
                 if not matching:
                     continue
-                # Pick the smallest-span context
                 best_idx = min(
                     matching,
                     key=lambda i: (contexts[i]["end_line"] - contexts[i]["start_line"])
@@ -186,23 +203,20 @@ class DiffProcessor:
 
                 diff_lines = [chg["diff_line"] for chg in change_list]
 
-                # Determine class_name for this element
                 class_name = None
-                if element_type == "class":
-                    class_name = element_name
-                else:
-                    for parent_ctx in contexts:
-                        if parent_ctx["type"] == "class" \
-                           and parent_ctx["start_line"] <= start_line <= parent_ctx["end_line"]:
-                            class_name = parent_ctx["element_name"]
-                            break
+                for parent_ctx in contexts:
+                    if parent_ctx["type"] == "class" \
+                       and parent_ctx["start_line"] <= start_line <= parent_ctx["end_line"]:
+                        class_name = parent_ctx["element_name"]
+                        break
 
-                # Determine element_source
                 if overall_type == "removed":
                     element_source = None
                 else:
                     snippet = "".join(full_source_lines[start_line - 1 : end_line]) if full_source_lines else None
                     element_source = snippet
+
+                class_source = class_to_source.get(class_name)
 
                 all_records.append({
                     "file_path": fp,
@@ -211,7 +225,8 @@ class DiffProcessor:
                     "element_name": element_name,
                     "change_type": overall_type,
                     "diff_lines": diff_lines,
-                    "element_source": element_source
+                    "element_source": element_source,
+                    "class_source": class_source
                 })
 
         return pd.DataFrame(all_records, columns=[
@@ -221,7 +236,8 @@ class DiffProcessor:
             "element_name",
             "change_type",
             "diff_lines",
-            "element_source"
+            "element_source",
+            "class_source"
         ])
 
     def _collect_changed_lines(self, diff_text: str) -> pd.DataFrame:
