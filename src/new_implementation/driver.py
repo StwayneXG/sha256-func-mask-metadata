@@ -49,8 +49,8 @@ if __name__ == "__main__":
     df = processor.parse_diff_to_dataframe(diff_text)
 
     # Print first few rows (now columns are file_path, class_name, element_type, element_name, change_type, diff_lines, element_source)
-    logger.info("Parsed diff into DataFrame:")
-    print(df.head(10).to_string(index=False))
+    # logger.info("Parsed diff into DataFrame:")
+    # print(df.head(10).to_string(index=False))
 
     # Optionally write CSV
     if args.out_csv:
