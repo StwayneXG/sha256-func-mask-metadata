@@ -38,7 +38,7 @@ def validate_diff_consistency(folder_path):
                         raise ValueError(f"Diff line {diff_line} not found for {project_bug} in source\n{element_source}")
             
             if removals_only:
-                print(f"removal only for {project_bug} for method {row['element_name']}")
+                print(f"removal only for {project_bug} for {row['element_type']} {row['element_name']}")
 
 # Example usage
 validate_diff_consistency("/root/data/Defects4J/relevent_gt_data/")
