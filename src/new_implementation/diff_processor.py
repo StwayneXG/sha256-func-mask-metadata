@@ -23,15 +23,15 @@ class DiffProcessor:
 
     def parse_diff_to_dataframe(self, diff_text: str) -> pd.DataFrame:
         """
-        Groups changes by the enclosing element (class/interface/enum/method/member_variable).
+        Groups changes by both high-level class and low-level element (method/member_variable).
         Returns a DataFrame with columns:
           - file_path
-          - class_name
-          - element_type
+          - class_name           (enclosing class)
+          - element_type         (one of class/interface/enum/method/member_variable)
           - element_name
-          - change_type       (added, removed, or modified)
-          - diff_lines        (list of strings starting with '+' or '-')
-          - element_source    (the full source code for that element, or None if removed)
+          - change_type          (added, removed, or modified)
+          - diff_lines           (all '+' or '-' lines for that element)
+          - element_source       (full source code of element if present, else None)
         """
         # Phase 1: collect changed lines
         changed_df = self._collect_changed_lines(diff_text)
@@ -63,12 +63,23 @@ class DiffProcessor:
 
             # Map each context index to its list of change rows
             context_changes: Dict[int, List[pd.Series]] = {i: [] for i in range(len(contexts))}
+
             for _, change_row in file_changes.iterrows():
                 ln = change_row["line_number"]
-                for idx_ctx, ctx in enumerate(contexts):
-                    if ctx["start_line"] <= ln <= ctx["end_line"]:
-                        context_changes[idx_ctx].append(change_row)
-                        break
+                # Find all contexts that include this line
+                matching_indices = [
+                    idx_ctx for idx_ctx, ctx in enumerate(contexts)
+                    if ctx["start_line"] <= ln <= ctx["end_line"]
+                ]
+                if not matching_indices:
+                    continue
+
+                # Among matching contexts, pick the one with smallest span
+                best_idx = min(
+                    matching_indices,
+                    key=lambda i: (contexts[i]["end_line"] - contexts[i]["start_line"])
+                )
+                context_changes[best_idx].append(change_row)
 
             # Build one output record per context with changes
             for idx_ctx, change_list in context_changes.items():
@@ -80,16 +91,27 @@ class DiffProcessor:
                 element_name = ctx["element_name"]
                 start_line = ctx["start_line"]
                 end_line = ctx["end_line"]
+                span_length = end_line - start_line + 1
 
-                diff_lines = [chg["diff_line"] for chg in change_list]
-                change_types = set(chg["change_type"] for chg in change_list)
+                # Separate added vs removed
+                added_lines = [chg for chg in change_list if chg["change_type"] == "added"]
+                removed_lines = [chg for chg in change_list if chg["change_type"] == "removed"]
 
-                if len(change_types) == 1:
-                    overall_change_type = next(iter(change_types))
+                removed_line_numbers = {chg["line_number"] for chg in removed_lines}
+                added_line_numbers = {chg["line_number"] for chg in added_lines}
+
+                # Entirely removed if all lines of that context are "-" and no "+"
+                if len(removed_line_numbers) == span_length and not added_lines:
+                    overall_change_type = "removed"
+                # Entirely added if all lines of that context are "+" and no "-"
+                elif len(added_line_numbers) == span_length and not removed_lines:
+                    overall_change_type = "added"
                 else:
                     overall_change_type = "modified"
 
-                # Determine class_name for this element
+                diff_lines = [chg["diff_line"] for chg in change_list]
+
+                # Determine class_name
                 class_name = None
                 if element_type == "class":
                     class_name = element_name
@@ -104,6 +126,7 @@ class DiffProcessor:
                 if full_source_lines:
                     snippet = "".join(full_source_lines[start_line - 1 : end_line])
                     if overall_change_type == "removed":
+                        # Only return snippet if element name still appears there
                         if element_name in snippet:
                             element_source = snippet
                         else:
